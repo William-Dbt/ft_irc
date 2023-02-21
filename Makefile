@@ -20,12 +20,13 @@ PATHSRCS	= srcs/
 PATHHEADERS	= includes/
 PATHNULL	= /dev/null
 
-SRCS		= $(addprefix ${PATHSRCS}, main.cpp)
+SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp) 
 
 OBJS		= ${SRCS:.cpp=.o}
 
 CC			= c++
-INC			= -I${PATHHEADERS}
+INC			= -I${PATHHEADERS} \
+				-I${PATHHEADERS}Server/ \
 
 CFLAGS		= -Wall -Wextra -Werror -std=c++98
 
