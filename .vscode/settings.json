@@ -1,0 +1,8 @@
+{
+	"workbench.colorTheme": "Visual Studio Dark - C++",
+	"files.associations": {
+		"*.excalidraw": "json",
+		"*.excalidrawlib": "json",
+		"ostream": "cpp"
+	}
+}
