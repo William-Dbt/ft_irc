@@ -125,19 +125,19 @@ int	main(int argc, char *argv[]) {
 						prefix = ":wdebotte!Wiwi@";
 						prefix += inet_ntoa(newAddress.sin_addr);
 						command = prefix;
-						command += " PASS password\n";
+						command += " 001 PASS password\n";
 						send(newSocket, command.c_str(), command.size(), 0);
 						prefix.clear();
 						prefix = ":wdebotte!Wiwi@";
 						prefix += inet_ntoa(newAddress.sin_addr);
 						command = prefix;
-						command += " NICK wdebotte\n";
+						command += " 002 NICK wdebotte\n";
 						send(newSocket, command.c_str(), command.size(), 0);
 						prefix.clear();
 						prefix = ":wdebotte!Wiwi@";
 						prefix += inet_ntoa(newAddress.sin_addr);
 						command = prefix;
-						command += " USER Wiwi Wiwi 127.0.0.1 :William\n";
+						command += " 003 USER Wiwi Wiwi 127.0.0.1 :William\n";
 						send(newSocket, command.c_str(), command.size(), 0);
 						status = 1;
 					}
