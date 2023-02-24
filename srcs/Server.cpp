@@ -50,10 +50,6 @@ int	Server::init() {
 	this->pfds.push_back(pollfd());
 	this->pfds.back().fd = socketFd;
 	this->pfds.back().events = POLLIN;
-
-	std::cout << "ServerFd: " << this->fd << '\n';
-	std::cout << "Password: " << this->password << '\n';
-	std::cout << "Port: " << this->port << std::endl;
 	return 0;
 }
 
@@ -69,7 +65,7 @@ void	Server::acceptClient() {
 
 	this->pfds.push_back(pollfd());
 	this->pfds.back().fd = fd;
-	this->pfds.back().revents = POLLIN;
+	this->pfds.back().events = POLLIN;
 	std::cout << "----- New client -----\n";
 	std::cout << "IP: " << inet_ntoa(address.sin_addr) << '\n';
 	std::cout << "fd: " << fd << '\n';
@@ -87,7 +83,32 @@ void	Server::run() {
 	else { // Check if client send something
 		for (it = this->pfds.begin(); it != this->pfds.end(); it++) {
 			if ((*it).revents == POLLIN) {
-				std::cout << "fd: " << (*it).fd << '\n';
+
+// ------------------------------------------------------------------------------------------------------------------------
+// Have to parse entry from the client
+// It can give multiples entries for the first connection
+// Theses entries are :
+// PASS - The pass that the client have to match with the server's params
+// NICK - The nickname of the user that we'll use to recognize him
+// USER - Give the username, the host from where the client is writing and the real name of the client
+//
+// Check the doc for the reply of the server
+// A int is given for each commands, PASS NICK and USER is 001, 002 and 003 respectivly
+//
+// Have to use Client class to add a new client
+// ------------------------------------------------------------------------------------------------------------------------
+
+				char	buffer[4096];
+
+				int bytes = recv((*it).fd, buffer, 4096, 0);
+				if (bytes == 0) {
+					std::cout << "fd " << (*it).fd << " disconnected.\n";
+					close((*it).fd);
+					(*it).revents = POLLOUT;
+					continue ;
+				}
+				buffer[bytes] = '\0';
+				std::cout << buffer << '\n' << std::endl;
 			}
 		}
 	}
@@ -100,3 +121,39 @@ int	Server::getSocketFd() const {
 int	Server::getPort() const {
 	return this->port;
 }
+
+// if (polls[i].revents == POLLIN) {  
+// 	std::cout << "fd: " << polls[i].fd << '\n';
+// 	size = recv(polls[i].fd, &buffer, BUFFER_SIZE, 0);
+	
+// 	if (status == 0) {
+// 		prefix.clear();
+// 		prefix = ":wdebotte!Wiwi@";
+// 		prefix += inet_ntoa(newAddress.sin_addr);
+// 		command = prefix;
+// 		command += " 001 PASS password\n";
+// 		send(newSocket, command.c_str(), command.size(), 0);
+// 		prefix.clear();
+// 		prefix = ":wdebotte!Wiwi@";
+// 		prefix += inet_ntoa(newAddress.sin_addr);
+// 		command = prefix;
+// 		command += " 002 NICK wdebotte\n";
+// 		send(newSocket, command.c_str(), command.size(), 0);
+// 		prefix.clear();
+// 		prefix = ":wdebotte!Wiwi@";
+// 		prefix += inet_ntoa(newAddress.sin_addr);
+// 		command = prefix;
+// 		command += " 003 USER Wiwi Wiwi 127.0.0.1 :William\n";
+// 		send(newSocket, command.c_str(), command.size(), 0);
+// 		status = 1;
+// 	}
+	
+// 	if (size == 0) {
+// 		std::cout << "Fd " << polls[i].fd << " disconnected" << std::endl;
+// 		close(polls[i].fd);
+// 		polls[i].revents = POLLOUT;
+// 		continue ;
+// 	}
+// 	buffer[size] = '\0';
+// 	std::cout << buffer << std::endl;
+// }
