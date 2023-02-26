@@ -15,7 +15,7 @@ int	main(int argc, char *argv[]) {
 	if (exitStatus)
 		return exitStatus;
 
-	while (1)
+	while (server.running)
 		server.run();
 
 	return 0;

@@ -9,9 +9,16 @@
 #include <arpa/inet.h>
 #include "Server.hpp"
 
-Server::Server(const int &port, const std::string &password) : fd(-1), port(port), password(password) {}
+Server::Server(const int &port, const std::string &password) : fd(-1), port(port), password(password) {
+	this->running = true;
+}
 
 Server::~Server() {
+	std::map<int, Client*>::iterator	it;
+
+	for (it = this->clients.begin(); it != this->clients.end(); it++)
+		delete (*it).second;
+
 	if (this->fd != -1)
 		close(this->fd);
 }
@@ -66,23 +73,12 @@ void	Server::acceptClient() {
 	this->pfds.push_back(pollfd());
 	this->pfds.back().fd = fd;
 	this->pfds.back().events = POLLIN;
-	std::cout << "----- New client -----\n";
-	std::cout << "IP: " << inet_ntoa(address.sin_addr) << '\n';
-	std::cout << "fd: " << fd << '\n';
-	std::cout << "---------------------------\n" << std::endl;
+	this->clients[fd] = new Client(fd, inet_ntoa(address.sin_addr));
+	// std::cout << "----- New client -----\n";
+	// std::cout << "IP: " << inet_ntoa(address.sin_addr) << '\n';
+	// std::cout << "fd: " << fd << '\n';
+	// std::cout << "---------------------------\n" << std::endl;
 }
-
-void	Server::run() {
-	std::vector<pollfd>::iterator	it;
-
-	if (poll(&this->pfds[0], this->pfds.size(), TIMEOUT_LISTENING) == -1)
-		return ;
-
-	if (this->pfds[0].revents == POLLIN) // Server receive a new client connection
-		this->acceptClient();
-	else { // Check if client send something
-		for (it = this->pfds.begin(); it != this->pfds.end(); it++) {
-			if ((*it).revents == POLLIN) {
 
 // ------------------------------------------------------------------------------------------------------------------------
 // Have to parse entry from the client
@@ -98,17 +94,45 @@ void	Server::run() {
 // Have to use Client class to add a new client
 // ------------------------------------------------------------------------------------------------------------------------
 
+void	Server::run() {
+	unsigned int					toDelete = 0;
+	std::vector<pollfd>::iterator	it;
+
+	if (poll(&this->pfds[0], this->pfds.size(), TIMEOUT_LISTENING) == -1)
+		return ;
+
+	if (this->pfds[0].revents == POLLIN) // Server receive a new client connection
+		this->acceptClient();
+	else { // Check if client send something
+		for (it = this->pfds.begin(); it != this->pfds.end(); it++) {
+			if ((*it).revents == POLLIN) {
 				char	buffer[4096];
 
 				int bytes = recv((*it).fd, buffer, 4096, 0);
+				buffer[bytes] = '\0';
 				if (bytes == 0) {
-					std::cout << "fd " << (*it).fd << " disconnected.\n";
-					close((*it).fd);
+					std::cout << "fd " << (*it).fd << " disconnected." << std::endl;
+					delete this->clients[(*it).fd];
+					this->clients.erase((*it).fd);
+					toDelete++;
 					(*it).revents = POLLOUT;
 					continue ;
 				}
-				buffer[bytes] = '\0';
-				std::cout << buffer << '\n' << std::endl;
+				if (this->clients[(*it).fd]->status == COMMING
+					&& !this->clients[(*it).fd]->getBaseInfos(this, buffer))
+					continue ;
+
+				// std::cout << buffer << '\n' << std::endl;
+			}
+		}
+		while (toDelete) {
+			std::vector<pollfd>::iterator	deleteIt;
+			for (deleteIt = this->pfds.begin(); deleteIt != this->pfds.end(); deleteIt++) {
+				if ((*deleteIt).revents == POLLOUT) {
+					this->pfds.erase(deleteIt);
+					toDelete--;
+					break ;
+				}
 			}
 		}
 	}
@@ -121,6 +145,11 @@ int	Server::getSocketFd() const {
 int	Server::getPort() const {
 	return this->port;
 }
+
+std::string	Server::getPassword() const {
+	return this->password;
+}
+
 
 // if (polls[i].revents == POLLIN) {  
 // 	std::cout << "fd: " << polls[i].fd << '\n';

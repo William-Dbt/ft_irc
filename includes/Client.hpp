@@ -1,26 +1,44 @@
 #ifndef __CLIENT_HPP__
 # define __CLIENT_HPP__
 
+# include <string>
+# include <unistd.h>
+
+class	Server;
+
+enum	e_status {
+	COMMING = 0,
+	REGISTER,
+	CONNECTED,
+	DISCONNECTED
+};
+
 class	Client {
 	public:
-		Client();
+		Client(const int& fd, const std::string& host);
 		~Client();
 
-	private:
-		enum	status {
-			COMMING = 0,
-			REGISTER,
-			CONNECTED,
-			DISCONNECTED
-		};
+		void	setBaseInfo(std::string& entryInfo);
+		bool	getBaseInfos(Server* server, std::string entry);
+
+		int&			getFd();
+		std::string&	getHost();
+		std::string&	getPassword();
+		std::string&	getNickname();
+		std::string&	getUsername();
+		std::string&	getRealname();
 
 		int	status;
-		int	fd;
-		std::string	host;
-		std::string	password;
-		std::string	nickname;
-		std::string	username;
-		std::string	realname;
+
+	private:
+		int			_fd;
+		std::string	_host;
+		std::string	_password;
+		std::string	_nickname;
+		std::string	_username;
+		std::string	_realname;
 };
+
+# include "Server.hpp"
 
 #endif
