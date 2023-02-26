@@ -26,11 +26,11 @@ class	Server {
 		bool	running;
 
 	private:
-		int						fd;
-		int						port;
-		std::string				password;
-		std::vector<pollfd>		pfds;
-		std::map<int, Client*>	clients;
+		int						_fd;
+		int						_port;
+		std::string				_password;
+		std::vector<pollfd>		_pfds;
+		std::map<int, Client*>	_clients;
 };
 
 #endif
