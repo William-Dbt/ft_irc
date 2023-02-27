@@ -19,9 +19,9 @@ class	Server {
 		void	acceptClient();
 		void	run();
 
-		int			getSocketFd() const;
-		int			getPort() const;
-		std::string	getPassword() const;
+		int				getSocketFd() const;
+		int				getPort() const;
+		std::string&	getPassword();
 
 		bool	running;
 

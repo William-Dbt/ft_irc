@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <sstream>
+#include <sys/socket.h>
 #include "Client.hpp"
 
 Client::Client(const int& fd, const std::string& host) :	status(COMMING),
@@ -11,19 +13,45 @@ Client::~Client() {
 		close(this->_fd);
 }
 
+void	Client::connectToClient() {
+	int									i;
+	std::string							buffer;
+	std::vector<std::string>::iterator	it;
+
+	for (it = this->_commands.begin(), i = 1; it != this->_commands.end(); it++, i++) {
+		std::ostringstream	ss;
+
+		ss << i;
+
+		std::string	code = ss.str();
+
+		buffer = ':' + this->getPrefix() + ' ';
+		buffer += "00" + code + ' ';
+		buffer += (*it) + '\n';
+		send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	}
+}
+
 // TODO: Send commands to client within filling values in class
-// Don't forget to check for compatibility of the password
-void	Client::setBaseInfo(std::string& entryInfo) {
+void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 	size_t	pos;
 
-	if (this->_password.empty())
+	if (this->_password.empty()) {
 		this->_password = entryInfo.substr(entryInfo.find(' ') + 1, entryInfo.size());
-	else if (this->_nickname.empty())
+		if (this->_password.compare(serverPassword) != 0)
+			this->_password.clear();
+		else
+			this->_commands.push_back(entryInfo);
+	}
+	else if (this->_nickname.empty()) {
 		this->_nickname = entryInfo.substr(entryInfo.find(' ') + 1, entryInfo.size());
+		this->_commands.push_back(entryInfo);
+	}
 	else if (this->_username.empty()) {
 		pos = entryInfo.find(' ');
 		this->_username = entryInfo.substr(pos + 1, entryInfo.find(' ', pos));
-		this->_realname = entryInfo.substr(entryInfo.find(':'), entryInfo.size());
+		this->_realname = entryInfo.substr(entryInfo.find(':') + 1, entryInfo.size());
+		this->_commands.push_back(entryInfo);
 	}
 }
 
@@ -32,7 +60,6 @@ void	Client::setBaseInfo(std::string& entryInfo) {
 // Theses params are : PASS, NICK, USER
 // It refers to the first infos of the client that we receive
 bool	Client::getBaseInfos(Server* server, std::string entry) {
-	(void)server;
 	size_t		pos = 0;
 	size_t		lastPos = 0;
 	std::string	buffer;
@@ -46,7 +73,7 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 		if (buffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
 			continue ;
 
-		setBaseInfo(buffer);
+		setBaseInfo(buffer, server->getPassword());
 	}
 	if (!this->_password.size())
 		return false;
@@ -57,10 +84,19 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 	else if (!this->_realname.size())
 		return false;
 
-	// TODO: Remove register to only connected and send commands to clients within filling values in class
-	// If we return true on the password check, it'll normally block because the others commands will not be send
 	this->status = REGISTER;
 	return true;
+}
+
+std::string	Client::getPrefix() {
+	std::string	buffer;
+
+	buffer = this->_nickname;
+	buffer.append("!");
+	buffer += this->_username;
+	buffer.append("@");
+	buffer += this->_host;
+	return buffer;
 }
 
 int&	Client::getFd() {
