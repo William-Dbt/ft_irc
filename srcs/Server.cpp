@@ -118,7 +118,7 @@ void	Server::run() {
 					this->_clients[(*it).fd]->connectToClient();
 					this->_clients[(*it).fd]->status = CONNECTED;
 				}
-				std::cout << buffer << '\n' << std::endl;
+				// std::cout << buffer << '\n' << std::endl;
 			}
 		}
 		while (toDelete) {
@@ -144,39 +144,3 @@ int	Server::getPort() const {
 std::string&	Server::getPassword() {
 	return this->_password;
 }
-
-// if (polls[i].revents == POLLIN) {  
-// 	std::cout << "fd: " << polls[i].fd << '\n';
-// 	size = recv(polls[i].fd, &buffer, BUFFER_SIZE, 0);
-	
-// 	if (status == 0) {
-// 		prefix.clear();
-// 		prefix = ":wdebotte!Wiwi@";
-// 		prefix += inet_ntoa(newAddress.sin_addr);
-// 		command = prefix;
-// 		command += " 001 PASS password\n";
-// 		send(newSocket, command.c_str(), command.size(), 0);
-// 		prefix.clear();
-// 		prefix = ":wdebotte!Wiwi@";
-// 		prefix += inet_ntoa(newAddress.sin_addr);
-// 		command = prefix;
-// 		command += " 002 NICK wdebotte\n";
-// 		send(newSocket, command.c_str(), command.size(), 0);
-// 		prefix.clear();
-// 		prefix = ":wdebotte!Wiwi@";
-// 		prefix += inet_ntoa(newAddress.sin_addr);
-// 		command = prefix;
-// 		command += " 003 USER Wiwi Wiwi 127.0.0.1 :William\n";
-// 		send(newSocket, command.c_str(), command.size(), 0);
-// 		status = 1;
-// 	}
-	
-// 	if (size == 0) {
-// 		std::cout << "Fd " << polls[i].fd << " disconnected" << std::endl;
-// 		close(polls[i].fd);
-// 		polls[i].revents = POLLOUT;
-// 		continue ;
-// 	}
-// 	buffer[size] = '\0';
-// 	std::cout << buffer << std::endl;
-// }
