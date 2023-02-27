@@ -14,7 +14,7 @@ Client::~Client() {
 }
 
 void	Client::connectToClient() {
-	int									i;
+	/* int									i;
 	std::string							buffer;
 	std::vector<std::string>::iterator	it;
 
@@ -25,11 +25,19 @@ void	Client::connectToClient() {
 
 		std::string	code = ss.str();
 
-		buffer = ':' + this->getPrefix() + ' ';
-		buffer += "00" + code + ' ';
-		buffer += (*it) + '\n';
+		// buffer = ':' + this->getPrefix() + ' ';
+		// buffer += "00" + code + " ";
+		// buffer += (*it) + '\n';
+		buffer = ": NICK :" + this->_nickname + '\n';
 		send(this->_fd, buffer.c_str(), buffer.size(), 0);
-	}
+		std::cout << buffer << std::endl;
+	} */
+
+	// TODO: send replies to client, RPL_WELCOME, RPL_YOURHOST, RPL_CREATED, RPL_MYINFO
+	std::string	buffer;
+
+	buffer = ": NICK :" + this->_nickname + '\n';
+	send(this->_fd, buffer.c_str(), buffer.size(), 0);
 }
 
 // TODO: Send commands to client within filling values in class
@@ -40,18 +48,13 @@ void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 		this->_password = entryInfo.substr(entryInfo.find(' ') + 1, entryInfo.size());
 		if (this->_password.compare(serverPassword) != 0)
 			this->_password.clear();
-		else
-			this->_commands.push_back(entryInfo);
 	}
-	else if (this->_nickname.empty()) {
+	else if (this->_nickname.empty())
 		this->_nickname = entryInfo.substr(entryInfo.find(' ') + 1, entryInfo.size());
-		this->_commands.push_back(entryInfo);
-	}
 	else if (this->_username.empty()) {
 		pos = entryInfo.find(' ');
 		this->_username = entryInfo.substr(pos + 1, entryInfo.find(' ', pos + 1) - 5); // (-5 refers to the string "USER " before the command)
 		this->_realname = entryInfo.substr(entryInfo.find(':') + 1, entryInfo.size());
-		this->_commands.push_back(entryInfo);
 	}
 }
 
