@@ -118,7 +118,7 @@ void	Server::run() {
 					this->_clients[(*it).fd]->connectToClient();
 					this->_clients[(*it).fd]->status = CONNECTED;
 				}
-				// std::cout << buffer << '\n' << std::endl;
+				std::cout << buffer << '\n' << std::endl;
 			}
 		}
 		while (toDelete) {
