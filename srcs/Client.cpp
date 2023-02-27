@@ -49,7 +49,7 @@ void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 	}
 	else if (this->_username.empty()) {
 		pos = entryInfo.find(' ');
-		this->_username = entryInfo.substr(pos + 1, entryInfo.find(' ', pos));
+		this->_username = entryInfo.substr(pos + 1, entryInfo.find(' ', pos + 1) - 5); // (-5 refers to the string "USER " before the command)
 		this->_realname = entryInfo.substr(entryInfo.find(':') + 1, entryInfo.size());
 		this->_commands.push_back(entryInfo);
 	}
