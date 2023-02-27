@@ -76,29 +76,12 @@ void	Server::acceptClient() {
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr));
-	// std::cout << "----- New client -----\n";
-	// std::cout << "IP: " << inet_ntoa(address.sin_addr) << '\n';
-	// std::cout << "fd: " << fd << '\n';
-	// std::cout << "---------------------------\n" << std::endl;
 }
-
-// ------------------------------------------------------------------------------------------------------------------------
-// Have to parse entry from the client
-// It can give multiples entries for the first connection
-// Theses entries are :
-// PASS - The pass that the client have to match with the server's params
-// NICK - The nickname of the user that we'll use to recognize him
-// USER - Give the username, the host from where the client is writing and the real name of the client
-//
-// Check the doc for the reply of the server
-// A int is given for each commands, PASS NICK and USER is 001, 002 and 003 respectivly
-//
-// Have to use Client class to add a new client
-// ------------------------------------------------------------------------------------------------------------------------
 
 void	Server::run() {
 	unsigned int					toDelete = 0;
 	std::vector<pollfd>::iterator	it;
+	std::vector<pollfd>::iterator	deleteIt;
 
 	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
 		return ;
@@ -123,12 +106,22 @@ void	Server::run() {
 				if (this->_clients[(*it).fd]->status == COMMING
 					&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
 					continue ;
-
+				else if (this->_clients[(*it).fd]->status == REGISTER) {
+					std::cout << "--- New client registered ---\n";
+					std::cout << "fd: " << this->_clients[(*it).fd]->getFd() << '\n';
+					std::cout << "host: " << this->_clients[(*it).fd]->getHost() << '\n';
+					std::cout << "pass: " << this->_clients[(*it).fd]->getPassword() << '\n';
+					std::cout << "nickname: " << this->_clients[(*it).fd]->getNickname() << '\n';
+					std::cout << "username: " << this->_clients[(*it).fd]->getUsername() << '\n';
+					std::cout << "realname: " << this->_clients[(*it).fd]->getRealname() << '\n';
+					std::cout << "-----------------------------" << std::endl << std::endl;
+					this->_clients[(*it).fd]->connectToClient();
+					this->_clients[(*it).fd]->status = CONNECTED;
+				}
 				// std::cout << buffer << '\n' << std::endl;
 			}
 		}
 		while (toDelete) {
-			std::vector<pollfd>::iterator	deleteIt;
 			for (deleteIt = this->_pfds.begin(); deleteIt != this->_pfds.end(); deleteIt++) {
 				if ((*deleteIt).revents == POLLOUT) {
 					this->_pfds.erase(deleteIt);
@@ -148,10 +141,9 @@ int	Server::getPort() const {
 	return this->_port;
 }
 
-std::string	Server::getPassword() const {
+std::string&	Server::getPassword() {
 	return this->_password;
 }
-
 
 // if (polls[i].revents == POLLIN) {  
 // 	std::cout << "fd: " << polls[i].fd << '\n';
