@@ -33,6 +33,11 @@ CFLAGS		= -Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 MAKE		= make -C
 
+VALGRING 	= valgrind --leak-check=full --show-leak-kinds=all \
+			--track-origins=yes --log-file=${OUT} ./
+
+OUT 		= valgrind_leaks.txt
+
 ################################################################################
 # => RULES
 ################################################################################
@@ -53,7 +58,10 @@ clean:
 
 fclean:		clean
 				@echo "${BOLD}${RED}Removing:${END}\t${NAME}"
-				@${RM} ${NAME} >${PATHNULL}
+				@${RM} ${NAME} ${OUT} >${PATHNULL}
+
+d:			clean all
+				make clean && clear && ${VALGRING}${NAME} ${PORT} ${PASSWORD}
 
 re:			fclean all
 
