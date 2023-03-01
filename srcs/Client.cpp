@@ -3,9 +3,10 @@
 #include <sstream>
 #include <sys/socket.h>
 #include "Client.hpp"
+#include "replies.cpp"
 
-
-#define RST  "\x1B[0m"
+#define KRESET "\x1B[0m"
+#define KBLK  "\x1B[30m"
 #define KRED  "\x1B[31m"
 #define KGRN  "\x1B[32m"
 #define KYEL  "\x1B[33m"
@@ -13,6 +14,37 @@
 #define KMAG  "\x1B[35m"
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
+
+void reply (unsigned short code, Client &client, std::vector<std::string> params)
+{
+	std::ostringstream	sscode;
+	std::string			scode;
+	(void)params;
+
+	sscode << code;
+	scode = sscode.str();
+
+	std::string reply = ":" + client.getPrefix() + " " + scode + " " + client.getNickname() + " :";
+	std::cout << KBLU << reply << KRESET << std::endl;
+	switch (code)
+	{
+		case 1:
+		{
+			reply += RPL_WELCOME(client.getPrefix());
+			break;
+		}
+		case 2:
+		{
+			reply += RPL_YOURHOST("TotIrc", "0.1");
+			break;
+		}
+		// case 2:
+		// 	reply += RPL_YOURHOST();
+		// 	break;
+	}
+	// std::cout << KRED << "TOTOTOT" << KRESET << std::endl;
+	send(client.getFd(), reply.c_str(), reply.size(), 0);
+}
 
 Client::Client(const int& fd, const std::string& host) :	status(COMMING),
 															_fd(fd),
@@ -43,52 +75,55 @@ void	Client::connectToClient() {
 		std::cout << buffer << std::endl;
 	} */
 
-	std::string	buffer;
+	// TODO: send replies to client, RPL_WELCOME, RPL_YOURHOST, RPL_CREATED, RPL_MYINFO
+	// std::string	buffer;
 
-	buffer = ": NICK :" + this->_nickname + '\n';
-	send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	// buffer = ": NICK :" + this->_nickname + '\n';
+	// send(this->_fd, buffer.c_str(), buffer.size(), 0);
 
-	std::ostringstream	ss;
-	std::string			code;
-	for (int i = 1; i <= 4; i++) {
-		ss << i;
-		code = ss.str();
-		ss.str("");
-		buffer = ':' + this->getPrefix() + " 00" + code + ' ' + this->_nickname + " :";
-std::cout << KRED << buffer << RST << std::endl;
-		switch (i) {
-			case 1: {
-				buffer += "Welcome to the Internet Relay Network " + this->getPrefix() + '\n';
-				send(this->_fd, buffer.c_str(), buffer.size(), 0);
-				break ;
-			}
-			case 2: {
-				buffer += "Your host is ";
-				buffer += "TotIrc";
-				buffer += ", running version ";
-				buffer += "1.0";
-				buffer += '\n';
-				send(this->_fd, buffer.c_str(), buffer.size(), 0);
-				break ;
-			}
-			case 3: {
-				buffer += "This server was created ";
-				buffer += "01/05/2084";
-				buffer += '\n';
-				send(this->_fd, buffer.c_str(), buffer.size(), 0);
-				break ;
-			}
-			case 4: {
-				buffer += "TotIrc ";
-				buffer += "1.0 ";
-				buffer += "wi ";
-				buffer += "5";
-				buffer += '\n';
-				send(this->_fd, buffer.c_str(), buffer.size(), 0);
-				break ;
-			}
-		}
-	}
+	// std::string			code;
+	// for (int i = 1; i <= 4; i++) {
+	// std::ostringstream	ss;
+	// 	ss << i;
+	// 	code = ss.str();
+	// 	buffer = ':' + this->getPrefix() + " 00" + code + ' ' + this->_nickname + " :";
+
+	// 	switch (i) {
+	// 		case 1: {
+	// 			buffer += "Welcome to the Internet Relay Network " + this->getPrefix() + '\n';
+	// 			send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	// 			break ;
+	// 		}
+	// 		case 2: {
+	// 			buffer += "Your host is ";
+	// 			buffer += "TotIrc";
+	// 			buffer += ", running version ";
+	// 			buffer += "1.0";
+	// 			buffer += '\n';
+	// 			send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	// 			break ;
+	// 		}
+	// 		case 3: {
+	// 			buffer += "This server was created ";
+	// 			buffer += "01/05/2084";
+	// 			buffer += '\n';
+	// 			send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	// 			break ;
+	// 		}
+	// 		case 4: {
+	// 			buffer += "TotIrc ";
+	// 			buffer += "1.0 ";
+	// 			buffer += "wi ";
+	// 			buffer += "5";
+	// 			buffer += '\n';
+	// 			send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	// 			break ;
+	// 		}
+	// 	}
+	// 	std::cout << buffer << std::endl;
+	// }
+
+	reply(1, *this, std::vector<std::string>());
 }
 
 // TODO: Send commands to client within filling values in class
