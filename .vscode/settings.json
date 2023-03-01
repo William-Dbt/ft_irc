@@ -51,6 +51,8 @@
 		"streambuf": "cpp",
 		"typeinfo": "cpp",
 		"cerrno": "cpp",
-		"cstring": "cpp"
+		"cstring": "cpp",
+		"map": "cpp",
+		"sstream": "cpp"
 	}
 }

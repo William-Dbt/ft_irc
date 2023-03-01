@@ -4,6 +4,16 @@
 #include <sys/socket.h>
 #include "Client.hpp"
 
+
+#define RST  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
 Client::Client(const int& fd, const std::string& host) :	status(COMMING),
 															_fd(fd),
 															_host(host) {}
@@ -43,10 +53,10 @@ void	Client::connectToClient() {
 	std::string			code;
 	for (int i = 1; i <= 4; i++) {
 		ss << i;
-
 		code = ss.str();
-		ss.clear();
+		ss.str("");
 		buffer = ':' + this->getPrefix() + " 00" + code + ' ' + this->_nickname + " :";
+std::cout << KRED << buffer << RST << std::endl;
 		switch (i) {
 			case 1: {
 				buffer += "Welcome to the Internet Relay Network " + this->getPrefix() + '\n';
