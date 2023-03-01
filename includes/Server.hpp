@@ -6,6 +6,7 @@
 # include <map>
 # include <poll.h>
 # include "Client.hpp"
+# include "Config.hpp"
 
 # define TIMEOUT_LISTENING	500 // TODO - Check for ping time
 
@@ -22,6 +23,7 @@ class	Server {
 		int				getSocketFd() const;
 		int				getPort() const;
 		std::string&	getPassword();
+		Config&			getConfig();
 
 		bool	running;
 
@@ -31,6 +33,7 @@ class	Server {
 		std::string				_password;
 		std::vector<pollfd>		_pfds;
 		std::map<int, Client*>	_clients;
+		Config					_config;
 };
 
 #endif
