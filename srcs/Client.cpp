@@ -43,7 +43,6 @@ void	Client::connectToClient() {
 		std::cout << buffer << std::endl;
 	} */
 
-	// TODO: send replies to client, RPL_WELCOME, RPL_YOURHOST, RPL_CREATED, RPL_MYINFO
 	std::string	buffer;
 
 	buffer = ": NICK :" + this->_nickname + '\n';
