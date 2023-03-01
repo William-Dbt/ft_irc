@@ -118,5 +118,202 @@ Commands received from client to manage:
 	Parameters: None
 	Numeric Replies:
 		ERR_NOPRIVILEGES
+----------------------------------------------------------------------
 
+----------------------------------------------------------------------
+ERROR REPLIES MESSAGES
+
+-> 400+
+* ERR_NOSUCHNICK
+	Code: 401
+	Message: "<nickname> :No such nick/channel"
+
+* ERR_NOSUCHSERVER
+	Code: 402
+	Message: "<server name> :No such server"
+
+* ERR_NOSUCHCHANNEL
+	Code: 403
+	Message: "<channel name> :No such channel"
+
+* ERR_CANNOTSENDTOCHAN
+	Code: 404
+	Message: "<channel name> :Cannot send to channel"
+
+* ERR_TOOMANYCHANNELS
+	Code: 405
+	Message: "<channel name> :You have joined too many channels"
+
+* ERR_TOOMANYTARGETS
+	Code: 407
+	Message: "<target> :<error code> recipients. <abort message>"
+
+* ERR_NOORIGIN
+	Code: 409
+	Message: ":No origin specified"
+
+* ERR_NORECIPIENT
+	Code: 411
+	Message: ":No recipient given (<command>)"
+
+* ERR_NOTOPLEVEL
+	Code: 413
+	Message: "<mask> :No toplevel domain specified"
+
+* ERR_WILDTOPLEVEL
+	Code: 414
+	Message: "<mask> :Wildcard in toplevel domain"
+
+* ERR_NOTEXTTOSEND
+	Code: 412
+	Message: ":No text to send"
+
+* ERR_NOMOTD
+	Code: 422
+	Message: ":MOTD File is missing"
+
+* ERR_NONICKNAMEGIVEN
+	Code: 431
+	Message: ":No nickname given"
+
+* ERR_ERRONEUSNICKNAME
+	Code: 432
+	Message: "<nick> :Erroneous nickname"
+
+* ERR_NICKNAMEINUSE
+	Code: 433
+	Message: "<nick> :Nickname is already in use"
+
+* ERR_NICKCOLLISION
+	Code: 436
+	Message: "<nick> :Nickname collision KILL from <user>@<host>"
+
+* ERR_UNAVAILRESOURCE
+	Code: 437
+	Message: "<nick/channel> :Nick/channel is temporarily unavailable"
+
+* ERR_USERNOTINCHANNEL
+	Code: 441
+	Message: "<nick> <channel> :They aren't on that channel"
+
+* ERR_NOTONCHANNEL
+	Code: 442
+	Message: "<channel> :You're not on that channel"
+
+* ERR_USERONCHANNEL
+	Code: 443
+	Message: "<user> <channel> :is already on channel"
+
+* ERR_NEEDMOREPARAMS
+	Code: 461
+	Message: "<command> :Not enough parameters"
+
+* ERR_ALREADYREGISTRED
+	Code: 462
+	Message: ":Unauthorized command (already registered)"
+
+* ERR_PASSWDMISMATCH
+	Code: 464
+	Message: ":Password incorrect"
+
+* ERR_CHANNELISFULL
+	Code: 471
+	Message: "<channel> :Cannot join channel (+l)"
+
+* ERR_INVITEONLYCHAN
+	Code: 473
+	Message: "<channel> :Cannot join channel (+i)"
+
+* ERR_BANNEDFROMCHAN
+	Code: 474
+	Message: "<channel> :Cannot join channel (+b)"
+
+* ERR_BADCHANNELKEY
+	Code: 475
+	Message: "<channel> :Cannot join channel (+k)"
+
+* ERR_BADCHANMASK
+	Code: 476
+	Message: "<channel> :Bad Channel Mask"
+
+* ERR_NOCHANMODES
+	Code: 477
+	Message: "<channel> :Channel doesn't support modes"
+
+* ERR_NOPRIVILEGES
+	Code: 481
+	Message: ":Permission Denied- You're not an IRC operator"
+
+* ERR_CHANOPRIVSNEEDED
+	Code: 482
+	Message: "<channel> :You're not channel operator"
+
+* ERR_CANTKILLSERVER
+	Code: 483
+	Message: ":You can't kill a server!"
+
+* ERR_RESTRICTED
+	Code: 484
+	Message: ":Your connection is restricted!"
+
+* ERR_NOOPERHOST
+	Code: 491
+	Message: ":No O-lines for your host"
+
+-> 500+
+* ERR_UMODEUNKNOWNFLAG
+	Code: 501
+	Message: ":Unknown MODE flag"
+
+* ERR_USERSDONTMATCH
+	Code: 502
+	Message: ":Cannot change mode for other users"
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+REPLIES MESSAGES
+
+RPL_REHASHING
+	Code: 382
+	Message: "<config file> :Rehashing
+
+RPL_VERSION
+	Code: 351
+	Message: "<version>.<debuglevel> <server> :<comments>"
+
+RPL_MOTDSTART
+	Code: 375
+	Message: ":- <server> Message of the day - "
+
+RPL_MOTD
+	Code: 372
+	Message: ":- <text>"
+
+RPL_ENDOFMOTD
+	Code: 376
+	Message: ":End of MOTD command"
+
+RPL_AWAY
+	Code: 301
+	Message: "<nick> :<away message>"
+
+RPL_INVITING
+	Code: 341
+	Message: "<channel> <nick>"
+
+RPL_NOTOPIC
+	Code: 331
+	Message: "<channel> :No topic is set"
+
+RPL_TOPIC
+	Code: 332
+	Message: "<channel> :<topic>"
+
+RPL_UMODEIS
+	Code: 221
+	Message: "<user mode string>"
+
+RPL_YOUREOPER
+	Code: 381
+	Message: ":You are now an IRC operator"
 ----------------------------------------------------------------------
