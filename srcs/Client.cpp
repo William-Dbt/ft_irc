@@ -26,22 +26,22 @@ void reply (unsigned short code, Client &client, std::vector<std::string> params
 
 	std::string reply = ":" + client.getPrefix() + " " + scode + " " + client.getNickname() + " :";
 	std::cout << KBLU << reply << KRESET << std::endl;
-	switch (code)
-	{
-		case 1:
-		{
-			reply += RPL_WELCOME(client.getPrefix());
-			break;
-		}
-		case 2:
-		{
-			reply += RPL_YOURHOST("TotIrc", "0.1");
-			break;
-		}
-		// case 2:
-		// 	reply += RPL_YOURHOST();
-		// 	break;
-	}
+	// switch (code)
+	// {
+	// 	case 1:
+	// 	{
+	// 		reply += RPL_WELCOME(client.getPrefix());
+	// 		break;
+	// 	}
+	// 	// case 2:
+	// 	// {
+	// 	// 	reply += RPL_YOURHOST("TotIrc", "0.1");
+	// 	// 	break;
+	// 	// }
+	// 	// case 2:
+	// 	// 	reply += RPL_YOURHOST();
+	// 	// 	break;
+	// }
 	// std::cout << KRED << "TOTOTOT" << KRESET << std::endl;
 	send(client.getFd(), reply.c_str(), reply.size(), 0);
 }
