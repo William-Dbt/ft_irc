@@ -38,6 +38,48 @@ void	Client::connectToClient() {
 
 	buffer = ": NICK :" + this->_nickname + '\n';
 	send(this->_fd, buffer.c_str(), buffer.size(), 0);
+
+	std::ostringstream	ss;
+	std::string			code;
+	for (int i = 1; i <= 4; i++) {
+		ss << i;
+
+		code = ss.str();
+		ss.clear();
+		buffer = ':' + this->getPrefix() + " 00" + code + ' ' + this->_nickname + " :";
+		switch (i) {
+			case 1: {
+				buffer += "Welcome to the Internet Relay Network " + this->getPrefix() + '\n';
+				send(this->_fd, buffer.c_str(), buffer.size(), 0);
+				break ;
+			}
+			case 2: {
+				buffer += "Your host is ";
+				buffer += "TotIrc";
+				buffer += ", running version ";
+				buffer += "1.0";
+				buffer += '\n';
+				send(this->_fd, buffer.c_str(), buffer.size(), 0);
+				break ;
+			}
+			case 3: {
+				buffer += "This server was created ";
+				buffer += "01/05/2084";
+				buffer += '\n';
+				send(this->_fd, buffer.c_str(), buffer.size(), 0);
+				break ;
+			}
+			case 4: {
+				buffer += "TotIrc ";
+				buffer += "1.0 ";
+				buffer += "wi ";
+				buffer += "5";
+				buffer += '\n';
+				send(this->_fd, buffer.c_str(), buffer.size(), 0);
+				break ;
+			}
+		}
+	}
 }
 
 // TODO: Send commands to client within filling values in class
