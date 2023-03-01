@@ -1,0 +1,122 @@
+Subject part: 
+- You must be able to authenticate, set a nickname, a username, join a channel, send and receive private messages using your reference client.
+- All the messages sent from one client to a channel have to be forwarded to every other client that joined the channel.
+- You must have operators and regular users.◦ Then, you have to implement the commands that are specific to operators.
+
+----------------------------------------------------------------------
+Commands received from client to manage:
+
+-> CONNECTION / REGISTRATION
+* PASS
+	Parameters: <password>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_ALREADYREGISTRED
+
+* NICK
+	Parameters: <nickname>
+	Numeric Replies:
+		ERR_NONICKNAMEGIVEN, ERR_ERRONEUSNICKNAME, ERR_NICKNAMEINUSE, ERR_NICKCOLLISION, ERR_UNAVAILRESOURCE, ERR_RESTRICTED
+
+* USER
+	Parameters: <user> <mode> <unused> <realname>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_ALREADYREGISTRED
+
+* OPER
+	Parameters: <name> <password>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_NOOPERHOST, ERR_PASSWDMISMATCH
+		RPL_YOUREOPER
+
+* MODE
+	Parameters: <nickname>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_USERSDONTMATCH, ERR_UMODEUNKNOWNFLAG
+		RPL_UMODEIS
+
+* QUIT
+	Parameters: [ <Quit Message> ]
+	Numeric Replies:
+		None
+
+-> CHANNEL OPERATIONS
+* JOIN
+	Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_BANNEDFROMCHAN, ERR_INVITEONLYCHAN, ERR_BADCHANNELKEY, ERR_CHANNELISFULL
+		ERR_BADCHANMASK, ERR_NOSUCHCHANNEL, ERR_TOOMANYCHANNELS, ERR_TOOMANYTARGETS, ERR_UNAVAILRESOURCE
+		RPL_TOPIC
+
+* PART
+	Parameters: <channel> *( "," <channel> ) [ <Part Message> ]
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_NOSUCHCHANNEL, ERR_NOTONCHANNEL
+
+* TOPIC
+	Parameters: <channel> [ <topic> ]
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_NOTONCHANNEL, ERR_CHANOPRIVSNEEDED, ERR_NOCHANMODES
+		RPL_NOTOPIC, RPL_TOPIC
+
+* INVITE
+	Parameters: <nickname> <channel>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_NOSUCHNICK ,ERR_NOTONCHANNEL, ERR_USERONCHANNEL, ERR_CHANOPRIVSNEEDED
+		RPL_INVITING, RPL_AWAY
+
+* KICK
+	Parameters: <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS, ERR_NOSUCHCHANNEL, ERR_BADCHANMASK, ERR_CHANOPRIVSNEEDED, ERR_USERNOTINCHANNEL
+		ERR_NOTONCHANNEL
+
+-> SENDING MESSAGES
+* PRIVMSG
+	Parameters: <msgtarget> <text to be sent>
+	Numeric Replies:
+		ERR_NORECIPIENT, ERR_NOTEXTTOSEND, ERR_CANNOTSENDTOCHAN, ERR_NOTOPLEVEL, ERR_WILDTOPLEVEL, ERR_TOOMANYTARGETS
+		ERR_NOSUCHNICK
+		RPL_AWAY
+
+-> SERVER QUERIES AND Commands
+* MOTD
+	Parameters: [ <target> ]
+	Numeric Replies:
+		ERR_NOMOTD
+		RPL_MOTDSTART, RPL_MOTD, RPL_ENDOFMOTD
+
+* VERSION
+	Parameters: [ <target> ]
+	Numeric Replies:
+		ERR_NOSUCHSERVER
+		RPL_VERSION
+
+-> Miscellaneous messages
+* KILL
+	Parameters: <nickname> <comment>
+	Numeric Replies:
+		ERR_NOPRIVILEGES, ERR_NEEDMOREPARAMS, ERR_NOSUCHNICK, ERR_CANTKILLSERVER
+
+* PING
+	Parameters: <server1> [ <server2> ] // Server2 isn't a thing to do because we don't have to manage multiple server connections
+	Numeric Replies:
+		ERR_NOORIGIN, ERR_NOSUCHSERVER
+
+* PONG
+	Parameters: <server> [ <server2> ] // Server2 isn't a thing to do because we don't have to manage multiple server connections
+	Numeric Replies:
+		ERR_NOORIGIN, ERR_NOSUCHSERVER
+
+-> Optinnal Features
+* REHASH
+	Parameters: None
+	Numeric Replies:
+		ERR_NOPRIVILEGES
+		RPL_REHASHING
+
+* DIE
+	Parameters: None
+	Numeric Replies:
+		ERR_NOPRIVILEGES
+
+----------------------------------------------------------------------
