@@ -7,7 +7,7 @@ int	main(int argc, char *argv[]) {
 		std::cout << "Usage: ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
-
+	
 	int		exitStatus;
 	Server	server(atoi(argv[1]), argv[2]);
 

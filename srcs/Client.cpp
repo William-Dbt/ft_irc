@@ -56,27 +56,7 @@ Client::~Client() {
 }
 
 void	Client::connectToClient() {
-	/* int									i;
-	std::string							buffer;
-	std::vector<std::string>::iterator	it;
-
-	for (it = this->_commands.begin(), i = 1; it != this->_commands.end(); it++, i++) {
-		std::ostringstream	ss;
-
-		ss << i;
-
-		std::string	code = ss.str();
-
-		// buffer = ':' + this->getPrefix() + ' ';
-		// buffer += "00" + code + " ";
-		// buffer += (*it) + '\n';
-		buffer = ": NICK :" + this->_nickname + '\n';
-		send(this->_fd, buffer.c_str(), buffer.size(), 0);
-		std::cout << buffer << std::endl;
-	} */
-
-	// TODO: send replies to client, RPL_WELCOME, RPL_YOURHOST, RPL_CREATED, RPL_MYINFO
-	// std::string	buffer;
+	std::string	buffer;
 
 	// buffer = ": NICK :" + this->_nickname + '\n';
 	// send(this->_fd, buffer.c_str(), buffer.size(), 0);
@@ -126,7 +106,6 @@ void	Client::connectToClient() {
 	reply(1, *this, std::vector<std::string>());
 }
 
-// TODO: Send commands to client within filling values in class
 void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 	size_t	pos;
 

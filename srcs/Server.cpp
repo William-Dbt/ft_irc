@@ -144,3 +144,7 @@ int	Server::getPort() const {
 std::string&	Server::getPassword() {
 	return this->_password;
 }
+
+Config&	Server::getConfig() {
+	return this->_config;
+}
