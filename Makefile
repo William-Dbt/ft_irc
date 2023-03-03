@@ -26,8 +26,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp replies.cpp\
 OBJS		= ${SRCS:.cpp=.o}
 
 CC			= c++
-INC			= -I${PATHHEADERS} \
-				-I${PATHHEADERS}Server/ \
+INC			= -I${PATHHEADERS}
 
 CFLAGS		= -Wall -Wextra -Werror -std=c++98
 
@@ -66,6 +65,6 @@ d:			clean all
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+.PHONY:		all clean fclean re d
 
 ################################################################################

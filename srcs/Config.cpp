@@ -76,3 +76,14 @@ void	Config::setFileConfig() {
 
 	checkMinimumConfig();
 }
+
+std::string	Config::get(std::string configName) {
+	std::string	buffer;
+
+	try {
+		buffer = this->_config.at(configName);
+	}
+	catch (std::exception & e) {}
+
+	return (buffer);
+}

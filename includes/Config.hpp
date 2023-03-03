@@ -37,6 +37,8 @@ class	Config {
 		void	setDefaultConfig();
 		void	setFileConfig();
 
+		std::string	get(std::string configName);
+
 	private:
 		std::map<std::string, std::string>	_config;
 		std::vector<std::string>			_configNames;

@@ -1,6 +1,7 @@
 .vscode
 *.nfs
 ircserv
+valgrind_leaks.txt
 
 # Prerequisites
 *.d
