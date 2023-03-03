@@ -28,8 +28,6 @@ class	Server {
 		std::string&	getPassword();
 		Config&			getConfig();
 
-		bool	running;
-
 	private:
 		int						_fd;
 		int						_port;
@@ -39,7 +37,7 @@ class	Server {
 		Config					_config;
 };
 
-void	reply (unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
+void	reply(unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
 
 
 #endif

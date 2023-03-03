@@ -1,6 +1,14 @@
 #include <iostream>
 #include <cstdlib>
+#include <signal.h>
 #include "Server.hpp"
+
+bool	serverRunning = true;
+
+void	signalsHandler(int signum) {
+	(void)signum;
+	serverRunning = false;
+}
 
 int	main(int argc, char *argv[]) {
 	if (argc != 3) {
@@ -15,7 +23,8 @@ int	main(int argc, char *argv[]) {
 	if (exitStatus)
 		return exitStatus;
 
-	while (server.running)
+	signal(SIGINT, signalsHandler);
+	while (serverRunning)
 		server.run();
 
 	return 0;

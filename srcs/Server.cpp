@@ -11,9 +11,7 @@
 
 Server::Server(const int &port, const std::string &password) : _fd(-1),
 																_port(port),
-																_password(password) {
-	this->running = true;
-}
+																_password(password) {}
 
 Server::~Server() {
 	std::map<int, Client*>::iterator	it;
