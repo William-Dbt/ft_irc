@@ -18,11 +18,11 @@ void	Config::setDefaultConfig() {
 	if (this->_config.size())
 		this->_config.clear();
 
-	this->_config[NSERVERNAME] = SERVERNAME;
-	this->_config[NVERSION] = VERSION;
-	this->_config[NMOTDFILE] = MOTDFILE;
-	this->_config[NMAXUSERS] = MAXUSERS;
-	this->_config[NTIMEOUT] = TIMEOUT;
+	this->_config[VAR_SERVERNAME] = SERVERNAME;
+	this->_config[VAR_VERSION] = VERSION;
+	this->_config[VAR_MOTDFILE] = MOTDFILE;
+	this->_config[VAR_MAXUSERS] = MAXUSERS;
+	this->_config[VAR_TIMEOUT] = TIMEOUT;
 }
 
 bool	Config::checkMinimumConfig() {
@@ -51,11 +51,11 @@ void	Config::setFileConfig() {
 	char			readBuffer[254];
 
 	if (!this->_configNames.size()) {
-		this->_configNames.push_back(NSERVERNAME);
-		this->_configNames.push_back(NVERSION);
-		this->_configNames.push_back(NMOTDFILE);
-		this->_configNames.push_back(NMAXUSERS);
-		this->_configNames.push_back(NTIMEOUT);
+		this->_configNames.push_back(VAR_SERVERNAME);
+		this->_configNames.push_back(VAR_VERSION);
+		this->_configNames.push_back(VAR_MOTDFILE);
+		this->_configNames.push_back(VAR_MAXUSERS);
+		this->_configNames.push_back(VAR_TIMEOUT);
 	}
 	if (this->_config.size())
 		this->_config.clear();
