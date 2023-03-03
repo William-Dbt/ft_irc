@@ -3,11 +3,11 @@
 #include <signal.h>
 #include "Server.hpp"
 
-bool	serverRunning = true;
+bool	g_bServerRunning = true;
 
 void	signalsHandler(int signum) {
 	(void)signum;
-	serverRunning = false;
+	g_bServerRunning = false;
 }
 
 int	main(int argc, char *argv[]) {
@@ -24,7 +24,7 @@ int	main(int argc, char *argv[]) {
 		return exitStatus;
 
 	signal(SIGINT, signalsHandler);
-	while (serverRunning)
+	while (g_bServerRunning)
 		server.run();
 
 	return 0;
