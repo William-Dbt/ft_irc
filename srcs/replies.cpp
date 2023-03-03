@@ -1,37 +1,59 @@
-#include "Command.hpp"
+#include "Server.hpp"
+
+#define KRESET "\x1B[0m"
+#define KBLK  "\x1B[30m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 
 
-// std::string RPL_WELCOME(std::string prefix) { return ("Welcome to the Internet Relay Network " + prefix); }
-// std::string RPL_YOURHOST(std::string servername, std::string ver) { return ("Your host is " + servername + ", running version " + ver); }
+std::string RPL_WELCOME(std::string prefix) { return ("Welcome to the Internet Relay Network " + prefix); }
+std::string RPL_YOURHOST(std::string servername, std::string ver) { return ("Your host is " + servername + ", running version " + ver); }
+std::string RPL_CREATED(std::string date) { return "This server was created " + date; }
+std::string RPL_MYINFO(std::string servername, std::string version, std::string umodes, std::string cmodes) { return servername + " " + version + " " + umodes + " " + cmodes; }
 
 
-void Command::reply (unsigned short code, Client &client, std::vector<std::string> params)
+
+std::string getReply(unsigned short code, std::string arg1, std::string arg2, std::string arg3, std::string arg4)
+{
+	switch (code)
+	{
+		case 1:
+			return (RPL_WELCOME(arg1));
+		case 2:
+			return (RPL_YOURHOST(arg1, arg2));
+		case 3:
+			return (RPL_CREATED(arg1));
+		case 4:
+			return (RPL_MYINFO(arg1, arg2, arg3, arg4));
+
+		default:
+			return std::string();
+	}
+}
+
+void reply (unsigned short code, Client &client, std::string arg1, std::string arg2, std::string arg3, std::string arg4)
 {
 	std::ostringstream	sscode;
 	std::string			scode;
-	(void)params;
 
 	sscode << code;
 	scode = sscode.str();
+	while (scode.size() < 3)
+		scode = "0" + scode;
 
 	std::string reply = ":" + client.getPrefix() + " " + scode + " " + client.getNickname() + " :";
+	reply += KCYN;
+	reply += getReply(code, arg1, arg2, arg3, arg4) /* + "\n" */;
+	reply += KRESET;
+	reply += "\n";
+
 	std::cout << KBLU << reply << KRESET << std::endl;
-	// switch (code)
-	// {
-	// 	case 1:
-	// 	{
-	// 		reply += RPL_WELCOME(client.getPrefix());
-	// 		break;
-	// 	}
-	// 	// case 2:
-	// 	// {
-	// 	// 	reply += RPL_YOURHOST("TotIrc", "0.1");
-	// 	// 	break;
-	// 	// }
-	// 	// case 2:
-	// 	// 	reply += RPL_YOURHOST();
-	// 	// 	break;
-	// }
-	// std::cout << KRED << "TOTOTOT" << KRESET << std::endl;
 	send(client.getFd(), reply.c_str(), reply.size(), 0);
 }
+
+

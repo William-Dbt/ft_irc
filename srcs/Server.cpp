@@ -41,7 +41,7 @@ int	Server::init() {
 		return initError(1, "can't open new socket.");
 
 	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
-		return initError(2, "can't set option(s) to server socket.");
+		/* return initError(2, "can't set option(s) to server socket.") */;
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) == -1)
 		return (initError(3, "can't set the socket to O_NONBLOCK."));

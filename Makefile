@@ -21,7 +21,7 @@ PATHHEADERS	= includes/
 PATHNULL	= /dev/null
 
 SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp replies.cpp\
-										Command.cpp Config.cpp)
+										Config.cpp)
 
 OBJS		= ${SRCS:.cpp=.o}
 

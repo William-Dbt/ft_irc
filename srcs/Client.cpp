@@ -3,17 +3,7 @@
 #include <sstream>
 #include <sys/socket.h>
 #include "Client.hpp"
-#include "Command.hpp"
 
-#define KRESET "\x1B[0m"
-#define KBLK  "\x1B[30m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
 
 // void reply (unsigned short code, Client &client, std::vector<std::string> params)
 // {
@@ -56,7 +46,7 @@ Client::~Client() {
 }
 
 void	Client::connectToClient() {
-	std::string	buffer;
+	// std::string	buffer;
 
 	// buffer = ": NICK :" + this->_nickname + '\n';
 	// send(this->_fd, buffer.c_str(), buffer.size(), 0);
@@ -102,8 +92,12 @@ void	Client::connectToClient() {
 	// 	}
 	// 	std::cout << buffer << std::endl;
 	// }
+	// send(this->_fd, buffer.c_str(), buffer.size(), 0);
+	reply(1, *this, this->getPrefix());
+	reply(2, *this, "TotIrc", "1.0");
+	reply(3, *this, "today");
+	reply(4, *this, "TotIrc", "1.0", "wi", "5");
 
-	reply(1, *this, std::vector<std::string>());
 }
 
 void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {

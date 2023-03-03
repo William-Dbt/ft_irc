@@ -2,9 +2,12 @@
 # define __SERVER_HPP__
 
 # include <string>
+# include <iostream>
+# include <sstream>
 # include <vector>
 # include <map>
 # include <poll.h>
+# include <sys/socket.h>
 # include "Client.hpp"
 # include "Config.hpp"
 
@@ -35,5 +38,8 @@ class	Server {
 		std::map<int, Client*>	_clients;
 		Config					_config;
 };
+
+void	reply (unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
+
 
 #endif
