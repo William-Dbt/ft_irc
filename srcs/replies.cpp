@@ -1,11 +1,11 @@
 #include "Command.hpp"
 
 
-std::string RPL_WELCOME(std::string prefix) { return ("Welcome to the Internet Relay Network " + prefix); }
+// std::string RPL_WELCOME(std::string prefix) { return ("Welcome to the Internet Relay Network " + prefix); }
 // std::string RPL_YOURHOST(std::string servername, std::string ver) { return ("Your host is " + servername + ", running version " + ver); }
 
 
-void reply (unsigned short code, Client &client, std::vector<std::string> params)
+void Command::reply (unsigned short code, Client &client, std::vector<std::string> params)
 {
 	std::ostringstream	sscode;
 	std::string			scode;

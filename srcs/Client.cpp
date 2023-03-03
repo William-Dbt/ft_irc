@@ -3,7 +3,7 @@
 #include <sstream>
 #include <sys/socket.h>
 #include "Client.hpp"
-#include "replies.cpp"
+#include "Command.hpp"
 
 #define KRESET "\x1B[0m"
 #define KBLK  "\x1B[30m"
@@ -15,36 +15,36 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-void reply (unsigned short code, Client &client, std::vector<std::string> params)
-{
-	std::ostringstream	sscode;
-	std::string			scode;
-	(void)params;
+// void reply (unsigned short code, Client &client, std::vector<std::string> params)
+// {
+// 	std::ostringstream	sscode;
+// 	std::string			scode;
+// 	(void)params;
 
-	sscode << code;
-	scode = sscode.str();
+// 	sscode << code;
+// 	scode = sscode.str();
 
-	std::string reply = ":" + client.getPrefix() + " " + scode + " " + client.getNickname() + " :";
-	std::cout << KBLU << reply << KRESET << std::endl;
-	// switch (code)
-	// {
-	// 	case 1:
-	// 	{
-	// 		reply += RPL_WELCOME(client.getPrefix());
-	// 		break;
-	// 	}
-	// 	// case 2:
-	// 	// {
-	// 	// 	reply += RPL_YOURHOST("TotIrc", "0.1");
-	// 	// 	break;
-	// 	// }
-	// 	// case 2:
-	// 	// 	reply += RPL_YOURHOST();
-	// 	// 	break;
-	// }
-	// std::cout << KRED << "TOTOTOT" << KRESET << std::endl;
-	send(client.getFd(), reply.c_str(), reply.size(), 0);
-}
+// 	std::string reply = ":" + client.getPrefix() + " " + scode + " " + client.getNickname() + " :";
+// 	std::cout << KBLU << reply << KRESET << std::endl;
+// 	// switch (code)
+// 	// {
+// 	// 	case 1:
+// 	// 	{
+// 	// 		reply += RPL_WELCOME(client.getPrefix());
+// 	// 		break;
+// 	// 	}
+// 	// 	// case 2:
+// 	// 	// {
+// 	// 	// 	reply += RPL_YOURHOST("TotIrc", "0.1");
+// 	// 	// 	break;
+// 	// 	// }
+// 	// 	// case 2:
+// 	// 	// 	reply += RPL_YOURHOST();
+// 	// 	// 	break;
+// 	// }
+// 	// std::cout << KRED << "TOTOTOT" << KRESET << std::endl;
+// 	send(client.getFd(), reply.c_str(), reply.size(), 0);
+// }
 
 Client::Client(const int& fd, const std::string& host) :	status(COMMING),
 															_fd(fd),

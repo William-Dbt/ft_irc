@@ -3,7 +3,10 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
 #include "Client.hpp"
+#include <sys/socket.h>
 
 
 #define KRESET "\x1B[0m"
@@ -16,8 +19,16 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
+class Command
+{
+private:
+	
+public:
+	Command(/* args */);
+	~Command();
 
-void reply (unsigned short code, Client &client, std::vector<std::string> params);
+	void reply (unsigned short code, Client &client, std::vector<std::string> params);
+};
 
 
 # endif
