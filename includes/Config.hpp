@@ -4,19 +4,19 @@
 # define CONFIGFILE		"config/default.config"
 
 // ----------------------------------------
-# define NSERVERNAME	"server_name"
+# define VAR_SERVERNAME	"server_name"
 # define SERVERNAME		"TotIrc"
 
-# define NVERSION		"version"
+# define VAR_VERSION	"version"
 # define VERSION		"1.0"
 
-# define NMOTDFILE		"motd_file"
+# define VAR_MOTDFILE	"motd_file"
 # define MOTDFILE		"config/motd.txt"
 
-# define NMAXUSERS		"max_users"
+# define VAR_MAXUSERS	"max_users"
 # define MAXUSERS		"4000"
 
-# define NTIMEOUT		"timeout"
+# define VAR_TIMEOUT	"timeout"
 # define TIMEOUT		"300"
 // ----------------------------------------
 
