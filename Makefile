@@ -34,7 +34,7 @@ RM			= rm -rf
 MAKE		= make -C
 
 VALGRING 	= valgrind --leak-check=full --show-leak-kinds=all \
-			--track-origins=yes --log-file=${OUT} ./
+			--track-origins=yes --track-fds=yes --log-file=${OUT} ./
 
 OUT 		= valgrind_leaks.txt
 

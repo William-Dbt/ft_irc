@@ -10,8 +10,7 @@ class	Server;
 enum	e_status {
 	COMMING = 0,
 	REGISTER,
-	CONNECTED,
-	DISCONNECTED
+	CONNECTED
 };
 
 class	Client {

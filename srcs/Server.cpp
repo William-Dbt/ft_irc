@@ -77,9 +77,7 @@ void	Server::acceptClient() {
 }
 
 void	Server::run() {
-	unsigned int					toDelete = 0;
 	std::vector<pollfd>::iterator	it;
-	std::vector<pollfd>::iterator	deleteIt;
 
 	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
 		return ;
@@ -97,8 +95,10 @@ void	Server::run() {
 					std::cout << "fd " << (*it).fd << " disconnected." << std::endl;
 					delete this->_clients[(*it).fd];
 					this->_clients.erase((*it).fd);
-					toDelete++;
-					(*it).revents = POLLOUT;
+					it = this->_pfds.erase(it);
+					if (it == this->_pfds.end())
+						break ;
+
 					continue ;
 				}
 				if (this->_clients[(*it).fd]->status == COMMING
@@ -117,15 +117,6 @@ void	Server::run() {
 					this->_clients[(*it).fd]->status = CONNECTED;
 				}
 				std::cout << buffer << '\n' << std::endl;
-			}
-		}
-		while (toDelete) {
-			for (deleteIt = this->_pfds.begin(); deleteIt != this->_pfds.end(); deleteIt++) {
-				if ((*deleteIt).revents == POLLOUT) {
-					this->_pfds.erase(deleteIt);
-					toDelete--;
-					break ;
-				}
 			}
 		}
 	}

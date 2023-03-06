@@ -25,7 +25,7 @@ void	Config::setDefaultConfig() {
 	this->_config[VAR_TIMEOUT] = TIMEOUT;
 }
 
-bool	Config::checkMinimumConfig() {
+void	Config::checkMinimumConfig() {
 	std::string							buffer;
 	std::vector<std::string>::iterator	it;
 
@@ -37,10 +37,9 @@ bool	Config::checkMinimumConfig() {
 			buffer = "the config \'" + (*it);
 			buffer += "\' is missing.";
 			error(buffer);
-			return false;
+			return ;
 		}
 	}
-	return true;
 }
 
 void	Config::setFileConfig() {
@@ -71,6 +70,7 @@ void	Config::setFileConfig() {
 		value = buffer.substr(buffer.rfind(' ') + 1);
 		this->_config[name] = value;
 	}
+	file.close();
 	if (this->_config.size() < TOTALCONFIGS)
 		error("Error: not enough config entries are given.");
 

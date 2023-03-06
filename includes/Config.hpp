@@ -33,7 +33,7 @@ class	Config {
 
 		void	error(std::string error);
 
-		bool	checkMinimumConfig();
+		void	checkMinimumConfig();
 		void	setDefaultConfig();
 		void	setFileConfig();
 
