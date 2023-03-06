@@ -5,6 +5,7 @@
 #include "Client.hpp"
 
 Client::Client(const int& fd, const std::string& host) :	status(COMMING),
+															_lastPing(std::time(NULL)),
 															_fd(fd),
 															_host(host) {}
 
@@ -71,6 +72,11 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 	return true;
 }
 
+void	Client::send(std::string message) {
+	message.append("\n");
+	::send(this->_fd, message.c_str(), message.size(), 0);
+}
+
 std::string	Client::getPrefix() {
 	std::string	buffer;
 
@@ -80,6 +86,14 @@ std::string	Client::getPrefix() {
 	buffer.append("@");
 	buffer += this->_host;
 	return buffer;
+}
+
+void	Client::setLastPing(time_t time) {
+	this->_lastPing = time;
+}
+
+time_t&	Client::getLastPing() {
+	return this->_lastPing;
 }
 
 int&	Client::getFd() {

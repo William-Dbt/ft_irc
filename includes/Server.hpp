@@ -34,6 +34,7 @@ class	Server {
 		void	acceptClient();
 		void	run();
 
+		void	sendPings();
 		void	manageEntry(std::string entry);
 
 		int				getSocketFd() const;

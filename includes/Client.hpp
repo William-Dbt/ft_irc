@@ -3,6 +3,7 @@
 
 # include <string>
 # include <vector>
+# include <ctime>
 # include <unistd.h>
 
 class	Server;
@@ -10,7 +11,8 @@ class	Server;
 enum	e_status {
 	COMMING = 0,
 	REGISTER,
-	CONNECTED
+	CONNECTED,
+	DISCONNECTED
 };
 
 class	Client {
@@ -22,8 +24,13 @@ class	Client {
 		void	setBaseInfo(std::string& entryInfo, std::string& serverPassword);
 		bool	getBaseInfos(Server* server, std::string entry);
 
+		void	send(std::string message);
+
 		std::string	getPrefix();
 
+		void	setLastPing(time_t time);
+
+		time_t&			getLastPing();
 		int&			getFd();
 		std::string&	getHost();
 		std::string&	getPassword();
@@ -34,6 +41,7 @@ class	Client {
 		int	status;
 
 	private:
+		time_t						_lastPing;
 		int							_fd;
 		std::string					_host;
 		std::string					_password;

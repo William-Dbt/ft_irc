@@ -22,6 +22,7 @@ void	Config::setDefaultConfig() {
 	this->_config[VAR_VERSION] = VERSION;
 	this->_config[VAR_MOTDFILE] = MOTDFILE;
 	this->_config[VAR_MAXUSERS] = MAXUSERS;
+	this->_config[VAR_PINGDELAY] = PINGDELAY;
 	this->_config[VAR_TIMEOUT] = TIMEOUT;
 }
 
@@ -54,6 +55,7 @@ void	Config::setFileConfig() {
 		this->_configNames.push_back(VAR_VERSION);
 		this->_configNames.push_back(VAR_MOTDFILE);
 		this->_configNames.push_back(VAR_MAXUSERS);
+		this->_configNames.push_back(VAR_PINGDELAY);
 		this->_configNames.push_back(VAR_TIMEOUT);
 	}
 	if (this->_config.size())

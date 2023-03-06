@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -39,8 +40,10 @@ int	Server::init() {
 	if (socketFd == -1)
 		return initError(1, "can't open new socket.");
 
-	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
-		/* return initError(2, "can't set option(s) to server socket.") */;
+	#ifdef __linux__
+		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
+			return initError(2, "can't set option(s) to server socket.");
+	#endif
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) == -1)
 		return (initError(3, "can't set the socket to O_NONBLOCK."));
@@ -78,10 +81,17 @@ void	Server::acceptClient() {
 }
 
 void	Server::run() {
-	char							buffer[4096];
-	int								bytes;
-	std::vector<pollfd>::iterator	it;
+	char		buffer[4096];
+	int			bytes;
+	static int	lastPing = std::time(0);
 
+	std::vector<pollfd>::iterator		it;
+	std::map<int, Client*>::iterator	deleteIt;
+
+	if (std::time(0) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
+		sendPings();
+		lastPing = std::time(0);
+	}
 	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
 		return ;
 
@@ -94,15 +104,16 @@ void	Server::run() {
 				buffer[bytes] = '\0';
 				if (bytes == 0) {
 					std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
-					delete this->_clients[(*it).fd];
-					this->_clients.erase((*it).fd);
+					this->_clients[(*it).fd]->status = DISCONNECTED;
+					// delete this->_clients[(*it).fd]; //TODO
+					// this->_clients.erase((*it).fd);
 					it = this->_pfds.erase(it);
 					if (it == this->_pfds.end())
 						break ;
 
 					continue ;
 				}
-				if (this->_clients[(*it).fd]->status == COMMING
+				if (this->_clients[(*it).fd]->status == COMMING // TODO : check for maximum users
 					&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
 					continue ;
 				else if (this->_clients[(*it).fd]->status == REGISTER) {
@@ -113,6 +124,27 @@ void	Server::run() {
 				}
 				manageEntry(buffer);
 			}
+		}
+		// for (deleteIt = this->_clients.begin(); deleteIt != this->_clients.end(); deleteIt++) { // TODO : Check why looping
+		// 	if ((*deleteIt).second->status == DISCONNECTED) {
+		// 		delete (*deleteIt).second;
+		// 		this->_clients.erase(deleteIt);
+		// 		deleteIt = this->_clients.begin();	
+		// 	}
+		// }
+	}
+}
+
+void	Server::sendPings() {
+	std::map<int, Client*>::iterator	it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		if (std::time(NULL) - (*it).second->getLastPing() >= atoi(this->_config.get("timeout").c_str())) {
+			(*it).second->status = DISCONNECTED;
+		}
+		else {
+			(*it).second->send("PING " + (*it).second->getNickname());
+			(*it).second->setLastPing(std::time(NULL)); // TODO - Manage in command PONG
 		}
 	}
 }

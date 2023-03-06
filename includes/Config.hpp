@@ -16,6 +16,9 @@
 # define VAR_MAXUSERS	"max_users"
 # define MAXUSERS		"4000"
 
+# define VAR_PINGDELAY	"ping_delay"
+# define PINGDELAY		"50"
+
 # define VAR_TIMEOUT	"timeout"
 # define TIMEOUT		"300"
 // ----------------------------------------
