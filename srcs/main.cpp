@@ -8,6 +8,7 @@ bool	g_bServerRunning = true;
 void	signalsHandler(int signum) {
 	(void)signum;
 	g_bServerRunning = false;
+	std::cout << "\b\b\b" << KRED << BROADCAST << "Shutdown server." << KRESET << std::endl;
 }
 
 int	main(int argc, char *argv[]) {

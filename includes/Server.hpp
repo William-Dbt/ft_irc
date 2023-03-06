@@ -11,7 +11,18 @@
 # include "Client.hpp"
 # include "Config.hpp"
 
-# define TIMEOUT_LISTENING	500 // TODO - Check for ping time
+# define KRESET		"\x1B[0m"
+# define KBLK		"\x1B[30m"
+# define KRED		"\x1B[31m"
+# define KGRN		"\x1B[32m"
+# define KYEL		"\x1B[33m"
+# define KBLU		"\x1B[34m"
+# define KMAG		"\x1B[35m"
+# define KCYN		"\x1B[36m"
+# define KWHT		"\x1B[37m"
+# define BROADCAST	"BROADCAST: "
+
+# define TIMEOUT_LISTENING	500 // TODO - Check for ping time & delete this line, it'll be manage with config file
 
 class	Server {
 	public:
@@ -22,6 +33,8 @@ class	Server {
 		int		init();
 		void	acceptClient();
 		void	run();
+
+		void	manageEntry(std::string entry);
 
 		int				getSocketFd() const;
 		int				getPort() const;

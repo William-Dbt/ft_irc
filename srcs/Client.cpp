@@ -44,7 +44,7 @@ void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 // It refers to the first infos of the client that we receive
 bool	Client::getBaseInfos(Server* server, std::string entry) {
 	size_t		pos = 0;
-	size_t		lastPos = 0;
+	size_t		lastPos;
 	std::string	buffer;
 
 	entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end()); // Remove all '\r' because we don't want them

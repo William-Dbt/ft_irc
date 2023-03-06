@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -77,6 +78,8 @@ void	Server::acceptClient() {
 }
 
 void	Server::run() {
+	char							buffer[4096];
+	int								bytes;
 	std::vector<pollfd>::iterator	it;
 
 	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
@@ -87,12 +90,10 @@ void	Server::run() {
 	else { // Check if client send something
 		for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
 			if ((*it).revents == POLLIN) {
-				char	buffer[4096];
-
-				int bytes = recv((*it).fd, buffer, 4096, 0);
+				bytes = recv((*it).fd, buffer, 4096, 0);
 				buffer[bytes] = '\0';
 				if (bytes == 0) {
-					std::cout << "fd " << (*it).fd << " disconnected." << std::endl;
+					std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 					delete this->_clients[(*it).fd];
 					this->_clients.erase((*it).fd);
 					it = this->_pfds.erase(it);
@@ -105,21 +106,39 @@ void	Server::run() {
 					&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
 					continue ;
 				else if (this->_clients[(*it).fd]->status == REGISTER) {
-					std::cout << "--- New client registered ---\n";
-					std::cout << "fd: " << this->_clients[(*it).fd]->getFd() << '\n';
-					std::cout << "host: " << this->_clients[(*it).fd]->getHost() << '\n';
-					std::cout << "pass: " << this->_clients[(*it).fd]->getPassword() << '\n';
-					std::cout << "nickname: " << this->_clients[(*it).fd]->getNickname() << '\n';
-					std::cout << "username: " << this->_clients[(*it).fd]->getUsername() << '\n';
-					std::cout << "realname: " << this->_clients[(*it).fd]->getRealname() << '\n';
-					std::cout << "-----------------------------" << std::endl << std::endl;
+					std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
 					this->_clients[(*it).fd]->connectToClient();
 					this->_clients[(*it).fd]->status = CONNECTED;
+					continue ;
 				}
-				std::cout << buffer << '\n' << std::endl;
+				manageEntry(buffer);
 			}
 		}
 	}
+}
+
+void	Server::manageEntry(std::string entry) {
+	size_t						pos = 0;
+	size_t						lastPos;
+	std::vector<std::string>	argv;
+
+	entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end()); // Remove all '\r' because we don't want them
+	while (pos < entry.size()) {
+		lastPos = entry.find(' ', pos);
+		if (lastPos == std::string::npos)
+			lastPos = entry.size() - 1;
+
+		argv.push_back(entry.substr(pos, lastPos - pos));
+		pos = lastPos + 1;
+	}
+
+	std::vector<std::string>::iterator it;
+
+	std::cout << "argv: ";
+	for (it = argv.begin(); it != argv.end(); it++)
+		std::cout << *it << ' ';
+
+	std::cout << std::endl;
 }
 
 int	Server::getSocketFd() const {

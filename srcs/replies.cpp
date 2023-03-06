@@ -1,16 +1,5 @@
 #include "Server.hpp"
 
-#define KRESET "\x1B[0m"
-#define KBLK  "\x1B[30m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-
-
 std::string RPL_WELCOME(std::string prefix) { return ("Welcome to the Internet Relay Network " + prefix); }
 std::string RPL_YOURHOST(std::string servername, std::string ver) { return ("Your host is " + servername + ", running version " + ver); }
 std::string RPL_CREATED(std::string date) { return "This server was created " + date; }
@@ -52,7 +41,7 @@ void reply (unsigned short code, Client &client, std::string arg1, std::string a
 	reply += KRESET;
 	reply += "\n";
 
-	std::cout << KBLU << reply << KRESET << std::endl;
+	// std::cout << KBLU << reply << KRESET << std::endl;
 	send(client.getFd(), reply.c_str(), reply.size(), 0);
 }
 
