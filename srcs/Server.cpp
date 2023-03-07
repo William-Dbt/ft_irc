@@ -74,6 +74,9 @@ void	Server::acceptClient() {
 	if (fd == -1)
 		return ;
 
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
+		initError(1, "can't set a client's fd to O_NONBLOCK.");
+
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
@@ -81,70 +84,90 @@ void	Server::acceptClient() {
 }
 
 void	Server::run() {
-	char		buffer[4096];
-	int			bytes;
-	static int	lastPing = std::time(0);
+	int			returnValue;
+	static int	lastPing = std::time(NULL);
 
-	std::vector<pollfd>::iterator		it;
-	std::map<int, Client*>::iterator	deleteIt;
+	std::vector<pollfd>::iterator	it;
 
-	if (std::time(0) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
-		sendPings();
-		lastPing = std::time(0);
-	}
 	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
 		return ;
 
-	if (this->_pfds[0].revents == POLLIN) // Server receive a new client connection
-		this->acceptClient();
-	else { // Check if client send something
-		for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
-			if ((*it).revents == POLLIN) {
-				bytes = recv((*it).fd, buffer, 4096, 0);
-				buffer[bytes] = '\0';
-				if (bytes == 0) {
-					std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
-					this->_clients[(*it).fd]->status = DISCONNECTED;
-					// delete this->_clients[(*it).fd]; //TODO
-					// this->_clients.erase((*it).fd);
-					it = this->_pfds.erase(it);
-					if (it == this->_pfds.end())
+	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
+		sendPings();
+		lastPing = std::time(NULL);
+	}
+	else {
+		if (this->_pfds[0].revents == POLLIN) // Server receive a new client connection
+			this->acceptClient();
+		else { // Check if client send something
+			for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
+				if ((*it).revents == POLLIN) {
+					returnValue = receiveEntries(it);
+					if (returnValue == -1)
 						break ;
-
-					continue ;
+					else if (returnValue)
+						continue ;
 				}
-				if (this->_clients[(*it).fd]->status == COMMING // TODO : check for maximum users
-					&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
-					continue ;
-				else if (this->_clients[(*it).fd]->status == REGISTER) {
-					std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
-					this->_clients[(*it).fd]->connectToClient();
-					this->_clients[(*it).fd]->status = CONNECTED;
-					continue ;
-				}
-				manageEntry(buffer);
 			}
 		}
-		// for (deleteIt = this->_clients.begin(); deleteIt != this->_clients.end(); deleteIt++) { // TODO : Check why looping
-		// 	if ((*deleteIt).second->status == DISCONNECTED) {
-		// 		delete (*deleteIt).second;
-		// 		this->_clients.erase(deleteIt);
-		// 		deleteIt = this->_clients.begin();	
-		// 	}
-		// }
+	}
+	deleteClients();
+}
+
+int	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
+	char		buffer[4096];
+	int			bytes;
+
+	bytes = recv((*it).fd, buffer, 4096, 0);
+	buffer[bytes] = '\0';
+	if (bytes == 0) {
+		std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
+		this->_clients[(*it).fd]->status = DISCONNECTED;
+		it = this->_pfds.erase(it);
+		if (it == this->_pfds.end())
+			return -1;
+
+		return 1;
+	}
+	if (this->_clients[(*it).fd]->status == COMMING // TODO : check for maximum users
+		&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
+		return 1 ;
+	else if (this->_clients[(*it).fd]->status == REGISTER) {
+		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
+		this->_clients[(*it).fd]->connectToClient();
+		this->_clients[(*it).fd]->status = CONNECTED;
+		return 1;
+	}
+	manageEntry(buffer);
+	return 0;
+}
+
+void	Server::deleteClients() {
+	std::vector<Client*>				usersToDelete;
+	std::vector<Client*>::iterator		deleteIt;
+	std::map<int, Client*>::iterator	it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		if ((*it).second->status == DISCONNECTED)
+			usersToDelete.push_back((*it).second);
+
+	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
+		this->_clients.erase((*deleteIt)->getFd());
+		delete (*deleteIt);
 	}
 }
 
 void	Server::sendPings() {
+	int	timeout = atoi(this->_config.get("timeout").c_str());
+
 	std::map<int, Client*>::iterator	it;
 
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
-		if (std::time(NULL) - (*it).second->getLastPing() >= atoi(this->_config.get("timeout").c_str())) {
+		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
 			(*it).second->status = DISCONNECTED;
-		}
 		else {
 			(*it).second->send("PING " + (*it).second->getNickname());
-			(*it).second->setLastPing(std::time(NULL)); // TODO - Manage in command PONG
+			(*it).second->setLastPing(std::time(NULL)); // TODO : Manage this in PONG command (to check if we got the result of the client interface)
 		}
 	}
 }
@@ -154,14 +177,16 @@ void	Server::manageEntry(std::string entry) {
 	size_t						lastPos;
 	std::vector<std::string>	argv;
 
-	entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end()); // Remove all '\r' because we don't want them
 	while (pos < entry.size()) {
 		lastPos = entry.find(' ', pos);
 		if (lastPos == std::string::npos)
-			lastPos = entry.size() - 1;
+			lastPos = entry.size() - 2; // -2 Refers to \r\n
 
 		argv.push_back(entry.substr(pos, lastPos - pos));
-		pos = lastPos + 1;
+		if (lastPos != entry.size() - 2)
+			pos = lastPos + 1;
+		else
+			break ;
 	}
 
 	std::vector<std::string>::iterator it;

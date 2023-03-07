@@ -6,6 +6,7 @@
 # include <sstream>
 # include <vector>
 # include <map>
+# include <ctime>
 # include <poll.h>
 # include <sys/socket.h>
 # include "Client.hpp"
@@ -31,8 +32,11 @@ class	Server {
 
 		int		initError(const int &exit_code, const std::string &error);
 		int		init();
+
 		void	acceptClient();
 		void	run();
+		int		receiveEntries(std::vector<pollfd>::iterator& it);
+		void	deleteClients();
 
 		void	sendPings();
 		void	manageEntry(std::string entry);
@@ -52,6 +56,5 @@ class	Server {
 };
 
 void	reply(unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
-
 
 #endif

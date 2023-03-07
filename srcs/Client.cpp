@@ -19,7 +19,6 @@ void	Client::connectToClient() {
 	reply(2, *this, "TotIrc", "1.0");
 	reply(3, *this, "today");
 	reply(4, *this, "TotIrc", "1.0", "wi", "5");
-
 }
 
 void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
@@ -48,12 +47,11 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 	size_t		lastPos;
 	std::string	buffer;
 
-	entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end()); // Remove all '\r' because we don't want them
 	while (pos != entry.size()) {
-		lastPos = entry.find('\n', pos);
+		lastPos = entry.find("\r\n", pos);
 		buffer = entry.substr(pos, lastPos);
 		buffer.erase(lastPos - pos);
-		pos = lastPos + 1;
+		pos = lastPos + 2;
 		if (buffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
 			continue ;
 
@@ -73,7 +71,7 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 }
 
 void	Client::send(std::string message) {
-	message.append("\n");
+	message.append("\r\n");
 	::send(this->_fd, message.c_str(), message.size(), 0);
 }
 
