@@ -84,7 +84,6 @@ void	Server::acceptClient() {
 }
 
 void	Server::run() {
-	int			returnValue;
 	static int	lastPing = std::time(NULL);
 
 	std::vector<pollfd>::iterator	it;
@@ -101,20 +100,15 @@ void	Server::run() {
 			this->acceptClient();
 		else { // Check if client send something
 			for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
-				if ((*it).revents == POLLIN) {
-					returnValue = receiveEntries(it);
-					if (returnValue == -1)
-						break ;
-					else if (returnValue)
-						continue ;
-				}
+				if ((*it).revents == POLLIN)
+					receiveEntries(it);
 			}
 		}
 	}
 	deleteClients();
 }
 
-int	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
+void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	char		buffer[4096];
 	int			bytes;
 
@@ -123,53 +117,18 @@ int	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	if (bytes == 0) {
 		std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->status = DISCONNECTED;
-		it = this->_pfds.erase(it);
-		if (it == this->_pfds.end())
-			return -1;
-
-		return 1;
+		return ;
 	}
-	if (this->_clients[(*it).fd]->status == COMMING // TODO : check for maximum users
+	if (this->_clients[(*it).fd]->status == COMMING
 		&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
-		return 1 ;
+		return ;
 	else if (this->_clients[(*it).fd]->status == REGISTER) {
 		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->connectToClient();
 		this->_clients[(*it).fd]->status = CONNECTED;
-		return 1;
+		return ;
 	}
 	manageEntry(buffer);
-	return 0;
-}
-
-void	Server::deleteClients() {
-	std::vector<Client*>				usersToDelete;
-	std::vector<Client*>::iterator		deleteIt;
-	std::map<int, Client*>::iterator	it;
-
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
-		if ((*it).second->status == DISCONNECTED)
-			usersToDelete.push_back((*it).second);
-
-	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
-		this->_clients.erase((*deleteIt)->getFd());
-		delete (*deleteIt);
-	}
-}
-
-void	Server::sendPings() {
-	int	timeout = atoi(this->_config.get("timeout").c_str());
-
-	std::map<int, Client*>::iterator	it;
-
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
-		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
-			(*it).second->status = DISCONNECTED;
-		else {
-			(*it).second->send("PING " + (*it).second->getNickname());
-			(*it).second->setLastPing(std::time(NULL)); // TODO : Manage this in PONG command (to check if we got the result of the client interface)
-		}
-	}
 }
 
 void	Server::manageEntry(std::string entry) {
@@ -196,6 +155,53 @@ void	Server::manageEntry(std::string entry) {
 		std::cout << *it << ' ';
 
 	std::cout << std::endl;
+}
+
+static void	deleteClientPollFd(std::vector<pollfd>& pfds, int& fd) {
+	std::vector<pollfd>::iterator	it;
+
+	for (it = pfds.begin(); it != pfds.end(); it++) {
+		if ((*it).fd == fd) {
+			pfds.erase(it);
+			break ;
+		}
+	}
+}
+
+void	Server::deleteClients() {
+	std::map<int, Client*>::iterator	it;
+
+	std::vector<Client*>				usersToDelete;
+	std::vector<Client*>::iterator		deleteIt;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		if ((*it).second->status == DISCONNECTED)
+			usersToDelete.push_back((*it).second);
+
+	if (!usersToDelete.size())
+		return ;
+
+	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
+		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
+		this->_clients.erase((*deleteIt)->getFd());
+		delete (*deleteIt);
+	}
+}
+
+void	Server::sendPings() {
+	int	timeout = atoi(this->_config.get("timeout").c_str());
+
+	std::map<int, Client*>::iterator	it;
+
+	// std::cout << "clients size: " << this->_clients.size() << std::endl;
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
+			(*it).second->status = DISCONNECTED;
+		else {
+			(*it).second->send("PING " + (*it).second->getNickname());
+			(*it).second->setLastPing(std::time(NULL));
+		}
+	}
 }
 
 int	Server::getSocketFd() const {

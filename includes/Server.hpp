@@ -23,7 +23,7 @@
 # define KWHT		"\x1B[37m"
 # define BROADCAST	"BROADCAST: "
 
-# define TIMEOUT_LISTENING	500 // TODO - Check for ping time & delete this line, it'll be manage with config file
+# define TIMEOUT_LISTENING	500
 
 class	Server {
 	public:
@@ -35,7 +35,7 @@ class	Server {
 
 		void	acceptClient();
 		void	run();
-		int		receiveEntries(std::vector<pollfd>::iterator& it);
+		void	receiveEntries(std::vector<pollfd>::iterator& it);
 		void	deleteClients();
 
 		void	sendPings();

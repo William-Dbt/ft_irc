@@ -72,7 +72,7 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 
 void	Client::send(std::string message) {
 	message.append("\r\n");
-	::send(this->_fd, message.c_str(), message.size(), 0);
+	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
 }
 
 std::string	Client::getPrefix() {
