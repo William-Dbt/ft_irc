@@ -88,7 +88,7 @@ void	Server::run() {
 
 	std::vector<pollfd>::iterator	it;
 
-	if (poll(&this->_pfds[0], this->_pfds.size(), TIMEOUT_LISTENING) == -1)
+	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("timeout").c_str())) == -1)
 		return ;
 
 	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
@@ -120,26 +120,27 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		return ;
 	}
 	if (this->_clients[(*it).fd]->status == COMMING
-		&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer))
+		&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer)) {
 		return ;
+	}
 	else if (this->_clients[(*it).fd]->status == REGISTER) {
 		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->connectToClient();
 		this->_clients[(*it).fd]->status = CONNECTED;
 		return ;
 	}
-	manageEntry(buffer);
+	manageEntry(buffer, this->_clients[(*it).fd]);
 }
 
-void	Server::manageEntry(std::string entry) {
+void	Server::manageEntry(std::string entry, Client* client) {
 	size_t						pos = 0;
 	size_t						lastPos;
 	std::vector<std::string>	argv;
 
 	while (pos < entry.size()) {
-		lastPos = entry.find(' ', pos);
+		lastPos = entry.find("\r\n", pos);
 		if (lastPos == std::string::npos)
-			lastPos = entry.size() - 2; // -2 Refers to \r\n
+			lastPos = entry.size() - 2;
 
 		argv.push_back(entry.substr(pos, lastPos - pos));
 		if (lastPos != entry.size() - 2)
@@ -148,9 +149,22 @@ void	Server::manageEntry(std::string entry) {
 			break ;
 	}
 
+	// One line command
+	// while (pos < entry.size()) {
+	// 	lastPos = entry.find(' ', pos);
+	// 	if (lastPos == std::string::npos)
+	// 		lastPos = entry.size() - 2; // -2 Refers to \r\n
+
+	// 	argv.push_back(entry.substr(pos, lastPos - pos));
+	// 	if (lastPos != entry.size() - 2)
+	// 		pos = lastPos + 1;
+	// 	else
+	// 		break ;
+	// }
+
 	std::vector<std::string>::iterator it;
 
-	std::cout << "argv: ";
+	std::cout << "[" << client->getFd() << "] argv: ";
 	for (it = argv.begin(); it != argv.end(); it++)
 		std::cout << *it << ' ';
 
