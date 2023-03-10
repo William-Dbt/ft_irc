@@ -12,7 +12,10 @@
 # include "Client.hpp"
 # include "Config.hpp"
 
+#define DEBUG 1
+
 # define KRESET		"\x1B[0m"
+# define KBOLD		"\x1b[1m"
 # define KBLK		"\x1B[30m"
 # define KRED		"\x1B[31m"
 # define KGRN		"\x1B[32m"

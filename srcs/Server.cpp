@@ -31,8 +31,8 @@ int	Server::initError(const int &exit_code, const std::string &error) {
 }
 
 int	Server::init() {
-	int	socketFd = -1,
-		opt = 1;
+	int socketFd = -1;
+	int opt = 1;
 
 	struct sockaddr_in	address;
 
@@ -42,6 +42,9 @@ int	Server::init() {
 
 	#ifdef __linux__
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
+			return initError(2, "can't set option(s) to server socket.");
+	#else
+		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) // Set socket options to reuse address and port
 			return initError(2, "can't set option(s) to server socket.");
 	#endif
 
@@ -61,6 +64,7 @@ int	Server::init() {
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = socketFd;
 	this->_pfds.back().events = POLLIN;
+
 	return 0;
 }
 
@@ -114,6 +118,10 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, buffer, 4096, 0);
 	buffer[bytes] = '\0';
+
+	if (DEBUG)
+		std::cout << KBOLD << "<< [" << KRESET << KMAG << buffer << KRESET << std::endl;
+
 	if (bytes == 0) {
 		std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->status = DISCONNECTED;
@@ -125,7 +133,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	}
 	else if (this->_clients[(*it).fd]->status == REGISTER) {
 		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
-		this->_clients[(*it).fd]->connectToClient();
+		this->_clients[(*it).fd]->connectToClient(*this);
 		this->_clients[(*it).fd]->status = CONNECTED;
 		return ;
 	}

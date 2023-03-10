@@ -24,6 +24,14 @@ int	main(int argc, char *argv[]) {
 	if (exitStatus)
 		return exitStatus;
 
+	if (DEBUG)
+	{
+		std::cout << "Message sender by color:" << std::endl;
+		std::cout << KCYN << "Server to Client Msg" << KRESET << std::endl;
+		std::cout << KMAG << "Client to Server Msg" << KRESET << std::endl
+				  << std::endl;
+	}
+
 	signal(SIGINT, signalsHandler);
 	while (g_bServerRunning)
 		server.run();

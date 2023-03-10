@@ -20,13 +20,14 @@ class	Client {
 		Client(const int& fd, const std::string& host);
 		~Client();
 
-		void	connectToClient();
+		void	connectToClient(Server &server);
 		void	setBaseInfo(std::string& entryInfo, std::string& serverPassword);
 		bool	getBaseInfos(Server* server, std::string entry);
 
 		void	send(std::string message);
+		void	sendReply(std::string message);
 
-		std::string	getPrefix();
+		std::string getPrefix();
 
 		void	setLastPing(time_t time);
 
