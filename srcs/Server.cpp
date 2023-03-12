@@ -80,7 +80,7 @@ void	Server::acceptClient() {
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
-	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr));
+	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
 }
 
 void	Server::run() {
@@ -120,7 +120,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		return ;
 	}
 	if (this->_clients[(*it).fd]->status == COMMING
-		&& !this->_clients[(*it).fd]->getBaseInfos(this, buffer)) {
+		&& !this->_clients[(*it).fd]->getBaseInfos(buffer)) {
 		return ;
 	}
 	else if (this->_clients[(*it).fd]->status == REGISTER) {

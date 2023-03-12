@@ -17,12 +17,12 @@ enum	e_status {
 
 class	Client {
 	public:
-		Client(const int& fd, const std::string& host);
+		Client(const int& fd, const std::string& host, Server* server);
 		~Client();
 
 		void	connectToClient();
 		void	setBaseInfo(std::string& entryInfo, std::string& serverPassword);
-		bool	getBaseInfos(Server* server, std::string entry);
+		bool	getBaseInfos(std::string entry);
 
 		void	send(std::string message);
 
@@ -48,7 +48,9 @@ class	Client {
 		std::string					_nickname;
 		std::string					_username;
 		std::string					_realname;
+
 		std::vector<std::string>	_commands;
+		Server*						_server;
 };
 
 # include "Server.hpp"

@@ -4,6 +4,8 @@
 
 Config::Config() {
 	setFileConfig();
+	this->_config["user_mods"] = "aiwro0s";
+	this->_config["channel_mods"] = "0ovaimnqpsrtklbeI";
 }
 
 Config::~Config() {}
@@ -58,8 +60,8 @@ void	Config::setFileConfig() {
 		this->_configNames.push_back(VAR_PINGDELAY);
 		this->_configNames.push_back(VAR_TIMEOUT);
 	}
-	if (this->_config.size())
-		this->_config.clear();
+	/*if (this->_config.size())
+		this->_config.clear();*/
 
 	file.open(CONFIGFILE, std::ifstream::in);
 	if (!file.is_open()) {
@@ -70,6 +72,7 @@ void	Config::setFileConfig() {
 		buffer = readBuffer;
 		name = buffer.substr(0, buffer.find(' '));
 		value = buffer.substr(buffer.rfind(' ') + 1);
+		this->_config.erase(name);
 		this->_config[name] = value;
 	}
 	file.close();
