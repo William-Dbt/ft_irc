@@ -129,46 +129,10 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		this->_clients[(*it).fd]->status = CONNECTED;
 		return ;
 	}
-	manageEntry(buffer, this->_clients[(*it).fd]);
-}
+	
+	Command	command(this->_clients[(*it).fd], buffer);
 
-void	Server::manageEntry(std::string entry, Client* client) {
-	size_t						pos = 0;
-	size_t						lastPos;
-	std::vector<std::string>	argv;
-
-	while (pos < entry.size()) {
-		lastPos = entry.find("\r\n", pos);
-		if (lastPos == std::string::npos)
-			lastPos = entry.size() - 2;
-
-		argv.push_back(entry.substr(pos, lastPos - pos));
-		if (lastPos != entry.size() - 2)
-			pos = lastPos + 1;
-		else
-			break ;
-	}
-
-	// One line command
-	// while (pos < entry.size()) {
-	// 	lastPos = entry.find(' ', pos);
-	// 	if (lastPos == std::string::npos)
-	// 		lastPos = entry.size() - 2; // -2 Refers to \r\n
-
-	// 	argv.push_back(entry.substr(pos, lastPos - pos));
-	// 	if (lastPos != entry.size() - 2)
-	// 		pos = lastPos + 1;
-	// 	else
-	// 		break ;
-	// }
-
-	std::vector<std::string>::iterator it;
-
-	std::cout << "[" << client->getFd() << "] argv: ";
-	for (it = argv.begin(); it != argv.end(); it++)
-		std::cout << *it << ' ';
-
-	std::cout << std::endl;
+	command.execute();
 }
 
 static void	deleteClientPollFd(std::vector<pollfd>& pfds, int& fd) {
@@ -207,7 +171,6 @@ void	Server::sendPings() {
 
 	std::map<int, Client*>::iterator	it;
 
-	// std::cout << "clients size: " << this->_clients.size() << std::endl;
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
 			(*it).second->status = DISCONNECTED;

@@ -11,6 +11,7 @@
 # include <sys/socket.h>
 # include "Client.hpp"
 # include "Config.hpp"
+# include "Command.hpp"
 
 # define KRESET		"\x1B[0m"
 # define KBLK		"\x1B[30m"
@@ -39,7 +40,6 @@ class	Server {
 		void	deleteClients();
 
 		void	sendPings();
-		void	manageEntry(std::string entry, Client* client);
 
 		int				getSocketFd() const;
 		int				getPort() const;
