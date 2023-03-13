@@ -2,13 +2,15 @@
 #include <algorithm>
 #include <sstream>
 #include <sys/socket.h>
+#include "utils.hpp"
 #include "Client.hpp"
 #include "replies.hpp"
 
-Client::Client(const int& fd, const std::string& host) :	status(COMMING),
-															_lastPing(std::time(NULL)),
-															_fd(fd),
-															_host(host) {}
+Client::Client(const int& fd, const std::string& host, Server* server) : status(COMMING),
+																		 _lastPing(std::time(NULL)),
+																		 _fd(fd),
+																		 _host(host),
+																		 _server(server) {}
 
 Client::~Client() {
 	if (this->_fd != -1)
@@ -96,7 +98,7 @@ void	Client::setBaseInfo(std::string& entryInfo, std::string& serverPassword) {
 // and save them in our class
 // Theses params are : PASS, NICK, USER
 // It refers to the first infos of the client that we receive
-bool	Client::getBaseInfos(Server* server, std::string entry) {
+bool	Client::getBaseInfos(std::string entry) {
 	size_t		pos = 0;
 	size_t		lastPos;
 	std::string	buffer;
@@ -109,7 +111,7 @@ bool	Client::getBaseInfos(Server* server, std::string entry) {
 		if (buffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
 			continue ;
 
-		setBaseInfo(buffer, server->getPassword());
+		setBaseInfo(buffer, this->_server->getPassword());
 	}
 	if (!this->_password.size())
 		return false;

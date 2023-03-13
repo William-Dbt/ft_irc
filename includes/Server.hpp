@@ -11,6 +11,7 @@
 # include <sys/socket.h>
 # include "Client.hpp"
 # include "Config.hpp"
+# include "Command.hpp"
 
 #define DEBUG 1
 
@@ -42,7 +43,6 @@ class	Server {
 		void	deleteClients();
 
 		void	sendPings();
-		void	manageEntry(std::string entry, Client* client);
 
 		int				getSocketFd() const;
 		int				getPort() const;

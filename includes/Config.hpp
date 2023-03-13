@@ -3,7 +3,7 @@
 
 # define CONFIGFILE		"config/default.config"
 
-// ----------------------------------------
+// Minimal configuration ------------------
 # define VAR_SERVERNAME	"server_name"
 # define SERVERNAME		"TotIrc"
 
@@ -21,9 +21,41 @@
 
 # define VAR_TIMEOUT	"timeout"
 # define TIMEOUT		"300"
+
+# define TOTALCONFIGS	6
 // ----------------------------------------
 
-# define TOTALCONFIGS	5
+/* 
+# User mods (the respective config is call "user_mods")
+# a - user is flagged as away
+# i - marks a users as invisible
+# w - user receives wallops
+# r - restricted user connection
+# o - operator flag
+# O - local operator flag
+# s - marks a user for receipt of server notices.
+#
+# Channel mods (the respective config is call "channel_mods")
+# O - give "channel creator" status
+# o - give/take channel operator privilege
+# v - give/take the voice privilege
+#
+# a - toggle the anonymous channel flag
+# i - toggle the invite-only channel flag
+# m - toggle the moderated channel
+# n - toggle the no messages to channel from clients on the outside
+# q - toggle the quiet channel flag
+# p - toggle the private channel flag
+# s - toggle the secret channel flag
+# r - toggle the server reop channel flag
+# t - toggle the topic settable by channel operator only flag
+#
+# k - set/remove the channel key (password)
+# l - set/remove the user limit to channel
+# b - set/remove ban mask to keep users out
+# e - set/remove an exception mask to override a ban mask
+# I - set/remove an invitation mask to automatically override the invite-only flag
+*/
 
 # include <map>
 # include <vector>
@@ -41,6 +73,7 @@ class	Config {
 		void	setFileConfig();
 
 		std::string	get(std::string configName);
+		void		set(std::string configName, std::string value);
 
 	private:
 		std::map<std::string, std::string>	_config;
