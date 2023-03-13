@@ -40,6 +40,7 @@ class	Client {
 		std::string&	getNickname();
 		std::string&	getUsername();
 		std::string&	getRealname();
+		Server*			getServer();
 
 		std::map<std::string, void (*)(Command*)>&	getCommands();
 

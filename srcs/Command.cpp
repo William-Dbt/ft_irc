@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Command.hpp"
 
-Command::Command(Client* client, std::string line) : _client(client), _commandLine(line) {
+Command::Command(Client* client, std::string line) :  _server(client->getServer()), _client(client), _commandLine(line) {
 	size_t	pos = 0;
 	size_t	lastPos;
 

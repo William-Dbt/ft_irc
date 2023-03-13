@@ -21,7 +21,7 @@ PATHCMDS	= ${PATHSRCS}commands/
 PATHHEADERS	= includes/
 PATHNULL	= /dev/null
 
-SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp replies.cpp \
+SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 										Config.cpp Command.cpp utils.cpp) \
 			$(addprefix ${PATHCMDS}, MODE.cpp PING.cpp QUIT.cpp)
 

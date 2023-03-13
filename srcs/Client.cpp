@@ -191,6 +191,10 @@ std::string&	Client::getRealname() {
 	return this->_realname;
 }
 
+Server*	Client::getServer() {
+	return this->_server;
+}
+
 std::map<std::string, void (*)(Command*)>&	Client::getCommands() {
 	return this->_commands;
 }
