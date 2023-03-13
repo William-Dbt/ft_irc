@@ -122,16 +122,16 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	if (DEBUG)
 		std::cout << KBOLD << "<< [" << KRESET << KMAG << buffer << KRESET << std::endl;
 
-	if (bytes == 0) {
+	if (bytes == 0) { // Client disconnected from the server (or crashed) 
 		std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->status = DISCONNECTED;
 		return ;
 	}
-	if (this->_clients[(*it).fd]->status == COMMING
+	if (this->_clients[(*it).fd]->status == COMMING // Client is connecting to the server (first message)
 		&& !this->_clients[(*it).fd]->getBaseInfos(buffer)) {
 		return ;
 	}
-	else if (this->_clients[(*it).fd]->status == REGISTER) {
+	else if (this->_clients[(*it).fd]->status == REGISTER) { // Client is registering to the server (second message)
 		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
 		this->_clients[(*it).fd]->connectToClient(*this);
 		this->_clients[(*it).fd]->status = CONNECTED;

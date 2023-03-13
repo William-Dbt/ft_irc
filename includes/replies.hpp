@@ -14,19 +14,16 @@
 # define ERR_TOOMANYTARGETS(target) "407" + target + " :Duplicate recipients. No message delivered"
 # define ERR_NOORIGIN() "409:No origin specified"
 # define ERR_NORECIPIENT(command) "411:No recipient given (" + command + ")"
-
 # define ERR_NOTOPLEVEL(mask) "413" + mask + " :No toplevel domain specified"
 # define ERR_WILDTOPLEVEL(mask) "414" + mask + " :Wildcard in toplevel domain"
 # define ERR_NOTEXTTOSEND() "412:No text to send"
 # define ERR_NOMOTD() "422:MOTD File is missing"
 # define ERR_NONICKNAMEGIVEN() "431:No nickname given"
 # define ERR_ERRONEUSNICKNAME(nickname) "432" + nickname + " :Erroneous nickname"
-
 # define ERR_NICKNAMEINUSE(nickname) "433" + nickname + " :Nickname is already in use"
 # define ERR_NICKCOLLISION(nickname, username, host) "436" + nickname + " :Nickname collision KILL from " + username + "@" + host
 # define ERR_UNAVAILRESOURCE(nickchannel) "437" + nickchannel + " :Nick/channel is temporarily unavailable"
 # define ERR_USERNOTINCHANNEL(nickname, channel) "441" + nickname + " " + channel + " :They aren't on that channel"
-
 # define ERR_NOTONCHANNEL(channel) "442" + channel + " :You're not on that channel"
 # define ERR_USERONCHANNEL(username, channel) "443" + username + " " + channel + " :is already on channel"
 # define ERR_NEEDMOREPARAMS(command) "461" + command + " :Not enough parameters"
@@ -39,14 +36,12 @@
 # define ERR_BADCHANMASK(channel) "476" + channel + " :Bad Channel Mask"
 # define ERR_NOCHANMODES(channel) "477" + channel + " :Channel doesn't support modes"
 # define ERR_NOPRIVILEGES() "481:Permission Denied- You're not an IRC operator"
-
 # define ERR_CHANOPRIVSNEEDED(channel) "482" + channel + " :You're not channel operator"
 # define ERR_CANTKILLSERVER() "483:You can't kill a server!"
 # define ERR_RESTRICTED() "484:Your connection is restricted!"
 # define ERR_NOOPERHOST() "491:No O-lines for your host"
 # define ERR_UMODEUNKNOWNFLAG() "501:Unknown MODE flag"
 # define ERR_USERSDONTMATCH() "502:Cannot change mode for other users"
-
 
 # define RPL_REHASHING(configfile) "382" + configfile + " :Rehashing"
 # define RPL_VERSION(version, debuglevel, server, comments) "351" + version + "." + debuglevel + " " + server + " :" + comments
