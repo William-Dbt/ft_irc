@@ -9,7 +9,11 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 																		 _lastPing(std::time(NULL)),
 																		 _fd(fd),
 																		 _host(host),
-																		 _server(server) {}
+																		 _server(server) {
+	this->_commands["MODE"] = MODE;
+	this->_commands["PING"] = PING;
+	this->_commands["QUIT"] = QUIT;
+}
 
 Client::~Client() {
 	if (this->_fd != -1)
@@ -118,4 +122,8 @@ std::string&	Client::getUsername() {
 
 std::string&	Client::getRealname() {
 	return this->_realname;
+}
+
+std::map<std::string, void (*)(Command*)>&	Client::getCommands() {
+	return this->_commands;
 }
