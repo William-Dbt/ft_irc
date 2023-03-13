@@ -11,13 +11,18 @@ class	Command {
 		Command(Client* client, std::string line);
 		~Command();
 
-		void	execute();
+		void		execute();
+		std::string	getCommandLine();
 
 	private:
 		Client*						_client;
 		std::string					_commandLine;
 		std::vector<std::string>	_commandValues;
 };
+
+void	MODE(Command* command);
+void	PING(Command* command);
+void	QUIT(Command* command);
 
 # include "Client.hpp"
 

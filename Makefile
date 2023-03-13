@@ -17,11 +17,13 @@ CYAN	= \033[96m
 NAME		= ircserv
 
 PATHSRCS	= srcs/
+PATHCMDS	= ${PATHSRCS}commands/
 PATHHEADERS	= includes/
 PATHNULL	= /dev/null
 
-SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp replies.cpp\
-										Config.cpp Command.cpp utils.cpp)
+SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp replies.cpp \
+										Config.cpp Command.cpp utils.cpp) \
+			$(addprefix ${PATHCMDS}, MODE.cpp PING.cpp QUIT.cpp)
 
 OBJS		= ${SRCS:.cpp=.o}
 
