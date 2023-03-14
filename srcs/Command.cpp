@@ -1,9 +1,9 @@
 #include <iostream>
 #include "Command.hpp"
 
-Command::Command(Client* client, std::string line) : _client(client), _commandLine(line) {
-	size_t						pos = 0;
-	size_t						lastPos;
+Command::Command(Client* client, std::string line) :  _server(client->getServer()), _client(client), _commandLine(line) {
+	size_t	pos = 0;
+	size_t	lastPos;
 
 	while (pos < this->_commandLine.size()) {
 		lastPos = this->_commandLine.find(' ', pos);
@@ -21,11 +21,16 @@ Command::Command(Client* client, std::string line) : _client(client), _commandLi
 Command::~Command() {}
 
 void	Command::execute() {
-	std::vector<std::string>::iterator it;
+	/* std::vector<std::string>::iterator it;
 
 	std::cout << "[" << this->_client->getFd() << "] argv: ";
 	for (it = this->_commandValues.begin(); it != this->_commandValues.end(); it++)
 		std::cout << *it << '|';
 
-	std::cout << std::endl;
+	std::cout << std::endl; */
+	this->_client->getCommands()[this->_commandValues[0]](this);
+}
+
+std::string	Command::getCommandLine() {
+	return this->_commandLine;
 }

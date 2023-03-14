@@ -3,8 +3,10 @@
 
 # include <string>
 # include <vector>
+# include <map>
 # include <ctime>
 # include <unistd.h>
+# include "Command.hpp"
 
 class	Server;
 
@@ -38,20 +40,23 @@ class	Client {
 		std::string&	getNickname();
 		std::string&	getUsername();
 		std::string&	getRealname();
+		Server*			getServer();
+
+		std::map<std::string, void (*)(Command*)>&	getCommands();
 
 		int	status;
 
 	private:
-		time_t						_lastPing;
-		int							_fd;
-		std::string					_host;
-		std::string					_password;
-		std::string					_nickname;
-		std::string					_username;
-		std::string					_realname;
+		time_t		_lastPing;
+		int			_fd;
+		std::string	_host;
+		std::string	_password;
+		std::string	_nickname;
+		std::string	_username;
+		std::string	_realname;
 
-		std::vector<std::string>	_commands;
-		Server*						_server;
+		Server*										_server;
+		std::map<std::string, void (*)(Command*)>	_commands;
 };
 
 # include "Server.hpp"
