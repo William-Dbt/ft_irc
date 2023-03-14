@@ -21,16 +21,24 @@ Command::Command(Client* client, std::string line) :  _server(client->getServer(
 Command::~Command() {}
 
 void	Command::execute() {
-	/* std::vector<std::string>::iterator it;
-
-	std::cout << "[" << this->_client->getFd() << "] argv: ";
-	for (it = this->_commandValues.begin(); it != this->_commandValues.end(); it++)
-		std::cout << *it << '|';
-
-	std::cout << std::endl; */
-	this->_client->getCommands()[this->_commandValues[0]](this);
+	try {
+		this->_client->getCommands().at(this->_commandValues[0])(this);
+	}
+	catch (std::exception & e) {
+		// TODO: check for reply unknown command
+		std::cerr << "Unknown command: " << this->_commandValues[0] << std::endl;
+		std::cerr << "Check for error reply" << std::endl;
+	}
 }
 
-std::string	Command::getCommandLine() {
+Client*	Command::getClient() {
+	return this->_client;
+}
+
+std::string&	Command::getLine() {
 	return this->_commandLine;
+}
+
+std::vector<std::string>&	Command::getValues() {
+	return this->_commandValues;
 }

@@ -115,6 +115,7 @@ void	Server::run() {
 void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	char		buffer[4096];
 	int			bytes;
+	Client*		user = this->_clients[(*it).fd];
 
 	bytes = recv((*it).fd, buffer, 4096, 0);
 	buffer[bytes] = '\0';
@@ -122,24 +123,23 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	if (DEBUG)
 		std::cout << KBOLD << "<< [" << KRESET << KMAG << buffer << KRESET << std::endl;
 
-	if (bytes == 0) { // Client disconnected from the server (or crashed) 
-		std::cout << KRED << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
-		this->_clients[(*it).fd]->status = DISCONNECTED;
+	if (bytes == 0) {
+		std::cout << KRED << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
+		user->status = DISCONNECTED;
 		return ;
 	}
-	if (this->_clients[(*it).fd]->status == COMMING // Client is connecting to the server (first message)
-		&& !this->_clients[(*it).fd]->getBaseInfos(buffer)) {
+	if (user->status != CONNECTED 
+		&& user->status != BADPASSWORD
+		&& user->status != REGISTER
+		&& !user->getBaseInfos(buffer))
+		return ;
+	else if (user->status == REGISTER) {
+		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
+		user->connectToClient(*this);
+		user->status = CONNECTED;
 		return ;
 	}
-	else if (this->_clients[(*it).fd]->status == REGISTER) { // Client is registering to the server (second message)
-		std::cout << KGRN << BROADCAST << "Client " << KWHT << this->_clients[(*it).fd]->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
-		this->_clients[(*it).fd]->connectToClient(*this);
-		this->_clients[(*it).fd]->status = CONNECTED;
-		return ;
-	}
-	
 	Command	command(this->_clients[(*it).fd], buffer);
-
 	command.execute();
 }
 
@@ -203,4 +203,8 @@ std::string&	Server::getPassword() {
 
 Config&	Server::getConfig() {
 	return this->_config;
+}
+
+std::map<int, Client*>&	Server::getClients() {
+	return this->_clients;
 }

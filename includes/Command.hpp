@@ -3,6 +3,8 @@
 
 # include <string>
 # include <vector>
+# include <map>
+# include "replies.hpp"
 
 class	Client;
 class	Server;
@@ -12,8 +14,11 @@ class	Command {
 		Command(Client* client, std::string line);
 		~Command();
 
-		void		execute();
-		std::string	getCommandLine();
+		void	execute();
+
+		Client*						getClient();
+		std::string&				getLine();
+		std::vector<std::string>&	getValues();
 
 	private:
 		Server*						_server;
@@ -22,6 +27,9 @@ class	Command {
 		std::vector<std::string>	_commandValues;
 };
 
+void	PASS(Command* command);
+void	NICK(Command* command);
+void	USER(Command* command);
 void	MODE(Command* command);
 void	PING(Command* command);
 void	QUIT(Command* command);
