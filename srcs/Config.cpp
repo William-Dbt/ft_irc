@@ -21,7 +21,7 @@ void	Config::setDefaultConfig() {
 		this->_config.clear();
 
 	this->_config[VAR_SERVERNAME] = SERVERNAME;
-	this->_config[VAR_VERSION] = VERSION;
+	this->_config[VAR_VERSION_SERVER] = VERSION_SERVER;
 	this->_config[VAR_MOTDFILE] = MOTDFILE;
 	this->_config[VAR_MAXUSERS] = MAXUSERS;
 	this->_config[VAR_PINGDELAY] = PINGDELAY;
@@ -54,7 +54,7 @@ void	Config::setFileConfig() {
 
 	if (!this->_configNames.size()) {
 		this->_configNames.push_back(VAR_SERVERNAME);
-		this->_configNames.push_back(VAR_VERSION);
+		this->_configNames.push_back(VAR_VERSION_SERVER);
 		this->_configNames.push_back(VAR_MOTDFILE);
 		this->_configNames.push_back(VAR_MAXUSERS);
 		this->_configNames.push_back(VAR_PINGDELAY);

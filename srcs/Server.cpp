@@ -121,7 +121,11 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	buffer[bytes] = '\0';
 
 	if (DEBUG)
-		std::cout << KBOLD << "<< [" << KRESET << KMAG << buffer << KRESET << std::endl;
+		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
+			<< KBOLD << "   <--" << KGRAY << "{"<< (*it).fd << "}" << KRESET 
+			<< KBOLD << "[" << KRESET
+			<< KMAG << buffer << KRESET
+			<< std::endl;
 
 	if (bytes == 0) {
 		std::cout << KRED << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;

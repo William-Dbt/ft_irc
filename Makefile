@@ -28,6 +28,8 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									 USER.cpp \
 									 MODE.cpp \
 									 PING.cpp \
+									 PONG.cpp \
+									 VERSION.cpp \
 									 QUIT.cpp)
 
 OBJS		= ${SRCS:.cpp=.o}
@@ -67,8 +69,8 @@ fclean:		clean
 				@echo "${BOLD}${RED}Removing:${END}\t${NAME}"
 				@${RM} ${NAME} ${OUT} >${PATHNULL}
 
-d:			clean all
-				make clean && clear && ${VALGRING}${NAME} ${PORT} ${PASSWORD}
+d:			clean
+				make -j && make clean && clear && ${VALGRING}${NAME} ${PORT} ${PASSWORD}
 
 re:			fclean all
 

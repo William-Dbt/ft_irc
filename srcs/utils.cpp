@@ -13,7 +13,7 @@ const std::string	getCurrentDateTime(bool both, bool onlyDate) {
 	else if (onlyDate)
 		strftime(buffer, sizeof(buffer), "%B %e, %Y", &timeStruct);
 	else
-		strftime(buffer, sizeof(buffer), "%r", &timeStruct);
+		strftime(buffer, sizeof(buffer), "%T", &timeStruct);
 
 	return buffer;
 }

@@ -4,25 +4,25 @@
 # define CONFIGFILE		"config/default.config"
 
 // Minimal configuration ------------------
-# define VAR_SERVERNAME	"server_name"
-# define SERVERNAME		"TotIrc"
+# define VAR_SERVERNAME		"server_name"
+# define SERVERNAME			"TotIrc"
 
-# define VAR_VERSION	"version"
-# define VERSION		"1.0"
+# define VAR_VERSION_SERVER	"version"
+# define VERSION_SERVER		"1.0"
 
-# define VAR_MOTDFILE	"motd_file"
-# define MOTDFILE		"config/motd.txt"
+# define VAR_MOTDFILE		"motd_file"
+# define MOTDFILE			"config/motd.txt"
 
-# define VAR_MAXUSERS	"max_users"
-# define MAXUSERS		"4000"
+# define VAR_MAXUSERS		"max_users"
+# define MAXUSERS			"4000"
 
-# define VAR_PINGDELAY	"ping_delay"
-# define PINGDELAY		"50"
+# define VAR_PINGDELAY		"ping_delay"
+# define PINGDELAY			"50"
 
-# define VAR_TIMEOUT	"timeout"
-# define TIMEOUT		"300"
+# define VAR_TIMEOUT		"timeout"
+# define TIMEOUT			"300"
 
-# define TOTALCONFIGS	6
+# define TOTALCONFIGS		6
 // ----------------------------------------
 
 /* 

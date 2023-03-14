@@ -16,7 +16,9 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["USER"] = USER;
 	this->_commands["MODE"] = MODE;
 	this->_commands["PING"] = PING;
+	this->_commands["PONG"] = PONG;
 	this->_commands["QUIT"] = QUIT;
+	this->_commands["version"] = VERSION;
 }
 
 Client::~Client() {
@@ -58,7 +60,11 @@ void	Client::send(std::string message) {
 	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
 
 	if (DEBUG)
-		std::cout << KBOLD << ">> [" << KRESET << KCYN << message << KRESET << std::endl;
+		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
+			<< KBOLD << "-->   " << KGRAY << "{"<< getFd() << "}" << KRESET 
+			<< KBOLD << "[" << KRESET
+			<< KCYN << message << KRESET
+			<< std::endl;
 }
 
 void Client::sendReply(std::string message)
