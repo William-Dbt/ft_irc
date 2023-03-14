@@ -23,7 +23,12 @@ PATHNULL	= /dev/null
 
 SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 										Config.cpp Command.cpp utils.cpp) \
-			$(addprefix ${PATHCMDS}, MODE.cpp PING.cpp QUIT.cpp)
+			$(addprefix ${PATHCMDS}, PASS.cpp \
+									 NICK.cpp \
+									 USER.cpp \
+									 MODE.cpp \
+									 PING.cpp \
+									 QUIT.cpp)
 
 OBJS		= ${SRCS:.cpp=.o}
 

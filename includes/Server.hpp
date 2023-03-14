@@ -44,10 +44,11 @@ class	Server {
 
 		void	sendPings();
 
-		int				getSocketFd() const;
-		int				getPort() const;
-		std::string&	getPassword();
-		Config&			getConfig();
+		int						getSocketFd() const;
+		int						getPort() const;
+		std::string&			getPassword();
+		Config&					getConfig();
+		std::map<int, Client*>&	getClients();
 
 	private:
 		int						_fd;

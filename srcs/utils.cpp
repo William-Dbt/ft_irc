@@ -17,3 +17,31 @@ const std::string	getCurrentDateTime(bool both, bool onlyDate) {
 
 	return buffer;
 }
+
+// special = %x5B-60 / %x7B-7D ; "[", "]", "\", "`", "_", "^", "{", "|", "}"
+bool	isSpecial(char c) {
+	if (c == '[' || c == ']' || c == '\\' || c == '`'
+		|| c == '_' || c == '^' || c == '{' || c == '|' || c == '}')
+		return true;
+
+	return false;
+}
+
+// letter = %x41-5A / %x61-7A ; A-Z / a-z
+bool	isLetter(char c) {
+	if (c >= 'A' && c <= 'Z')
+		return true;
+
+	if (c >= 'a' && c <= 'z')
+		return true;
+
+	return false;
+}
+
+// digit = %x30-39 ; 0-9
+bool	isDigit(char c) {
+	if (c >= '0' && c <= '9')
+		return true;
+
+	return false;
+}
