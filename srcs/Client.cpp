@@ -67,6 +67,20 @@ void	Client::send(std::string message) {
 			<< std::endl;
 }
 
+void	Client::sendTo(std::string message) {
+	std::string	buffer;
+
+	if (this->status == CONNECTED) {
+		buffer = ':' + this->getPrefix() + ' ';
+		buffer += message;
+		message = buffer;
+	}
+	else
+		message = ": " + message;
+
+	send(message);
+}
+
 void Client::sendReply(std::string message)
 {
 	std::string code;
@@ -79,6 +93,9 @@ void Client::sendReply(std::string message)
 
 std::string	Client::getPrefix() {
 	std::string	buffer;
+
+	if (this->status != CONNECTED)
+		return "";
 
 	buffer = this->_nickname;
 	buffer.append("!");
@@ -136,7 +153,10 @@ std::string&	Client::getPassword() {
 	return this->_password;
 }
 
-std::string&	Client::getNickname() {
+std::string	Client::getNickname() {
+	if (this->status == COMMING || this->status == DISCONNECTED)
+		return "*";
+
 	return this->_nickname;
 }
 

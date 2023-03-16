@@ -14,7 +14,7 @@
 # include "Command.hpp"
 # include "utils.hpp"
 
-#define DEBUG 1
+# define DEBUG 1
 
 # define KRESET		"\x1B[0m"
 # define KBOLD		"\x1b[1m"

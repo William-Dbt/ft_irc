@@ -44,7 +44,7 @@ int	Server::init() {
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
 			return initError(2, "can't set option(s) to server socket.");
 	#else
-		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) // Set socket options to reuse address and port
+		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
 			return initError(2, "can't set option(s) to server socket.");
 	#endif
 
@@ -100,9 +100,9 @@ void	Server::run() {
 		lastPing = std::time(NULL);
 	}
 	else {
-		if (this->_pfds[0].revents == POLLIN) // Server receive a new client connection
+		if (this->_pfds[0].revents == POLLIN)
 			this->acceptClient();
-		else { // Check if client send something
+		else {
 			for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
 				if ((*it).revents == POLLIN)
 					receiveEntries(it);
@@ -113,18 +113,18 @@ void	Server::run() {
 }
 
 void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
-	char		buffer[4096];
+	char		readBuffer[4096];
 	int			bytes;
 	Client*		user = this->_clients[(*it).fd];
 
-	bytes = recv((*it).fd, buffer, 4096, 0);
-	buffer[bytes] = '\0';
+	bytes = recv((*it).fd, readBuffer, 4096, 0);
+	readBuffer[bytes] = '\0';
 
 	if (DEBUG)
 		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
-			<< KBOLD << "   <--" << KGRAY << "{"<< (*it).fd << "}" << KRESET 
+			<< KBOLD << "   <--" << KGRAY << "{"<< (*it).fd << "}" << KRESET
 			<< KBOLD << "[" << KRESET
-			<< KMAG << buffer << KRESET
+			<< KMAG << readBuffer << KRESET
 			<< std::endl;
 
 	if (bytes == 0) {
@@ -132,7 +132,33 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		user->status = DISCONNECTED;
 		return ;
 	}
-	if (user->status != CONNECTED 
+
+	size_t		pos = 0;
+	size_t		lastPos;
+	std::string	entryBuffer = readBuffer;
+	std::string	commandBuffer;
+
+	while (pos != entryBuffer.size()) {
+		lastPos = entryBuffer.find("\r\n", pos) + 2;
+		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
+		pos = lastPos;
+		if (commandBuffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
+			continue ;
+
+		Command	command(this->_clients[(*it).fd], commandBuffer);
+		command.execute();
+	}
+	if (user->status == REGISTER) {
+		if (user->getNickname().empty()) {
+			user->status = DISCONNECTED;
+			return ;
+		}
+		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
+		user->connectToClient(*this);
+		user->status = CONNECTED;
+	}
+
+	/* if (user->status != CONNECTED
 		&& user->status != BADPASSWORD
 		&& user->status != REGISTER
 		&& !user->getBaseInfos(buffer))
@@ -144,7 +170,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		return ;
 	}
 	Command	command(this->_clients[(*it).fd], buffer);
-	command.execute();
+	command.execute(); */
 }
 
 static void	deleteClientPollFd(std::vector<pollfd>& pfds, int& fd) {

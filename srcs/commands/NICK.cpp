@@ -16,7 +16,10 @@
 static bool	isNicknameProperlyFormatted(std::string nickname) {
 	size_t	i = 0;
 
-	while (nickname[i] < 9) {
+	if (nickname.size() > 9)
+		return false;
+
+	while (i < nickname.size()) {
 		if (i < 8) {
 			if (!isLetter(nickname[i]) && !isSpecial(nickname[i]))
 				return false;
@@ -25,6 +28,8 @@ static bool	isNicknameProperlyFormatted(std::string nickname) {
 			if (!isLetter(nickname[i]) && !isDigit(nickname[i])
 				&& !isSpecial(nickname[i]) && nickname[i] != '-')
 				return false;
+
+		i++;
 	}
 	return true;
 }
@@ -50,15 +55,12 @@ void	NICK(Command* command) {
 		return client->sendReply(ERR_RESTRICTED());
 
 	nickname = command->getValues()[1];
-	if (nickname.size() > 9)
-		nickname.resize(9);
-
 	if (!isNicknameProperlyFormatted(nickname))
 		return client->sendReply(ERR_ERRONEUSNICKNAME(nickname));
 
 	if (isNicknameAlreadyInUse(client->getServer(), nickname))
 		return client->sendReply(ERR_NICKNAMEINUSE(nickname));
 
-	// std::cout << "NICK: |" << nickname << '|' << std::endl;
-	command->getClient()->setNickname(command->getValues()[1]);
+	client->sendTo("NICK :" + nickname);
+	client->setNickname(nickname);
 }

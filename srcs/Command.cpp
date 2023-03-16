@@ -21,6 +21,9 @@ Command::Command(Client* client, std::string line) :  _server(client->getServer(
 Command::~Command() {}
 
 void	Command::execute() {
+	if (this->_client->status == DISCONNECTED)
+		return ;
+
 	try {
 		this->_client->getCommands().at(this->_commandValues[0])(this);
 	}

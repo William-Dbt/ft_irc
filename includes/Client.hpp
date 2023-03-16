@@ -27,6 +27,7 @@ class	Client {
 		bool	getBaseInfos(std::string entry);
 
 		void	send(std::string message);
+		void	sendTo(std::string message);
 		void	sendReply(std::string message);
 
 		std::string getPrefix();
@@ -42,7 +43,7 @@ class	Client {
 		int&			getFd();
 		std::string&	getHost();
 		std::string&	getPassword();
-		std::string&	getNickname();
+		std::string		getNickname();
 		std::string&	getUsername();
 		std::string&	getRealname();
 		Server*			getServer();
