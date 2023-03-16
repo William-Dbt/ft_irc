@@ -215,7 +215,40 @@ void	Server::sendPings() {
 		else
 			(*it).second->send("PING " + (*it).second->getNickname());
 	}
+
+	// TMP
+	std::map<std::string, Channel*>::iterator	chanIt;
+	std::map<int, Client*>::iterator		clientIt;
+	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
+		std::cout << KGRN << "Channel " << (*chanIt).first << " : " << KRESET << std::endl;
+
+		std::map<int, Client*>					clientInChannel = (*chanIt).second->getClients();
+		std::map<int, Client*>::iterator		clientInChannelIt;
+
+		for (clientInChannelIt = clientInChannel.begin(); clientInChannelIt != clientInChannel.end(); clientInChannelIt++) {
+			std::cout << KGRN << "- " << (*clientInChannelIt).second->getNickname() << KRESET << std::endl;
+		}
+		std::cout << std::endl;
+	}
+	for (clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) 
+		std::cout << KYEL << "Client " << (*clientIt).second->getNickname() << KRESET << std::endl;
 }
+
+void	Server::addChannel(Channel *channel)
+{
+	this->_channels[channel->getName()] = channel;
+}
+
+
+Channel*	Server::getChannel(std::string name) {
+	std::map<std::string, Channel*>::iterator	it;
+
+	it = this->_channels.find(name);
+	if (it == this->_channels.end())
+		return NULL;
+	return (*it).second;
+}
+
 
 int	Server::getSocketFd() const {
 	return this->_fd;
