@@ -18,6 +18,8 @@ enum	e_status {
 	DISCONNECTED
 };
 
+class	Channel;
+
 class	Client {
 	public:
 		Client(const int& fd, const std::string& host, Server* server);
@@ -30,6 +32,8 @@ class	Client {
 		void	sendReply(std::string message);
 
 		std::string getPrefix();
+
+		void	addChannel(Channel* channel);
 
 		void	setLastPing(time_t time);
 		void	setPassword(std::string password);
@@ -60,9 +64,12 @@ class	Client {
 		std::string	_realname;
 
 		Server*										_server;
+		std::map<std::string, Channel*>				_channels;
+
 		std::map<std::string, void (*)(Command*)>	_commands;
 };
 
 # include "Server.hpp"
+# include "Channel.hpp"
 
 #endif

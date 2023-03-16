@@ -12,6 +12,7 @@
 # include "Client.hpp"
 # include "Config.hpp"
 # include "Command.hpp"
+# include "Channel.hpp"
 # include "utils.hpp"
 
 #define DEBUG 1
@@ -46,6 +47,9 @@ class	Server {
 
 		void	sendPings();
 
+		void	addChannel(Channel* channel);
+
+		Channel*				getChannel(std::string name);
 		int						getSocketFd() const;
 		int						getPort() const;
 		std::string&			getPassword();
@@ -53,12 +57,13 @@ class	Server {
 		std::map<int, Client*>&	getClients();
 
 	private:
-		int						_fd;
-		int						_port;
-		std::string				_password;
-		std::vector<pollfd>		_pfds;
-		std::map<int, Client*>	_clients;
-		Config					_config;
+		int									_fd;
+		int									_port;
+		std::string							_password;
+		std::vector<pollfd>					_pfds;
+		std::map<int, Client*>				_clients;
+		std::map<std::string, Channel*>		_channels;
+		Config								_config;
 };
 
 void	reply(unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");

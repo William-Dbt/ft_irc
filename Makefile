@@ -22,15 +22,28 @@ PATHHEADERS	= includes/
 PATHNULL	= /dev/null
 
 SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
-										Config.cpp Command.cpp utils.cpp) \
+										Config.cpp Command.cpp Channel.cpp \
+										utils.cpp) \
 			$(addprefix ${PATHCMDS}, PASS.cpp \
 									 NICK.cpp \
 									 USER.cpp \
+									  \
 									 MODE.cpp \
+									 QUIT.cpp \
+									 JOIN.cpp \
+									  \
+									  \
+									  \
+									  \
+									  \
+									  \
+									 VERSION.cpp \
+									  \
 									 PING.cpp \
 									 PONG.cpp \
-									 VERSION.cpp \
-									 QUIT.cpp)
+									  \
+									 )
+
 
 OBJS		= ${SRCS:.cpp=.o}
 
