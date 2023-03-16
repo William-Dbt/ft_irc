@@ -30,6 +30,7 @@ class	Client {
 		void	sendReply(std::string message);
 
 		std::string getPrefix();
+		bool		isModeInUse(char mode);
 
 		void	setLastPing(time_t time);
 		void	setPassword(std::string password);
@@ -58,6 +59,7 @@ class	Client {
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_realname;
+		std::string	_modes;
 
 		Server*										_server;
 		std::map<std::string, void (*)(Command*)>	_commands;

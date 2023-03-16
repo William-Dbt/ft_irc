@@ -88,6 +88,18 @@ std::string	Client::getPrefix() {
 	return buffer;
 }
 
+bool	Client::isModeInUse(char mode) {
+	std::string::iterator	it;
+
+	if (this->_modes.empty())
+		return false;
+
+	if (this->_modes.find(mode) == std::string::npos)
+		return false;
+
+	return true;
+}
+
 void	Client::setLastPing(time_t time) {
 	this->_lastPing = time;
 }

@@ -186,10 +186,8 @@ void	Server::sendPings() {
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
 			(*it).second->status = DISCONNECTED;
-		else {
+		else
 			(*it).second->send("PING " + (*it).second->getNickname());
-			(*it).second->setLastPing(std::time(NULL));
-		}
 	}
 }
 
