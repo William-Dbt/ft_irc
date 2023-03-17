@@ -148,29 +148,15 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		Command	command(this->_clients[(*it).fd], commandBuffer);
 		command.execute();
 	}
-	if (user->status == REGISTER) {
+	if (user->status == FULLYREGISTER) {
 		if (user->getNickname().empty()) {
 			user->status = DISCONNECTED;
 			return ;
 		}
 		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
-		user->connectToClient(*this);
 		user->status = CONNECTED;
-	}
-
-	/* if (user->status != CONNECTED
-		&& user->status != BADPASSWORD
-		&& user->status != REGISTER
-		&& !user->getBaseInfos(buffer))
-		return ;
-	else if (user->status == REGISTER) {
-		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
 		user->connectToClient(*this);
-		user->status = CONNECTED;
-		return ;
 	}
-	Command	command(this->_clients[(*it).fd], buffer);
-	command.execute(); */
 }
 
 static void	deleteClientPollFd(std::vector<pollfd>& pfds, int& fd) {

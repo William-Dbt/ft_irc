@@ -34,27 +34,6 @@ void Client::connectToClient(Server &server)
 	this->sendReply(RPL_MYINFO(server.getConfig().get("server_name"), server.getConfig().get("version"), server.getConfig().get("user_mods"), server.getConfig().get("channel_mods")));
 }
 
-bool	Client::getBaseInfos(std::string entry) {
-	size_t		pos = 0;
-	size_t		lastPos;
-	std::string	buffer;
-
-	while (pos != entry.size()) {
-		lastPos = entry.find("\r\n", pos) + 2;
-		buffer = entry.substr(pos, lastPos - pos);
-		pos = lastPos;
-		if (buffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
-			continue ;
-
-		Command	command(this, buffer);
-		command.execute();
-	}
-	if (this->status != REGISTER)
-		return false;
-
-	return true;
-}
-
 void	Client::send(std::string message) {
 	message.append("\r\n");
 	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
@@ -121,10 +100,6 @@ void	Client::setLastPing(time_t time) {
 	this->_lastPing = time;
 }
 
-void	Client::setPassword(std::string password) {
-	this->_password = password;
-}
-
 void	Client::setNickname(std::string nickname) {
 	this->_nickname = nickname;
 }
@@ -147,10 +122,6 @@ int&	Client::getFd() {
 
 std::string&	Client::getHost() {
 	return this->_host;
-}
-
-std::string&	Client::getPassword() {
-	return this->_password;
 }
 
 std::string	Client::getNickname() {

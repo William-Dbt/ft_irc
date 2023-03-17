@@ -14,6 +14,7 @@ enum	e_status {
 	BADPASSWORD = 0,
 	COMMING,
 	REGISTER,
+	FULLYREGISTER,
 	CONNECTED,
 	DISCONNECTED
 };
@@ -24,17 +25,15 @@ class	Client {
 		~Client();
 
 		void	connectToClient(Server &server);
-		bool	getBaseInfos(std::string entry);
 
 		void	send(std::string message);
 		void	sendTo(std::string message);
 		void	sendReply(std::string message);
 
-		std::string getPrefix();
+		std::string	getPrefix();
 		bool		isModeInUse(char mode);
 
 		void	setLastPing(time_t time);
-		void	setPassword(std::string password);
 		void	setNickname(std::string nickname);
 		void	setUsername(std::string username);
 		void	setRealname(std::string realname);
@@ -42,7 +41,6 @@ class	Client {
 		time_t&			getLastPing();
 		int&			getFd();
 		std::string&	getHost();
-		std::string&	getPassword();
 		std::string		getNickname();
 		std::string&	getUsername();
 		std::string&	getRealname();
@@ -56,7 +54,6 @@ class	Client {
 		time_t		_lastPing;
 		int			_fd;
 		std::string	_host;
-		std::string	_password;
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_realname;

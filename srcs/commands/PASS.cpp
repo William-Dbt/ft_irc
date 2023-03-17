@@ -3,7 +3,7 @@
 void	PASS(Command* command) {
 	Client*	client = command->getClient();
 
-	if (client->status == CONNECTED)
+	if (client->status == CONNECTED || client->status == REGISTER)
 		return client->sendReply(ERR_ALREADYREGISTRED());
 
 	if (command->getValues().size() < 2)
@@ -12,5 +12,5 @@ void	PASS(Command* command) {
 	if (client->getServer()->getPassword().compare(command->getValues()[1]) != 0)
 		client->status = BADPASSWORD;
 
-	client->setPassword(command->getValues()[1]);
+	client->status = REGISTER;
 }
