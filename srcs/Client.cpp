@@ -14,11 +14,22 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["PASS"] = PASS;
 	this->_commands["NICK"] = NICK;
 	this->_commands["USER"] = USER;
+	// this->_commands["OPER"] = OPER;
 	this->_commands["MODE"] = MODE;
+	this->_commands["QUIT"] = QUIT;
+	this->_commands["JOIN"] = JOIN;
+	// this->_commands["PART"] = PART;
+	// this->_commands["TOPIC"] = TOPIC;
+	// this->_commands["INVITE"] = INVITE;
+	// this->_commands["KICK"] = KICK;
+	// this->_commands["PRIVMSG"] = PRIVMSG;
+	// this->_commands["MOTD"] = MOTD;
+	this->_commands["VERSION"] = VERSION;
+	// this->_commands["KILL"] = KILL;
 	this->_commands["PING"] = PING;
 	this->_commands["PONG"] = PONG;
-	this->_commands["QUIT"] = QUIT;
-	this->_commands["version"] = VERSION;
+	// this->_commands["REHASH"] = REHASH;
+	// this->_commands["DIE"] = DIE;
 }
 
 Client::~Client() {
@@ -93,6 +104,11 @@ bool	Client::isModeInUse(char mode) {
 		return false;
 
 	return true;
+}
+
+void	Client::addChannel(Channel* channel)
+{
+	_channels[channel->getName()] = channel;
 }
 
 void	Client::setLastPing(time_t time) {

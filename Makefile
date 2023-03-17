@@ -26,11 +26,23 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 			$(addprefix ${PATHCMDS}, PASS.cpp \
 									 NICK.cpp \
 									 USER.cpp \
+									  \
 									 MODE.cpp \
+									 QUIT.cpp \
+									 JOIN.cpp \
+									  \
+									  \
+									  \
+									  \
+									  \
+									  \
+									 VERSION.cpp \
+									  \
 									 PING.cpp \
 									 PONG.cpp \
-									 VERSION.cpp \
-									 QUIT.cpp)
+									  \
+									 )
+
 
 OBJS		= ${SRCS:.cpp=.o}
 
