@@ -107,13 +107,6 @@ Commands received from client to manage:
 	Numeric Replies:
 		ERR_NOORIGIN, ERR_NOSUCHSERVER
 
--> Optinnal Features
-* REHASH
-	Parameters: None
-	Numeric Replies:
-		ERR_NOPRIVILEGES
-		RPL_REHASHING
-
 * DIE
 	Parameters: None
 	Numeric Replies:
