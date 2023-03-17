@@ -21,7 +21,7 @@ Command::Command(Client* client, std::string line) :  _server(client->getServer(
 Command::~Command() {}
 
 void	Command::execute() {
-	if (this->_client->status == DISCONNECTED)
+	if (this->_client->status == DISCONNECTED || this->_client->status == BADPASSWORD)
 		return ;
 
 	try {

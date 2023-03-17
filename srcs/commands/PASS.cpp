@@ -9,8 +9,10 @@ void	PASS(Command* command) {
 	if (command->getValues().size() < 2)
 		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));
 
-	if (client->getServer()->getPassword().compare(command->getValues()[1]) != 0)
+	if (client->getServer()->getPassword().compare(command->getValues()[1]) != 0) {
 		client->status = BADPASSWORD;
+		return ;
+	}
 
 	client->status = REGISTER;
 }

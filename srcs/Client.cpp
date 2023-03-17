@@ -49,14 +49,13 @@ void	Client::send(std::string message) {
 void	Client::sendTo(std::string message) {
 	std::string	buffer;
 
-	if (this->status == CONNECTED) {
+	if (this->status == REGISTER)
+		message = ": " + message;
+	else {
 		buffer = ':' + this->getPrefix() + ' ';
 		buffer += message;
 		message = buffer;
 	}
-	else
-		message = ": " + message;
-
 	send(message);
 }
 
@@ -73,7 +72,7 @@ void Client::sendReply(std::string message)
 std::string	Client::getPrefix() {
 	std::string	buffer;
 
-	if (this->status != CONNECTED)
+	if (this->status == REGISTER)
 		return "";
 
 	buffer = this->_nickname;
@@ -112,6 +111,10 @@ void	Client::setRealname(std::string realname) {
 	this->_realname = realname;
 }
 
+void	Client::setQuitMessage(std::string quitMessage) {
+	this->_quitMessage = quitMessage;
+}
+
 time_t&	Client::getLastPing() {
 	return this->_lastPing;
 }
@@ -125,7 +128,7 @@ std::string&	Client::getHost() {
 }
 
 std::string	Client::getNickname() {
-	if (this->status == COMMING || this->status == DISCONNECTED)
+	if (this->status == COMMING)
 		return "*";
 
 	return this->_nickname;
@@ -137,6 +140,13 @@ std::string&	Client::getUsername() {
 
 std::string&	Client::getRealname() {
 	return this->_realname;
+}
+
+std::string	Client::getQuitMessage() {
+	if (this->_quitMessage.size())
+		return this->_quitMessage;
+	
+	return "leaving";
 }
 
 Server*	Client::getServer() {

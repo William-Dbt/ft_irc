@@ -128,7 +128,6 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 			<< std::endl;
 
 	if (bytes == 0) {
-		std::cout << KRED << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 		user->status = DISCONNECTED;
 		return ;
 	}
@@ -184,6 +183,8 @@ void	Server::deleteClients() {
 		return ;
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
+		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
+		std::cout << KRED << BROADCAST << "Client " << KWHT << (*deleteIt)->getNickname() << "(" << (*deleteIt)->getFd() << ")" << KRED << " has been disconnected." << KRESET << std::endl;
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);

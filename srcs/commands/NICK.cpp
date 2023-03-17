@@ -48,6 +48,10 @@ void	NICK(Command* command) {
 	std::string	nickname;
 	Client*		client = command->getClient();
 
+	if (client->status == COMMING) { // In case of no password given
+		client->status = BADPASSWORD;
+		return ;
+	}
 	if (command->getValues().size() < 2 || command->getValues()[1].empty())
 		return client->sendReply(ERR_NONICKNAMEGIVEN());
 
