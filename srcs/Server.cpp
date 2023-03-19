@@ -64,7 +64,6 @@ int	Server::init() {
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = socketFd;
 	this->_pfds.back().events = POLLIN;
-
 	return 0;
 }
 
@@ -158,7 +157,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	}
 }
 
-static void	deleteClientPollFd(std::vector<pollfd>& pfds, int& fd) {
+static void	deleteClientPollFd(std::vector<pollfd>& pfds, int fd) {
 	std::vector<pollfd>::iterator	it;
 
 	for (it = pfds.begin(); it != pfds.end(); it++) {
@@ -197,6 +196,9 @@ void	Server::sendPings() {
 	std::map<int, Client*>::iterator	it;
 
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		if ((*it).second->status != CONNECTED)
+			continue ;
+
 		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
 			(*it).second->status = DISCONNECTED;
 		else

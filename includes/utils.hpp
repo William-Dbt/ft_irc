@@ -5,6 +5,7 @@
 
 const std::string	getCurrentDateTime(bool both = true, bool onlyDate = false);
 
+bool	isValidUserMode(char c);
 bool	isSpecial(char c);
 bool	isLetter(char c);
 bool	isDigit(char c);

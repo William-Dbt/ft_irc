@@ -27,7 +27,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 			$(addprefix ${PATHCMDS}, PASS.cpp \
 									 NICK.cpp \
 									 USER.cpp \
-									  \
+									 OPER.cpp \
 									 MODE.cpp \
 									 QUIT.cpp \
 									 JOIN.cpp \
@@ -36,7 +36,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									  \
 									  \
 									  \
-									  \
+									 MOTD.cpp \
 									 VERSION.cpp \
 									  \
 									 PING.cpp \
