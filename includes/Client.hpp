@@ -35,7 +35,6 @@ class	Client {
 		void		addMode(char mode);
 		void		removeMode(char mode);
 
-
 		void	setLastPing(time_t time);
 		void	setNickname(std::string nickname);
 		void	setUsername(std::string username);

@@ -17,6 +17,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["NICK"] = NICK;
 	this->_commands["USER"] = USER;
 	this->_commands["MODE"] = MODE;
+	this->_commands["OPER"] = OPER;
 	this->_commands["PING"] = PING;
 	this->_commands["PONG"] = PONG;
 	this->_commands["QUIT"] = QUIT;

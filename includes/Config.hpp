@@ -22,7 +22,13 @@
 # define VAR_TIMEOUT		"timeout"
 # define TIMEOUT			"300"
 
-# define TOTALCONFIGS		6
+# define VAR_OPERUSERNAME	"oper_username"
+# define OPERUSERNAME		"admin"
+
+# define VAR_OPERPASSWORD	"oper_password"
+# define OPERPASSWORD		"admin"
+
+# define TOTALCONFIGS		8
 // ----------------------------------------
 
 /* 

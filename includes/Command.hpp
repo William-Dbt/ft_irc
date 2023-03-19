@@ -31,6 +31,7 @@ void	PASS(Command* command);
 void	NICK(Command* command);
 void	USER(Command* command);
 void	MODE(Command* command);
+void	OPER(Command* command);
 void	PING(Command* command);
 void	PONG(Command* command);
 void	QUIT(Command* command);
