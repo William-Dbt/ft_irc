@@ -13,6 +13,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 																		 _host(host),
 																		 _server(server) {
 	fcntl(fd, F_SETFL, O_NONBLOCK);
+	// All of this functions are prototyped in Command.hpp
 	this->_commands["PASS"] = PASS;
 	this->_commands["NICK"] = NICK;
 	this->_commands["USER"] = USER;
@@ -21,6 +22,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["PING"] = PING;
 	this->_commands["PONG"] = PONG;
 	this->_commands["QUIT"] = QUIT;
+	this->_commands["motd"] = MOTD;
 	this->_commands["version"] = VERSION;
 }
 

@@ -35,6 +35,7 @@ void	OPER(Command* command);
 void	PING(Command* command);
 void	PONG(Command* command);
 void	QUIT(Command* command);
+void	MOTD(Command* command);
 void 	VERSION(Command* command);
 
 # include "Client.hpp"
