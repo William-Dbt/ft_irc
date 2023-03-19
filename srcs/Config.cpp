@@ -4,7 +4,7 @@
 
 Config::Config() {
 	setFileConfig();
-	this->_config["user_mods"] = "aiwro0s";
+	this->_config["user_mods"] = "aiwros";
 	this->_config["channel_mods"] = "0ovaimnqpsrtklbeI";
 }
 
@@ -26,6 +26,8 @@ void	Config::setDefaultConfig() {
 	this->_config[VAR_MAXUSERS] = MAXUSERS;
 	this->_config[VAR_PINGDELAY] = PINGDELAY;
 	this->_config[VAR_TIMEOUT] = TIMEOUT;
+	this->_config[VAR_OPERUSERNAME] = OPERUSERNAME;
+	this->_config[VAR_OPERPASSWORD] = OPERPASSWORD;
 }
 
 void	Config::checkMinimumConfig() {
@@ -59,10 +61,9 @@ void	Config::setFileConfig() {
 		this->_configNames.push_back(VAR_MAXUSERS);
 		this->_configNames.push_back(VAR_PINGDELAY);
 		this->_configNames.push_back(VAR_TIMEOUT);
+		this->_configNames.push_back(VAR_OPERUSERNAME);
+		this->_configNames.push_back(VAR_OPERPASSWORD);
 	}
-	/*if (this->_config.size())
-		this->_config.clear();*/
-
 	file.open(CONFIGFILE, std::ifstream::in);
 	if (!file.is_open()) {
 		error("Error: an error occured while opening config file.");

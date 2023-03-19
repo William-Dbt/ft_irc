@@ -22,7 +22,13 @@
 # define VAR_TIMEOUT		"timeout"
 # define TIMEOUT			"300"
 
-# define TOTALCONFIGS		6
+# define VAR_OPERUSERNAME	"oper_username"
+# define OPERUSERNAME		"admin"
+
+# define VAR_OPERPASSWORD	"oper_password"
+# define OPERPASSWORD		"admin"
+
+# define TOTALCONFIGS		8
 // ----------------------------------------
 
 /* 
@@ -32,8 +38,7 @@
 # w - user receives wallops
 # r - restricted user connection
 # o - operator flag
-# O - local operator flag
-# s - marks a user for receipt of server notices.
+# s - marks a user for receipt of server notices. // Useless but still supported
 #
 # Channel mods (the respective config is call "channel_mods")
 # O - give "channel creator" status

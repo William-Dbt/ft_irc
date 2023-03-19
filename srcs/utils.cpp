@@ -18,6 +18,14 @@ const std::string	getCurrentDateTime(bool both, bool onlyDate) {
 	return buffer;
 }
 
+// user_modes = a i w r o s
+bool	isValidUserMode(char c) {
+	if (c == 'a' || c == 'i' || c == 'w' || c == 'r' || c == 'o' || c == 's')
+		return true;
+
+	return false;
+}
+
 // special = %x5B-60 / %x7B-7D ; "[", "]", "\", "`", "_", "^", "{", "|", "}"
 bool	isSpecial(char c) {
 	if (c == '[' || c == ']' || c == '\\' || c == '`'

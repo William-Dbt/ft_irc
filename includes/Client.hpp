@@ -34,6 +34,8 @@ class	Client {
 
 		std::string	getPrefix();
 		bool		isModeInUse(char mode);
+		void		addMode(char mode);
+		void		removeMode(char mode);
 
 		void	addChannel(Channel* channel);
 
@@ -43,14 +45,15 @@ class	Client {
 		void	setRealname(std::string realname);
 		void	setQuitMessage(std::string quitMessage);
 
-		time_t&			getLastPing();
-		int&			getFd();
-		std::string&	getHost();
-		std::string		getNickname();
-		std::string&	getUsername();
-		std::string&	getRealname();
-		std::string		getQuitMessage();
-		Server*			getServer();
+		time_t		getLastPing();
+		int			getFd();
+		std::string	getHost();
+		std::string	getNickname();
+		std::string	getUsername();
+		std::string	getRealname();
+		std::string	getUserModes();
+		std::string	getQuitMessage();
+		Server*		getServer();
 
 		std::map<std::string, void (*)(Command*)>&	getCommands();
 

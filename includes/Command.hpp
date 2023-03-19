@@ -30,7 +30,7 @@ class	Command {
 void PASS(Command* command);
 void NICK(Command* command);
 void USER(Command* command);
-// void OPER(Command* command);
+void OPER(Command* command);
 void MODE(Command* command);
 void QUIT(Command* command);
 void JOIN(Command* command);
@@ -39,7 +39,7 @@ void JOIN(Command* command);
 // void INVITE(Command* command);
 // void KICK(Command* command);
 // void PRIVMSG(Command* command);
-// void MOTD(Command* command);
+void MOTD(Command* command);
 void VERSION(Command* command);
 // void KILL(Command* command);
 void PING(Command* command);

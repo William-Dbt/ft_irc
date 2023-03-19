@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include "utils.hpp"
 #include "Client.hpp"
@@ -11,10 +12,11 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 																		 _fd(fd),
 																		 _host(host),
 																		 _server(server) {
+	// All of this functions are prototyped in Command.hpp
 	this->_commands["PASS"] = PASS;
 	this->_commands["NICK"] = NICK;
 	this->_commands["USER"] = USER;
-	// this->_commands["OPER"] = OPER;
+	this->_commands["OPER"] = OPER;
 	this->_commands["MODE"] = MODE;
 	this->_commands["QUIT"] = QUIT;
 	this->_commands["JOIN"] = JOIN;
@@ -23,7 +25,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	// this->_commands["INVITE"] = INVITE;
 	// this->_commands["KICK"] = KICK;
 	// this->_commands["PRIVMSG"] = PRIVMSG;
-	// this->_commands["MOTD"] = MOTD;
+	this->_commands["MOTD"] = MOTD;
 	this->_commands["VERSION"] = VERSION;
 	// this->_commands["KILL"] = KILL;
 	this->_commands["PING"] = PING;
@@ -111,6 +113,25 @@ void	Client::addChannel(Channel* channel)
 	_channels[channel->getName()] = channel;
 }
 
+void	Client::addMode(char mode) {
+	if (this->_modes.find(mode) != std::string::npos)
+		return ;
+
+	this->_modes.push_back(mode);
+}
+
+void	Client::removeMode(char mode) {
+	if (this->_modes.find(mode) == std::string::npos)
+		return ;
+
+	for (std::string::iterator it = this->_modes.begin(); it != this->_modes.end(); it++) {
+		if ((*it) == mode) {
+			this->_modes.erase(it);
+			return ;
+		}
+	}
+}
+
 void	Client::setLastPing(time_t time) {
 	this->_lastPing = time;
 }
@@ -131,15 +152,15 @@ void	Client::setQuitMessage(std::string quitMessage) {
 	this->_quitMessage = quitMessage;
 }
 
-time_t&	Client::getLastPing() {
+time_t	Client::getLastPing() {
 	return this->_lastPing;
 }
 
-int&	Client::getFd() {
+int	Client::getFd() {
 	return this->_fd;
 }
 
-std::string&	Client::getHost() {
+std::string	Client::getHost() {
 	return this->_host;
 }
 
@@ -150,12 +171,16 @@ std::string	Client::getNickname() {
 	return this->_nickname;
 }
 
-std::string&	Client::getUsername() {
+std::string	Client::getUsername() {
 	return this->_username;
 }
 
-std::string&	Client::getRealname() {
+std::string	Client::getRealname() {
 	return this->_realname;
+}
+
+std::string	Client::getUserModes() {
+	return this->_modes;
 }
 
 std::string	Client::getQuitMessage() {
