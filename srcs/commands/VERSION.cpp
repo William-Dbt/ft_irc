@@ -9,7 +9,6 @@ void	VERSION(Command* command) {
 
 	client->sendReply(RPL_VERSION(server->getConfig().get("version"),
 						"1",
-						server->getConfig().get("server_name"),
-						""));
+						server->getConfig().get("server_name")));
 }
 

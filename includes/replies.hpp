@@ -44,7 +44,7 @@
 # define ERR_USERSDONTMATCH() "502:Cannot change mode for other users"
 
 # define RPL_REHASHING(configfile) "382" + configfile + " :Rehashing"
-# define RPL_VERSION(version, debuglevel, server, comments) "351" + version + "." + debuglevel + " " + server + " :" + comments
+# define RPL_VERSION(version, debuglevel, server) "351" + version + "." + debuglevel + " " + server
 # define RPL_MOTDSTART(server) "375:- " + server + " Message of the day - "
 # define RPL_MOTD(text) "372:- " + text
 # define RPL_ENDOFMOTD() "376:End of MOTD command"
