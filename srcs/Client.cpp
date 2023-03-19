@@ -12,7 +12,6 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 																		 _fd(fd),
 																		 _host(host),
 																		 _server(server) {
-	fcntl(fd, F_SETFL, O_NONBLOCK);
 	// All of this functions are prototyped in Command.hpp
 	this->_commands["PASS"] = PASS;
 	this->_commands["NICK"] = NICK;
