@@ -49,7 +49,7 @@ void	MODE(Command* command) {
 		it++;
 	}
 	while (it != modes.end()) {
-		if ((*it) == 'o' || (*it) == 'a') {
+		if ((*it) == 'a') {
 			it++;
 			continue ;
 		}
@@ -57,9 +57,10 @@ void	MODE(Command* command) {
 			if ((*it) != 'r')
 				client->removeMode((*it));
 		}
-		else
-			client->addMode((*it));
-
+		else {
+			if ((*it) != 'o')
+				client->addMode((*it));
+		}
 		it++;
 	}
 	if (!client->getUserModes().size())
