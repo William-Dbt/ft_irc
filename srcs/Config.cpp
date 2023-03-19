@@ -4,7 +4,7 @@
 
 Config::Config() {
 	setFileConfig();
-	this->_config["user_mods"] = "aiwro0s";
+	this->_config["user_mods"] = "aiwros";
 	this->_config["channel_mods"] = "0ovaimnqpsrtklbeI";
 }
 

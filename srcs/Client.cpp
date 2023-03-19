@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include "utils.hpp"
 #include "Client.hpp"
@@ -11,6 +12,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 																		 _fd(fd),
 																		 _host(host),
 																		 _server(server) {
+	fcntl(fd, F_SETFL, O_NONBLOCK);
 	this->_commands["PASS"] = PASS;
 	this->_commands["NICK"] = NICK;
 	this->_commands["USER"] = USER;
@@ -95,6 +97,25 @@ bool	Client::isModeInUse(char mode) {
 	return true;
 }
 
+void	Client::addMode(char mode) {
+	if (this->_modes.find(mode) != std::string::npos)
+		return ;
+
+	this->_modes.push_back(mode);
+}
+
+void	Client::removeMode(char mode) {
+	if (this->_modes.find(mode) == std::string::npos)
+		return ;
+
+	for (std::string::iterator it = this->_modes.begin(); it != this->_modes.end(); it++) {
+		if ((*it) == mode) {
+			this->_modes.erase(it);
+			return ;
+		}
+	}
+}
+
 void	Client::setLastPing(time_t time) {
 	this->_lastPing = time;
 }
@@ -115,15 +136,15 @@ void	Client::setQuitMessage(std::string quitMessage) {
 	this->_quitMessage = quitMessage;
 }
 
-time_t&	Client::getLastPing() {
+time_t	Client::getLastPing() {
 	return this->_lastPing;
 }
 
-int&	Client::getFd() {
+int	Client::getFd() {
 	return this->_fd;
 }
 
-std::string&	Client::getHost() {
+std::string	Client::getHost() {
 	return this->_host;
 }
 
@@ -134,12 +155,16 @@ std::string	Client::getNickname() {
 	return this->_nickname;
 }
 
-std::string&	Client::getUsername() {
+std::string	Client::getUsername() {
 	return this->_username;
 }
 
-std::string&	Client::getRealname() {
+std::string	Client::getRealname() {
 	return this->_realname;
+}
+
+std::string	Client::getUserModes() {
+	return this->_modes;
 }
 
 std::string	Client::getQuitMessage() {

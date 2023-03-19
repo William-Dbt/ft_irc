@@ -32,8 +32,7 @@
 # w - user receives wallops
 # r - restricted user connection
 # o - operator flag
-# O - local operator flag
-# s - marks a user for receipt of server notices.
+# s - marks a user for receipt of server notices. // Useless but still supported
 #
 # Channel mods (the respective config is call "channel_mods")
 # O - give "channel creator" status
