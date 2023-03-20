@@ -14,14 +14,17 @@ public:
 	Channel();
 	~Channel();
 	Channel(const std::string& name);
-	// Channel(const std::string& name, const std::string& key);
+
+	void	setName(std::string name);
+	void	setTopic(std::string topic);
+	void	setKey(std::string key);
 
 	void	addClient(Client* client);
+	std::map<int, Client*>&	getClients();
 
 	std::string&			getName();
 	std::string&			getTopic();
 	std::string&			getKey();
-	std::map<int, Client*>&	getClients();
 
 
 private:
@@ -34,5 +37,3 @@ private:
 # include "Client.hpp"
 
 #endif
-
-

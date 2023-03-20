@@ -210,7 +210,8 @@ void	Server::sendPings() {
 	std::map<std::string, Channel*>::iterator	chanIt;
 	std::map<int, Client*>::iterator		clientIt;
 	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
-		std::cout << KGRN << "Channel " << (*chanIt).first << " : " << KRESET << std::endl;
+		std::cout << KGRN << "Channel " << KBOLD << (*chanIt).first << KRESET << std::endl;
+		std::cout << KGRN << "key: " << KBOLD <<  (*chanIt).second->getKey() << KRESET << std::endl;
 
 		std::map<int, Client*>					clientInChannel = (*chanIt).second->getClients();
 		std::map<int, Client*>::iterator		clientInChannelIt;
