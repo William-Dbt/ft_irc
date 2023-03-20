@@ -54,6 +54,7 @@ class	Server {
 		int						getPort() const;
 		std::string&			getPassword();
 		Config&					getConfig();
+		Client*					getClient(std::string nickname);
 		std::map<int, Client*>&	getClients();
 
 	private:

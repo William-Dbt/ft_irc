@@ -38,7 +38,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									  \
 									 MOTD.cpp \
 									 VERSION.cpp \
-									  \
+									 KILL.cpp \
 									 PING.cpp \
 									 PONG.cpp \
 									  \

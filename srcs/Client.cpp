@@ -27,7 +27,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	// this->_commands["PRIVMSG"] = PRIVMSG;
 	this->_commands["motd"] = MOTD;
 	this->_commands["version"] = VERSION;
-	// this->_commands["KILL"] = KILL;
+	this->_commands["kill"] = KILL;
 	this->_commands["PING"] = PING;
 	this->_commands["PONG"] = PONG;
 	// this->_commands["REHASH"] = REHASH;
@@ -45,6 +45,10 @@ void Client::connectToClient(Server &server)
 	this->sendReply(RPL_YOURHOST(server.getConfig().get("server_name"), server.getConfig().get("version")));
 	this->sendReply(RPL_CREATED(getCurrentDateTime()));
 	this->sendReply(RPL_MYINFO(server.getConfig().get("server_name"), server.getConfig().get("version"), server.getConfig().get("user_mods"), server.getConfig().get("channel_mods")));
+
+	Command command(this, "motd");
+
+	MOTD(&command);
 }
 
 void	Client::send(std::string message) {

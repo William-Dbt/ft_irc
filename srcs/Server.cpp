@@ -255,6 +255,16 @@ Config&	Server::getConfig() {
 	return this->_config;
 }
 
+Client*	Server::getClient(std::string nickname) {
+	std::map<int, Client*>::iterator	it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		if ((*it).second->getNickname() == nickname)
+			return (*it).second;
+
+	return NULL;
+}
+
 std::map<int, Client*>&	Server::getClients() {
 	return this->_clients;
 }

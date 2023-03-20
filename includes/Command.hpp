@@ -16,6 +16,7 @@ class	Command {
 
 		void	execute();
 
+		Server*						getServer();
 		Client*						getClient();
 		std::string&				getLine();
 		std::vector<std::string>&	getValues();
@@ -41,7 +42,7 @@ void JOIN(Command* command);
 // void PRIVMSG(Command* command);
 void MOTD(Command* command);
 void VERSION(Command* command);
-// void KILL(Command* command);
+void KILL(Command* command);
 void PING(Command* command);
 void PONG(Command* command);
 // void REHASH(Command* command);

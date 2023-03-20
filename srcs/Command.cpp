@@ -28,10 +28,12 @@ void	Command::execute() {
 		this->_client->getCommands().at(this->_commandValues[0])(this);
 	}
 	catch (std::exception & e) {
-		// TODO: check for reply unknown command
-		std::cerr << "Unknown command: " << this->_commandValues[0] << std::endl;
-		std::cerr << "Check for error reply" << std::endl;
+		this->_client->send("- The command " + this->_commandValues[0] + " isn't known by the server " + this->_server->getConfig().get("server_name") + ".");
 	}
+}
+
+Server*	Command::getServer() {
+	return this->_server;
 }
 
 Client*	Command::getClient() {
