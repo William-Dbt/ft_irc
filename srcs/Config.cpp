@@ -6,6 +6,7 @@ Config::Config() {
 	setFileConfig();
 	this->_config["user_mods"] = "aiwros";
 	this->_config["channel_mods"] = "0ovaimnqpsrtklbeI";
+	this->_config["config_file"] = CONFIGFILE;
 }
 
 Config::~Config() {}
@@ -72,7 +73,7 @@ void	Config::setFileConfig() {
 	while (file.getline(readBuffer, sizeof(readBuffer))) {
 		buffer = readBuffer;
 		name = buffer.substr(0, buffer.find(' '));
-		value = buffer.substr(buffer.rfind(' ') + 1);
+		value = buffer.substr(buffer.find('=') + 2);
 		this->_config.erase(name);
 		this->_config[name] = value;
 	}

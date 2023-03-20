@@ -30,8 +30,8 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["kill"] = KILL;
 	this->_commands["PING"] = PING;
 	this->_commands["PONG"] = PONG;
-	// this->_commands["REHASH"] = REHASH;
-	// this->_commands["DIE"] = DIE;
+	this->_commands["rehash"] = REHASH;
+	this->_commands["die"] = DIE;
 }
 
 Client::~Client() {

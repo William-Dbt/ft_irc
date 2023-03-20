@@ -18,9 +18,10 @@ Server::Server(const int &port, const std::string &password) : _fd(-1),
 Server::~Server() {
 	std::map<int, Client*>::iterator	it;
 
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		(*it).second->sendTo("QUIT :Server disconnected");
 		delete (*it).second;
-
+	}
 	if (this->_fd != -1)
 		close(this->_fd);
 }

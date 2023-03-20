@@ -45,8 +45,8 @@ void VERSION(Command* command);
 void KILL(Command* command);
 void PING(Command* command);
 void PONG(Command* command);
-// void REHASH(Command* command);
-// void DIE(Command* command);
+void REHASH(Command* command);
+void DIE(Command* command);
 
 # include "Client.hpp"
 # include "Server.hpp"
