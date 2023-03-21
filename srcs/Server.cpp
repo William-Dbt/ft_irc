@@ -84,6 +84,7 @@ void	Server::acceptClient() {
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
+	printLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
 }
 
 void	Server::run() {
@@ -131,6 +132,9 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	while (pos != entryBuffer.size()) {
 		lastPos = entryBuffer.find("\r\n", pos) + 2;
+		if (lastPos - 2 == std::string::npos)
+			lastPos = entryBuffer.find("\n", pos) + 1;
+
 		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
 		pos = lastPos;
 		if (commandBuffer.find("CAP LS") != std::string::npos)
