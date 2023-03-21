@@ -45,6 +45,7 @@ class	Server {
 		int									_port;
 		std::string							_password;
 		std::vector<pollfd>					_pfds;
+		int									_nbClients;
 		std::map<int, Client*>				_clients;
 		std::map<std::string, Channel*>		_channels;
 		Config								_config;

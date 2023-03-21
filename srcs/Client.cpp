@@ -165,6 +165,9 @@ std::string	Client::getNickname() {
 	if (this->status == COMMING)
 		return "*";
 
+	if (this->_nickname.empty())
+		return "Unknown";
+
 	return this->_nickname;
 }
 

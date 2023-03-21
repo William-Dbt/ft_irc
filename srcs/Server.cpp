@@ -12,8 +12,9 @@
 #include "Server.hpp"
 
 Server::Server(const int &port, const std::string &password) : _fd(-1),
-																_port(port),
-																_password(password) {}
+															   _port(port),
+															   _password(password),
+															   _nbClients(0) {}
 
 Server::~Server() {
 	std::map<int, Client*>::iterator	it;
@@ -85,6 +86,12 @@ void	Server::acceptClient() {
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
 	printLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
+	this->_nbClients++;
+	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str())) {
+		printLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
+		this->_clients[fd]->setQuitMessage("Server is full.");
+		this->_clients[fd]->status = DISCONNECTED;
+	}
 }
 
 void	Server::run() {
@@ -92,7 +99,7 @@ void	Server::run() {
 
 	std::vector<pollfd>::iterator	it;
 
-	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("timeout").c_str()) * 1000) == -1)
+	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("ping").c_str()) * 1000) == -1)
 		return ;
 
 	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
@@ -184,6 +191,7 @@ void	Server::deleteClients() {
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);
+		this->_nbClients--;
 	}
 }
 

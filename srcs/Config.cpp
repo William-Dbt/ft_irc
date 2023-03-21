@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include "utils.hpp"
 #include "Config.hpp"
 
 Config::Config() {
@@ -81,6 +83,19 @@ void	Config::setFileConfig() {
 	if (this->_config.size() < TOTALCONFIGS)
 		error("Error: not enough config entries are given.");
 
+	name = VAR_MAXUSERS;
+	do {
+		if (atoi(this->_config[name].c_str()) < 0) {
+			this->_config[name] = intToString(abs(atoi(this->_config[name].c_str())));
+			std::cerr << "Config error: " << name << " seems to be negative, absolute value is taken." << std::endl;
+		}
+		if (name == VAR_MAXUSERS)
+			name = VAR_PINGDELAY;
+		else if (name == VAR_PINGDELAY)
+			name = VAR_TIMEOUT;
+		else
+			name = "done";
+	} while (name != "done");
 	checkMinimumConfig();
 }
 

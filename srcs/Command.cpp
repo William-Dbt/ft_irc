@@ -24,11 +24,6 @@ Command::Command(Client* client, std::string line) :  _server(client->getServer(
 		else
 			break ;
 	}
-
-	std::vector<std::string>::iterator	it;
-
-	for (it = this->_commandValues.begin(); it != this->_commandValues.end(); it++)
-		std::cout << (*it) << std::endl;
 }
 
 Command::~Command() {}
