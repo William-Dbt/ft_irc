@@ -47,20 +47,13 @@ void Client::connectToClient(Server &server)
 	this->sendReply(RPL_MYINFO(server.getConfig().get("server_name"), server.getConfig().get("version"), server.getConfig().get("user_mods"), server.getConfig().get("channel_mods")));
 
 	Command command(this, "motd");
-
 	MOTD(&command);
 }
 
 void	Client::send(std::string message) {
 	message.append("\r\n");
 	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
-
-	if (DEBUG)
-		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
-			<< KBOLD << "-->   " << KGRAY << "{"<< getFd() << "}" << KRESET 
-			<< KBOLD << "[" << KRESET
-			<< KCYN << message << KRESET
-			<< std::endl;
+	printLog(this->_fd, message);
 }
 
 void	Client::sendTo(std::string message) {
