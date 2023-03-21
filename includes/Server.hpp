@@ -15,23 +15,6 @@
 # include "Channel.hpp"
 # include "utils.hpp"
 
-# define DEBUG 1
-
-# define KRESET		"\x1B[0m"
-# define KBOLD		"\x1b[1m"
-# define KGRAY		"\x1B[90m"
-# define KBLK		"\x1B[30m"
-# define KRED		"\x1B[31m"
-# define KGRN		"\x1B[32m"
-# define KYEL		"\x1B[33m"
-# define KBLU		"\x1B[34m"
-# define KMAG		"\x1B[35m"
-# define KCYN		"\x1B[36m"
-# define KWHT		"\x1B[37m"
-# define BROADCAST	"BROADCAST: "
-
-# define TIMEOUT_LISTENING	500
-
 class	Server {
 	public:
 		Server(const int &port, const std::string &password);

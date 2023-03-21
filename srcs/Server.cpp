@@ -18,10 +18,9 @@ Server::Server(const int &port, const std::string &password) : _fd(-1),
 Server::~Server() {
 	std::map<int, Client*>::iterator	it;
 
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
-		(*it).second->sendTo("QUIT :Server disconnected");
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete (*it).second;
-	}
+
 	if (this->_fd != -1)
 		close(this->_fd);
 }
@@ -92,7 +91,7 @@ void	Server::run() {
 
 	std::vector<pollfd>::iterator	it;
 
-	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("timeout").c_str())) == -1)
+	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("timeout").c_str()) * 1000) == -1)
 		return ;
 
 	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
@@ -119,14 +118,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
-
-	if (DEBUG)
-		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
-			<< KBOLD << "   <--" << KGRAY << "{"<< (*it).fd << "}" << KRESET
-			<< KBOLD << "[" << KRESET
-			<< KMAG << readBuffer << KRESET
-			<< std::endl;
-
+	printLog((*it).fd, readBuffer, true);
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
 		return ;
@@ -141,7 +133,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		lastPos = entryBuffer.find("\r\n", pos) + 2;
 		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
 		pos = lastPos;
-		if (commandBuffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
+		if (commandBuffer.find("CAP LS") != std::string::npos)
 			continue ;
 
 		Command	command(this->_clients[(*it).fd], commandBuffer);
@@ -152,7 +144,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 			user->status = DISCONNECTED;
 			return ;
 		}
-		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
+		printLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
 		user->status = CONNECTED;
 		user->connectToClient(*this);
 	}
@@ -184,7 +176,7 @@ void	Server::deleteClients() {
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
-		std::cout << KRED << BROADCAST << "Client " << KWHT << (*deleteIt)->getNickname() << "(" << (*deleteIt)->getFd() << ")" << KRED << " has been disconnected." << KRESET << std::endl;
+		printLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);
