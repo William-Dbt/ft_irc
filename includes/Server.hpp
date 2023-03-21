@@ -48,14 +48,16 @@ class	Server {
 		void	sendPings();
 
 		void	addChannel(Channel* channel);
+		void 	deleteChannel(std::string name);
 
-		Channel*				getChannel(std::string name);
-		int						getSocketFd() const;
-		int						getPort() const;
-		std::string&			getPassword();
-		Config&					getConfig();
-		Client*					getClient(std::string nickname);
-		std::map<int, Client*>&	getClients();
+		Channel*							getChannel(std::string name);
+		int									getSocketFd() const;
+		int									getPort() const;
+		std::string&						getPassword();
+		Config&								getConfig();
+		Client*								getClient(std::string nickname);
+		std::map<int, Client*>&				getClients();
+		std::vector<Channel *>				getChannels();
 
 	private:
 		int									_fd;

@@ -209,9 +209,12 @@ void	Server::sendPings() {
 	// TMP
 	std::map<std::string, Channel*>::iterator	chanIt;
 	std::map<int, Client*>::iterator		clientIt;
+
+	std::cout << KGRN << "Channels:" << (this->_channels.begin() == this->_channels.end()) << KRESET << std::endl;
 	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
 		std::cout << KGRN << "Channel " << KBOLD << (*chanIt).first << KRESET << std::endl;
 		std::cout << KGRN << "key: " << KBOLD <<  (*chanIt).second->getKey() << KRESET << std::endl;
+		std::cout << KGRN << "topic: " << KBOLD <<  (*chanIt).second->getTopic() << KRESET << std::endl;
 
 		std::map<int, Client*>					clientInChannel = (*chanIt).second->getClients();
 		std::map<int, Client*>::iterator		clientInChannelIt;
@@ -230,6 +233,15 @@ void	Server::addChannel(Channel *channel)
 	this->_channels[channel->getName()] = channel;
 }
 
+void	Server::deleteChannel(std::string name)
+{
+	std::map<std::string, Channel*>::iterator	it;
+
+	it = this->_channels.find(name);
+	if (it == this->_channels.end())
+		return ;
+	this->_channels.erase(it);
+}
 
 Channel*	Server::getChannel(std::string name) {
 	std::map<std::string, Channel*>::iterator	it;
@@ -269,4 +281,14 @@ Client*	Server::getClient(std::string nickname) {
 
 std::map<int, Client*>&	Server::getClients() {
 	return this->_clients;
+}
+
+std::vector<Channel *> Server::getChannels()
+{
+	std::map<std::string, Channel*>::iterator	chanIt;
+	std::vector<Channel *>						channels;
+	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
+		channels.push_back((*chanIt).second);
+	}
+	return channels;
 }

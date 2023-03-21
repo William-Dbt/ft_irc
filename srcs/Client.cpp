@@ -21,7 +21,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["QUIT"] = QUIT;
 	this->_commands["JOIN"] = JOIN;
 	// this->_commands["PART"] = PART;
-	// this->_commands["TOPIC"] = TOPIC;
+	this->_commands["TOPIC"] = TOPIC;
 	// this->_commands["INVITE"] = INVITE;
 	// this->_commands["KICK"] = KICK;
 	// this->_commands["PRIVMSG"] = PRIVMSG;
@@ -116,6 +116,20 @@ void	Client::addChannel(Channel* channel)
 {
 	_channels[channel->getName()] = channel;
 }
+
+void	Client::leaveChannel(Channel* channel)
+{
+	_channels.erase(channel->getName());
+}
+
+void	Client::leaveAllChannels(void)
+{
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	{
+		it->second->removeClient(this);
+	}
+}
+
 
 void	Client::addMode(char mode) {
 	if (this->_modes.find(mode) != std::string::npos)

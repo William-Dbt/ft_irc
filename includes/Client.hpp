@@ -38,6 +38,8 @@ class	Client {
 		void		removeMode(char mode);
 
 		void	addChannel(Channel* channel);
+		void	leaveChannel(Channel* channel);
+		void	leaveAllChannels(void);
 
 		void	setLastPing(time_t time);
 		void	setNickname(std::string nickname);

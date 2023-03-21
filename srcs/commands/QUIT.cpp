@@ -7,5 +7,6 @@ void	QUIT(Command* command) {
 	if (!buffer.empty())
 		command->getClient()->setQuitMessage(buffer);
 
+	command->getClient()->leaveAllChannels();
 	command->getClient()->status = DISCONNECTED;
 }
