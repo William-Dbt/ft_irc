@@ -18,8 +18,9 @@ class	Command {
 
 		Server*						getServer();
 		Client*						getClient();
-		std::string&				getLine();
-		std::vector<std::string>&	getValues();
+		std::string					getLine();
+		std::string					getEndParam(); // Generally a comment
+		std::vector<std::string>	getValues();
 
 	private:
 		Server*						_server;
