@@ -4,7 +4,7 @@
 void	PONG(Command* command) {
 	Client*	client = command->getClient();
 
-	if (command->getValues().size() < 2) {
+	if (command->getParameters().size() < 2) {
 		client->sendReply(ERR_NOORIGIN());
 		return ;
 	}

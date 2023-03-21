@@ -78,6 +78,11 @@ Commands received from client to manage:
 		ERR_NOSUCHNICK
 		RPL_AWAY
 
+* NOTICE
+	Parameters: <msgtarget> <text>
+	Numeric Replies:
+		None
+
 -> SERVER QUERIES AND Commands
 * MOTD
 	Parameters: [ <target> ]

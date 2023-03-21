@@ -21,13 +21,13 @@ void	MODE(Command* command) {
 	std::string::iterator	it;
 	Client*					client = command->getClient();
 
-	if (command->getValues().size() == 1)
-		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));
+	if (command->getParameters().size() == 1)
+		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
-	if (client->getNickname() != command->getValues()[1])
+	if (client->getNickname() != command->getParameters()[1])
 		return client->sendReply(ERR_USERSDONTMATCH());
 
-	if (command->getValues().size() == 2) {
+	if (command->getParameters().size() == 2) {
 		if (!client->getUserModes().size())
 			modes.clear();
 		else {
@@ -37,10 +37,10 @@ void	MODE(Command* command) {
 		return client->sendReply(RPL_UMODEIS(modes));
 	}
 
-	if (!isValidUserModeParam(command->getValues()[2]))
+	if (!isValidUserModeParam(command->getParameters()[2]))
 		return client->sendReply(ERR_UMODEUNKNOWNFLAG());
 
-	modes = command->getValues()[2];
+	modes = command->getParameters()[2];
 	it = modes.begin();
 	if ((*it) == '-' || (*it) == '+') {
 		if ((*it) == '-')

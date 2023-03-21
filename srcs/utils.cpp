@@ -63,7 +63,24 @@ bool	isDigit(char c) {
 	return false;
 }
 
-void	printLog(std::string log) {
+void	printConfigLog(std::string log) {
+	std::string buffer = KBOLD;
+
+	buffer += KGRAY + getCurrentDateTime(false, false);
+	buffer += ":";
+	buffer += KWHT;
+	buffer += "CONFIG";
+	buffer += KGRAY;
+	buffer += "{*}"; 
+	buffer += KWHT;
+	buffer += "[";
+	buffer += KRESET;
+	buffer += KBLU;
+	buffer += log + KRESET;
+	std::cout << buffer << std::endl;
+}
+
+void	printServerLog(std::string log) {
 	std::string buffer = KBOLD;
 
 	buffer += KGRAY + getCurrentDateTime(false, false);
@@ -80,7 +97,7 @@ void	printLog(std::string log) {
 	std::cout << buffer << std::endl;
 }
 
-void	printLog(int fd, std::string log, bool received) {
+void	printServerLog(int fd, std::string log, bool received) {
 	std::string	buffer = KBOLD;
 
 	buffer += KGRAY + getCurrentDateTime(false, false);

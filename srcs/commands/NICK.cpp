@@ -1,18 +1,5 @@
 #include "Command.hpp"
 
-/*
- # ERR_NONICKNAMEGIVEN: No nickname given
- # ERR_RESTRICTED: Mode +r is set
- # ERR_ERRONEUSNICKNAME: Forbidden characters in nickname
- # ERR_NICKNAMEINUSE: Nickname is already used by another user
- #
- # Check to do this part (maybe unnecessary)
- # ERR_UNAVAILRESOURCE: Refers to the nick delay mechanism
- # ERR_NICKCOLLISION: Refers to a nickname already inuse by another server
-*/
-
-// nickname   =  ( letter / special ) *8( letter / digit / special / "-" )
-
 static bool	isNicknameProperlyFormatted(std::string nickname) {
 	size_t	i = 0;
 
@@ -48,17 +35,21 @@ void	NICK(Command* command) {
 	std::string	nickname;
 	Client*		client = command->getClient();
 
-	if (client->status == COMMING) { // In case of no password given
-		client->status = BADPASSWORD;
-		return ;
+	if (client->status == COMMING) { // The user hasn't give a password
+		if (!command->getServer()->getPassword().empty()) {
+			client->status = BADPASSWORD;
+			return ;
+		}
+		else
+			client->status = REGISTER;
 	}
-	if (command->getValues().size() < 2 || command->getValues()[1].empty())
+	if (command->getParameters().size() < 2 || command->getParameters()[1].empty())
 		return client->sendReply(ERR_NONICKNAMEGIVEN());
 
 	if (client->isModeInUse('r'))
 		return client->sendReply(ERR_RESTRICTED());
 
-	nickname = command->getValues()[1];
+	nickname = command->getParameters()[1];
 	if (!isNicknameProperlyFormatted(nickname))
 		return client->sendReply(ERR_ERRONEUSNICKNAME(nickname));
 

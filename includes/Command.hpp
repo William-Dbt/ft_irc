@@ -20,13 +20,13 @@ class	Command {
 		Client*						getClient();
 		std::string					getLine();
 		std::string					getEndParam(); // Generally a comment
-		std::vector<std::string>	getValues();
+		std::vector<std::string>	getParameters();
 
 	private:
 		Server*						_server;
 		Client*						_client;
-		std::string					_commandLine;
-		std::vector<std::string>	_commandValues;
+		std::string					_line;
+		std::vector<std::string>	_parameters;
 };
 
 void PASS(Command* command);

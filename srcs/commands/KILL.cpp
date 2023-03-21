@@ -7,12 +7,12 @@ void	KILL(Command* command) {
 	if (!client->isModeInUse('o'))
 		return client->sendReply(ERR_NOPRIVILEGES());
 
-	if (command->getValues().size() < 3 || command->getValues()[2] == ":")
-		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));
+	if (command->getParameters().size() < 3 || command->getParameters()[2] == ":")
+		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
-	Client*	victim = command->getServer()->getClient(command->getValues()[1]);
+	Client*	victim = command->getServer()->getClient(command->getParameters()[1]);
 	if (!victim)
-		return client->sendReply(ERR_NOSUCHNICK(command->getValues()[1]));
+		return client->sendReply(ERR_NOSUCHNICK(command->getParameters()[1]));
 
 	size_t	posStartComment = command->getLine().find(':') + 1;
 

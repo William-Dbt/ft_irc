@@ -4,12 +4,12 @@
 void	PING(Command* command) {
 	Client*	client = command->getClient();
 
-	if (command->getValues().size() < 2) {
+	if (command->getParameters().size() < 2) {
 		client->sendReply(ERR_NOORIGIN());
 		return ;
 	}
 	
-	client->send(":" + client->getPrefix() + " PONG :" + command->getValues()[1]);
+	client->send(":" + client->getPrefix() + " PONG :" + command->getParameters()[1]);
 }
 
 /* 

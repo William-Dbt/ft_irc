@@ -9,7 +9,7 @@ void	signalsHandler(int signum) {
 	(void)signum;
 	g_bServerRunning = false;
 	std::cout << "\b\b\b";
-	printLog("Shutdown server.");
+	printServerLog("Shutdown server.");
 }
 
 int	main(int argc, char *argv[]) {
@@ -17,6 +17,7 @@ int	main(int argc, char *argv[]) {
 		std::cout << "Usage: ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
+	printServerLog("Server is starting...");
 	
 	int		exitStatus;
 	Server	server(atoi(argv[1]), argv[2]);

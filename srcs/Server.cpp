@@ -27,7 +27,7 @@ Server::~Server() {
 }
 
 int	Server::initError(const int &exit_code, const std::string &error) {
-	std::cerr << "Error: " << error << std::endl;
+	printServerLog(error);
 	return exit_code;
 }
 
@@ -39,27 +39,27 @@ int	Server::init() {
 
 	socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (socketFd == -1)
-		return initError(1, "can't open new socket.");
+		return initError(1, "Can't open new socket.");
 
 	#ifdef __linux__
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
-			return initError(2, "can't set option(s) to server socket.");
+			return initError(2, "Can't set option(s) to server socket.");
 	#else
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
-			return initError(2, "can't set option(s) to server socket.");
+			return initError(2, "Can't set option(s) to server socket.");
 	#endif
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) == -1)
-		return (initError(3, "can't set the socket to O_NONBLOCK."));
+		return (initError(3, "Can't set the socket to O_NONBLOCK."));
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(this->_port);
 	if (bind(socketFd, (struct sockaddr*)&address, sizeof(address)) == -1)
-		return (initError(4, "can't assign address for the socket (using bind function)."));
+		return (initError(4, "Can't assign address for the socket (using bind function)."));
 
 	if (listen(socketFd, address.sin_port) == -1)
-		return (initError(5, "can't listen to the given port."));
+		return (initError(5, "Can't listen to the given port."));
 
 	this->_fd = socketFd;
 	this->_pfds.push_back(pollfd());
@@ -79,16 +79,16 @@ void	Server::acceptClient() {
 		return ;
 
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
-		initError(1, "can't set a client's fd to O_NONBLOCK.");
+		initError(1, "Can't set a client's fd to O_NONBLOCK.");
 
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
-	printLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
+	printServerLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
 	this->_nbClients++;
 	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str())) {
-		printLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
+		printServerLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
 		this->_clients[fd]->setQuitMessage("Server is full.");
 		this->_clients[fd]->status = DISCONNECTED;
 	}
@@ -126,7 +126,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
-	printLog((*it).fd, readBuffer, true);
+	printServerLog((*it).fd, readBuffer, true);
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
 		return ;
@@ -155,7 +155,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 			user->status = DISCONNECTED;
 			return ;
 		}
-		printLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
+		printServerLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
 		user->status = CONNECTED;
 		user->connectToClient(*this);
 	}
@@ -187,11 +187,13 @@ void	Server::deleteClients() {
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
-		printLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
+		printServerLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);
 		this->_nbClients--;
+		if (this->_nbClients < 0)
+			this->_nbClients = 0; // Just to be sure
 	}
 }
 

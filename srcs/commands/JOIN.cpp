@@ -36,9 +36,9 @@ void JOIN(Command *command)
 	Client *client = command->getClient();
 	Server *server = client->getServer();
 
-	if (command->getValues().size() < 2)
-		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));
-	if (command->getValues()[1] == "0")
+	if (command->getParameters().size() < 2)
+		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
+	if (command->getParameters()[1] == "0")
 	{
 		// for (std::vector<Channel*>::iterator it = command->getClient()->getChannels().begin(); it != command->getClient()->getChannels().end(); it++) {
 		// 	(*it)->removeClient(command->getClient());
@@ -48,10 +48,10 @@ void JOIN(Command *command)
 		return;
 	}
 
-	std::vector<std::string> channelsNames = splitCommand(command->getValues()[1], ',');
+	std::vector<std::string> channelsNames = splitCommand(command->getParameters()[1], ',');
 	std::vector<std::string> channelsKeys;
-	if (command->getValues().size() > 2)
-		channelsKeys = splitCommand(command->getValues()[2], ',');
+	if (command->getParameters().size() > 2)
+		channelsKeys = splitCommand(command->getParameters()[2], ',');
 
 	for (std::vector<std::string>::iterator it = channelsNames.begin(); it != channelsNames.end(); it++)
 	{
