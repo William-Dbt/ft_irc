@@ -41,7 +41,6 @@ int Server::initError(const int &exit_code, const std::string &error)
  * 4. Assign address for the socket
  * 5. Listen to the given port
 */
-
 int Server::init()
 {
 	int socketFd = -1;
@@ -56,11 +55,11 @@ int Server::init()
 	if (socketFd == -1)
 		return initError(1, "Can't open new socket.");
 
-// set socket options
-// -> SOL_SOCKET: socket level
-// [ allow several clients on the same time ]
-// -> SO_REUSEADDR: allow reuse of local addresses 
-// -> SO_REUSEPORT: allow reuse of local ports
+	// set socket options
+	// -> SOL_SOCKET: socket level
+	// [ allow several clients on the same time ]
+	// -> SO_REUSEADDR: allow reuse of local addresses 
+	// -> SO_REUSEPORT: allow reuse of local ports
 #ifdef __linux__
 	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
 		return initError(2, "Can't set option(s) to server socket.");
@@ -94,6 +93,17 @@ int Server::init()
 	return 0;
 }
 
+/*
+ * acceptClient() function:
+ * 1. Accept a new client
+ * 2. Set the client's fd to non-blocking mode
+ * 3. Add the client's fd to the pollfd vector
+ * 4. Add the client to the clients map
+ * 5. Print a log message
+ * 6. Increment the number of clients
+ * 7. Check if the number of clients is greater than the maximum number of clients
+ * 8. If so, send a 433 ERR_NICKNAMEINUSE message to the client
+*/
 void Server::acceptClient()
 {
 	int fd;
@@ -101,19 +111,28 @@ void Server::acceptClient()
 	struct sockaddr_in address;
 
 	cliLenght = sizeof(address);
+
+	// accept a new client
 	fd = accept(this->_fd, (struct sockaddr *)&address, &cliLenght);
 	if (fd == -1)
 		return;
 
+	// set the client's fd to non-blocking mode -> to allo the server to listen to other clients
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		initError(1, "Can't set a client's fd to O_NONBLOCK.");
 
+	// same as the server socket -> in server.init()
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
+
+	// add the client to the clients map
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
+
 	printServerLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
 	this->_nbClients++;
+
+	// check if the number of clients is greater than the maximum number of clients
 	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str()))
 	{
 		printServerLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
@@ -122,15 +141,28 @@ void Server::acceptClient()
 	}
 }
 
+/* poll() function:
+*  poll prototype: int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+*  	-> fds: an array of pollfd structures
+*  	-> nfds: the number of file descriptors in the array
+*  	-> timeout: the number of milliseconds to wait for an event
+*  1. Wait for an event on a file descriptor
+*  2. If an event occurs, return the number of file descriptors with events
+*  3. If no event occurs, return 0
+*  4. If an error occurs, return -1
+*  5. If timeout is reached, return 0
+*/
 void Server::run()
 {
+	// lastPing is used to send pings to the clients every ping_delay seconds
 	static int lastPing = std::time(NULL);
-
 	std::vector<pollfd>::iterator it;
 
+	// the goal of this function is to check if there is an event on the server socket or on the client sockets
 	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("ping").c_str()) * 1000) == -1)
 		return;
 
+	// if the time elapsed since the last ping is greater than the ping_delay, send pings to the clients
 	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str()))
 	{
 		sendPings();
@@ -152,12 +184,20 @@ void Server::run()
 	deleteClients();
 }
 
+/*
+ * receiveEntries() function: called with iters on the pollfd vector
+ * 1. Receive the client's entries
+ * 2. If the client has disconnected, set the client's status to DISCONNECTED
+ * 3. If the client has sent an entry, parse it
+*/
 void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 {
 	char readBuffer[4096];
 	int bytes;
+	// get the client from the clients map using the client's fd
 	Client *user = this->_clients[(*it).fd];
 
+	// receive the client's entries
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
 	printServerLog((*it).fd, readBuffer, true);
