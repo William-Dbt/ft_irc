@@ -54,6 +54,8 @@
 # define RPL_TOPIC(channel, topic) "332" + channel + " :" + topic
 # define RPL_UMODEIS(usermode) "221" + usermode
 # define RPL_YOUREOPER() "381:You are now an IRC operator"
+# define RPL_NAMREPLY(channel, users) "353= " + channel + " :" + users
+# define RPL_ENDOFNAMES(channel) "366" + channel + " :End of /NAMES list"
 
 
 #endif

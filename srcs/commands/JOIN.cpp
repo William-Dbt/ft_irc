@@ -96,5 +96,7 @@ void JOIN(Command *command)
 			else
 				return client->sendReply(ERR_BADCHANNELKEY(*it));
 		}
+		client->sendReply(RPL_NAMREPLY(*it, channel->getClientsNicknames()));
+		client->sendReply(RPL_ENDOFNAMES(*it));
 	}
 }

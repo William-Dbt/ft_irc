@@ -24,6 +24,7 @@ public:
 	bool 	removeClient(Client* client);
 
 	std::map<int, Client*>&	getClients();
+	std::string				getClientsNicknames();
 	std::string&			getName();
 	std::string&			getTopic();
 	std::string&			getKey();

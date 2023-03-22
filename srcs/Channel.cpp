@@ -13,6 +13,15 @@ void Channel::addClient(Client *client) { this->_clients[client->getFd()] = clie
 bool Channel::removeClient(Client *client) { return this->_clients.erase(client->getFd()); }
 
 std::map<int, Client *> &Channel::getClients() { return this->_clients; }
+std::string Channel::getClientsNicknames()
+{
+	std::string nicknames = "";
+	std::map<int, Client *>::iterator it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		nicknames += (*it).second->getNickname() + " ";
+	return nicknames;
+}
 std::string &Channel::getName() { return this->_name; }
 std::string &Channel::getTopic() { return this->_topic; }
 std::string &Channel::getKey() { return this->_key; }
