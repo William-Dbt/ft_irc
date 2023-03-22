@@ -122,6 +122,12 @@ Commands received from client to manage:
 	Parameters: None
 	Numeric Replies:
 		ERR_NOPRIVILEGES
+
+-> Optinnal Features
+* WALLOPS
+	Parameters: <Text to be sent>
+	Numeric Replies:
+		ERR_NEEDMOREPARAMS
 ----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
