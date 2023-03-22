@@ -32,8 +32,5 @@ bool	isLetter(char c);
 bool	isDigit(char c);
 
 void	printLog(std::string log, int prefix, int fd = -1);
-// void	printConfigLog(std::string log);
-// void	printServerLog(std::string log);
-// void	printServerLog(int fd, std::string log, bool received = false);
 
 #endif
