@@ -63,61 +63,61 @@ bool	isDigit(char c) {
 	return false;
 }
 
-void	printConfigLog(std::string log) {
-	std::string buffer = KBOLD;
+static std::string	getLogInfo(int prefix, int infoOfColor) {
+	switch (prefix) {
+		case RECEIVED: {
+			if (infoOfColor)
+				return KMAG;
 
-	buffer += KGRAY + getCurrentDateTime(false, false);
-	buffer += ":";
-	buffer += KWHT;
-	buffer += "CONFIG";
-	buffer += KGRAY;
-	buffer += "{*}"; 
-	buffer += KWHT;
-	buffer += "[";
-	buffer += KRESET;
-	buffer += KBLU;
-	buffer += log + KRESET;
-	std::cout << buffer << std::endl;
+			return ("   <--");
+		}
+		case SENDING: {
+			if (infoOfColor)
+				return KCYN;
+
+			return ("-->   ");
+		}
+		case SERVER: {
+			if (infoOfColor)
+				return KYEL;
+
+			return ("SERVER");
+		}
+		case CONFIG: {
+			if (infoOfColor)
+				return KBLU;
+
+			return ("CONFIG");
+		}
+		default: {
+			if (infoOfColor)
+				return KRESET;
+
+			return ("      ");
+		}
+	};
 }
 
-void	printServerLog(std::string log) {
-	std::string buffer = KBOLD;
-
-	buffer += KGRAY + getCurrentDateTime(false, false);
-	buffer += ":";
-	buffer += KWHT;
-	buffer += "SERVER";
-	buffer += KGRAY;
-	buffer += "{*}";
-	buffer += KWHT;
-	buffer += "[";
-	buffer += KRESET;
-	buffer += KYEL;
-	buffer += log + KRESET;
-	std::cout << buffer << std::endl;
-}
-
-void	printServerLog(int fd, std::string log, bool received) {
+void	printLog(std::string log, int prefix, int fd) {
 	std::string	buffer = KBOLD;
 
-	buffer += KGRAY + getCurrentDateTime(false, false);
-	buffer += ":";
-	buffer += KWHT;
-	if (received)
-		buffer += "   <--";
+	buffer.append(KGRAY + getCurrentDateTime(false, false));
+	buffer.append(":");
+	buffer.append(KWHT);
+	buffer.append(getLogInfo(prefix, false));
+	buffer.append(KGRAY);
+	if (fd != -1)
+		buffer.append("{" + intToString(fd) + "}");
 	else
-		buffer += "-->   ";
+		buffer.append("{*}");
 
-	buffer += KGRAY;
-	buffer += "{" + intToString(fd) + "}";
-	buffer += KWHT;
-	buffer += "[";
-	buffer += KRESET;
-	if (received)
-		buffer += KMAG;
+	buffer.append(KWHT);
+	buffer.append("[");
+	buffer.append(KRESET);
+	buffer.append(getLogInfo(prefix, true));
+	buffer.append(log + KRESET);
+	if (prefix == SERVER || prefix == CONFIG)
+		std::cout << buffer << std::endl;
 	else
-		buffer += KCYN;
-
-	buffer += log + KRESET;
-	std::cout << buffer;
+		std::cout << buffer;
 }

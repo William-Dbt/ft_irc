@@ -27,7 +27,7 @@ Server::~Server() {
 }
 
 int	Server::initError(const int &exit_code, const std::string &error) {
-	printServerLog(error);
+	printLog(error, SERVER);
 	return exit_code;
 }
 
@@ -85,10 +85,10 @@ void	Server::acceptClient() {
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
-	printServerLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
+	printLog("New connection has been registered (fd: " + intToString(fd) + ").", SERVER, fd);
 	this->_nbClients++;
 	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str())) {
-		printServerLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
+		printLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)", SERVER);
 		this->_clients[fd]->setQuitMessage("Server is full.");
 		this->_clients[fd]->status = DISCONNECTED;
 	}
@@ -126,7 +126,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
-	printServerLog((*it).fd, readBuffer, true);
+	printLog(readBuffer, RECEIVED, (*it).fd);
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
 		return ;
@@ -155,7 +155,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 			user->status = DISCONNECTED;
 			return ;
 		}
-		printServerLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
+		printLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.", SERVER);
 		user->status = CONNECTED;
 		user->connectToClient(*this);
 	}
@@ -187,7 +187,7 @@ void	Server::deleteClients() {
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
-		printServerLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
+		printLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")", SERVER);
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);

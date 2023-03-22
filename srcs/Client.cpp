@@ -55,7 +55,7 @@ void Client::connectToClient(Server &server)
 void	Client::send(std::string message) {
 	message.append("\r\n");
 	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
-	printServerLog(this->_fd, message);
+	printLog(message, SENDING, this->_fd);
 }
 
 void	Client::sendTo(std::string message) {
