@@ -30,17 +30,19 @@ class	Server {
 
 		void	sendPings();
 
-		void	addChannel(Channel* channel);
-		void 	deleteChannel(std::string name);
+		void	addChannel(std::string name);
+		void	deleteChannel(std::string name);
+		void	kickClientFromChannel(Client* client, Channel* channel);
+		void	kickClientFromAllChannels(Client* client);
 
-		Channel*							getChannel(std::string name);
-		int									getSocketFd() const;
-		int									getPort() const;
-		std::string&						getPassword();
-		Config&								getConfig();
-		Client*								getClient(std::string nickname);
-		std::map<int, Client*>&				getClients();
-		std::vector<Channel *>				getChannels();
+		int						getSocketFd() const;
+		int						getPort() const;
+		std::string&			getPassword();
+		Config&					getConfig();
+		Client*					getClient(std::string nickname);
+		std::map<int, Client*>&	getClients();
+		Channel*				getChannel(std::string name);
+		std::vector<Channel >	getChannels();
 
 	private:
 		int									_fd;
@@ -49,10 +51,8 @@ class	Server {
 		std::vector<pollfd>					_pfds;
 		int									_nbClients;
 		std::map<int, Client*>				_clients;
-		std::map<std::string, Channel*>		_channels;
+		std::map<std::string, Channel>		_channels;
 		Config								_config;
 };
-
-void	reply(unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
 
 #endif

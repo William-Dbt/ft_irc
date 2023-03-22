@@ -36,14 +36,13 @@ void leaveAllChannels(Command *command)
 	Client *client = command->getClient();
 	Server *server = client->getServer();
 
-	std::vector<Channel *> channels = server->getChannels();
-	for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+	std::vector<Channel > channels = server->getChannels();
+	for (std::vector<Channel >::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
-		// (*it)->broadcast(client, "PART " + (*it)->getName() + (command->getValues().size() > 2 ? " :" + command->getValues()[2] : ""));
-		(*it)->removeClient(client);
-		if ((*it)->getClients().size() == 0)
-			server->deleteChannel((*it)->getName());
-		std::cout << "Client " << client->getNickname() << " left channel " << (*it)->getName() << std::endl;
+		(*it).removeClient(client);
+		if ((*it).getClients().size() == 0)
+			server->deleteChannel((*it).getName());
+		std::cout << "Client " << client->getNickname() << " left channel " << (*it).getName() << std::endl;
 	}
 	std::cout << "Client " << client->getNickname() << " left all channels" << std::endl;
 }
@@ -53,9 +52,9 @@ void JOIN(Command *command)
 	Client *client = command->getClient();
 	Server *server = client->getServer();
 
-	if (command->getValues().size() < 2)
-		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));
-	if (command->getValues()[1] == "0")
+	if (command->getParameters().size() < 2)
+		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
+	if (command->getParameters()[1] == "0")
 		return leaveAllChannels(command);
 
 	std::vector<std::string> channelsNames = splitCommand(command->getParameters()[1], ',');
@@ -67,12 +66,12 @@ void JOIN(Command *command)
 	{
 		if ((*it)[0] != '#')
 			return client->sendReply(ERR_BADCHANMASK(*it));
+
 		Channel *channel = server->getChannel(*it);
 		if (channel == NULL)
 		{
-			channel = new Channel(*it);
-			server->addChannel(channel);
-			
+			server->addChannel(*it);
+			channel = server->getChannel(*it);
 			if (channelsKeys.size())
 			{
 				if (channelsKeys[0] != "x")

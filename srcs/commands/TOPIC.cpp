@@ -2,27 +2,25 @@
 
 void TOPIC(Command *command)
 {
-	std::cout << "TOPIC function" << std::endl;
-
 	Client *client = command->getClient();
 	Server *server = client->getServer();
 
-	if (command->getValues().size() < 2)
-		return client->sendReply(ERR_NEEDMOREPARAMS(command->getValues()[0]));			// Not enough parameters
+	if (command->getParameters().size() < 2)
+		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
-	Channel *channel = server->getChannel(command->getValues()[1]);
+	Channel *channel = server->getChannel(command->getParameters()[1]);
 	if (channel == NULL)
-		return client->sendReply(ERR_NOSUCHCHANNEL(command->getValues()[1]));			// No such channel
+		return client->sendReply(ERR_NOSUCHCHANNEL(command->getParameters()[1]));
 	if (!channel->isClientInChannel(client))
-		return client->sendReply(ERR_NOTONCHANNEL(command->getValues()[1]));			// You're not on that channel
+		return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[1]));
 
-	if (command->getValues().size() < 3)												// get topic
-		return client->sendReply(RPL_TOPIC(channel->getName(), channel->getTopic()));	// <topic>
-	else																				// set topic
+	if (command->getParameters().size() < 3)
+		return client->sendReply(RPL_TOPIC(channel->getName(), channel->getTopic()));
+	else
 	{
-		std::string topic = command->getValues()[2];
+		std::string topic = command->getParameters()[2];
 		topic.erase(topic.begin());
 		channel->setTopic(topic);
-		return client->sendReply(RPL_TOPIC(channel->getName(), channel->getTopic()));	// <topic>
+		return client->sendReply(RPL_TOPIC(channel->getName(), channel->getTopic()));
 	}
 }

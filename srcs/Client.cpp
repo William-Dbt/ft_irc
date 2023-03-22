@@ -105,25 +105,6 @@ bool	Client::isModeInUse(char mode) {
 	return true;
 }
 
-void	Client::addChannel(Channel* channel)
-{
-	_channels[channel->getName()] = channel;
-}
-
-void	Client::leaveChannel(Channel* channel)
-{
-	_channels.erase(channel->getName());
-}
-
-void	Client::leaveAllChannels(void)
-{
-	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-		it->second->removeClient(this);
-	}
-}
-
-
 void	Client::addMode(char mode) {
 	if (this->_modes.find(mode) != std::string::npos)
 		return ;

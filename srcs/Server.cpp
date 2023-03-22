@@ -187,6 +187,7 @@ void	Server::deleteClients() {
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
+		this->kickClientFromAllChannels((*deleteIt));
 		printServerLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
@@ -213,35 +214,35 @@ void	Server::sendPings() {
 	}
 
 	// TMP
-	std::map<std::string, Channel*>::iterator	chanIt;
-	std::map<int, Client*>::iterator		clientIt;
+	// std::map<std::string, Channel>::iterator	chanIt;
+	// std::map<int, Client*>::iterator		clientIt;
 
-	std::cout << KGRN << "Channels:" << (this->_channels.begin() == this->_channels.end()) << KRESET << std::endl;
-	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
-		std::cout << KGRN << "Channel " << KBOLD << (*chanIt).first << KRESET << std::endl;
-		std::cout << KGRN << "key: " << KBOLD <<  (*chanIt).second->getKey() << KRESET << std::endl;
-		std::cout << KGRN << "topic: " << KBOLD <<  (*chanIt).second->getTopic() << KRESET << std::endl;
+	// for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
+	// 	std::cout << KGRN << "Channel " << KBOLD << (*chanIt).first << KRESET << std::endl;
+	// 	std::cout << KGRN << "key: " << KBOLD <<  (*chanIt).second.getKey() << KRESET << std::endl;
+	// 	std::cout << KGRN << "topic: " << KBOLD <<  (*chanIt).second.getTopic() << KRESET << std::endl;
 
-		std::map<int, Client*>					clientInChannel = (*chanIt).second->getClients();
-		std::map<int, Client*>::iterator		clientInChannelIt;
+	// 	std::map<int, Client*>					clientInChannel = (*chanIt).second.getClients();
+	// 	std::map<int, Client*>::iterator		clientInChannelIt;
 
-		for (clientInChannelIt = clientInChannel.begin(); clientInChannelIt != clientInChannel.end(); clientInChannelIt++) {
-			std::cout << KGRN << "- " << (*clientInChannelIt).second->getNickname() << KRESET << std::endl;
-		}
-		std::cout << std::endl;
-	}
-	for (clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) 
-		std::cout << KYEL << "Client " << (*clientIt).second->getNickname() << KRESET << std::endl;
+	// 	for (clientInChannelIt = clientInChannel.begin(); clientInChannelIt != clientInChannel.end(); clientInChannelIt++) {
+	// 		std::cout << KGRN << "- " << (*clientInChannelIt).second->getNickname() << KRESET << std::endl;
+	// 	}
+	// 	std::cout << std::endl;
+	// }
+	// for (clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) 
+	// 	std::cout << KYEL << "Client " << (*clientIt).second->getNickname() << KRESET << std::endl;
 }
 
-void	Server::addChannel(Channel *channel)
+void	Server::addChannel(std::string name)
 {
-	this->_channels[channel->getName()] = channel;
+	Channel &channel = _channels[name];
+	channel.setName(name);
 }
 
 void	Server::deleteChannel(std::string name)
 {
-	std::map<std::string, Channel*>::iterator	it;
+	std::map<std::string, Channel>::iterator	it;
 
 	it = this->_channels.find(name);
 	if (it == this->_channels.end())
@@ -249,15 +250,27 @@ void	Server::deleteChannel(std::string name)
 	this->_channels.erase(it);
 }
 
-Channel*	Server::getChannel(std::string name) {
-	std::map<std::string, Channel*>::iterator	it;
-
-	it = this->_channels.find(name);
-	if (it == this->_channels.end())
-		return NULL;
-	return (*it).second;
+void	Server::kickClientFromChannel(Client* client, Channel* channel)
+{
+	channel->removeClient(client);
+	if (channel->getClients().size() == 0)
+		this->deleteChannel(channel->getName());
 }
 
+void	Server::kickClientFromAllChannels(Client* client)
+{
+	std::vector<Channel *>				channelsWhereClientIs;
+
+	for (std::map<std::string, Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); it++)
+		if ((*it).second.isClientInChannel(client))
+			channelsWhereClientIs.push_back(&(*it).second);
+
+	while (channelsWhereClientIs.size() > 0)
+	{
+		this->kickClientFromChannel(client, channelsWhereClientIs[0]);
+		channelsWhereClientIs.erase(channelsWhereClientIs.begin());
+	}
+}
 
 int	Server::getSocketFd() const {
 	return this->_fd;
@@ -289,10 +302,19 @@ std::map<int, Client*>&	Server::getClients() {
 	return this->_clients;
 }
 
-std::vector<Channel *> Server::getChannels()
+Channel*	Server::getChannel(std::string name) {
+	std::map<std::string, Channel>::iterator	it;
+
+	it = this->_channels.find(name);
+	if (it == this->_channels.end())
+		return NULL;
+	return &(*it).second;
+}
+
+std::vector<Channel> Server::getChannels()
 {
-	std::map<std::string, Channel*>::iterator	chanIt;
-	std::vector<Channel *>						channels;
+	std::map<std::string, Channel>::iterator	chanIt;
+	std::vector<Channel >						channels;
 	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
 		channels.push_back((*chanIt).second);
 	}
