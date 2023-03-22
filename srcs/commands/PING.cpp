@@ -9,7 +9,7 @@ void	PING(Command* command) {
 		return ;
 	}
 	
-	client->send(":" + client->getPrefix() + " PONG :" + command->getParameters()[1]);
+	client->sendTo(" PONG :" + command->getParameters()[1]);
 }
 
 /* 

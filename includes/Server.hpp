@@ -51,6 +51,4 @@ class	Server {
 		Config								_config;
 };
 
-void	reply(unsigned short code, Client &client, std::string arg1 = "", std::string arg2 = "", std::string arg3 = "", std::string arg4 = "");
-
 #endif

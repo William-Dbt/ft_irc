@@ -42,7 +42,8 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									 PING.cpp \
 									 PONG.cpp \
 									 REHASH.cpp \
-									 DIE.cpp)
+									 DIE.cpp \
+									 WALLOPS.cpp)
 
 
 OBJS		= ${SRCS:.cpp=.o}

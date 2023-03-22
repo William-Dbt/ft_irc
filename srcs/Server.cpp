@@ -206,8 +206,10 @@ void	Server::sendPings() {
 		if ((*it).second->status != CONNECTED)
 			continue ;
 
-		if (std::time(NULL) - (*it).second->getLastPing() >= timeout)
+		if (std::time(NULL) - (*it).second->getLastPing() >= timeout) {
 			(*it).second->status = DISCONNECTED;
+			(*it).second->setQuitMessage("timeout");
+		}
 		else
 			(*it).second->send("PING " + (*it).second->getNickname());
 	}

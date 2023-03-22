@@ -32,6 +32,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["PONG"] = PONG;
 	this->_commands["rehash"] = REHASH;
 	this->_commands["die"] = DIE;
+	this->_commands["wallops"] = WALLOPS;
 }
 
 Client::~Client() {
@@ -41,6 +42,7 @@ Client::~Client() {
 
 void Client::connectToClient(Server &server)
 {
+	this->setLastPing(time(NULL));
 	this->sendReply(RPL_WELCOME(this->getNickname(), this->getUsername(), this->getHost()));
 	this->sendReply(RPL_YOURHOST(server.getConfig().get("server_name"), server.getConfig().get("version")));
 	this->sendReply(RPL_CREATED(getCurrentDateTime()));
