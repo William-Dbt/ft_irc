@@ -85,9 +85,9 @@ std::string	Client::getPrefix() {
 	if (this->status == REGISTER)
 		return "";
 
-	buffer = this->_nickname;
+	buffer = getNickname();
 	buffer.append("!");
-	buffer += this->_username;
+	buffer += getUsername();
 	buffer.append("@");
 	buffer += this->_host;
 	return buffer;
@@ -162,16 +162,16 @@ std::string	Client::getHost() {
 }
 
 std::string	Client::getNickname() {
-	if (this->status == COMMING)
-		return "*";
-
 	if (this->_nickname.empty())
-		return "Unknown";
+		return "*";
 
 	return this->_nickname;
 }
 
 std::string	Client::getUsername() {
+	if (this->_username.empty())
+		return "#";
+
 	return this->_username;
 }
 
