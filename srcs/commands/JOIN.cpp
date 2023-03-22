@@ -58,10 +58,10 @@ void JOIN(Command *command)
 	if (command->getValues()[1] == "0")
 		return leaveAllChannels(command);
 
-	std::vector<std::string> channelsNames = splitCommand(command->getValues()[1], ',');
+	std::vector<std::string> channelsNames = splitCommand(command->getParameters()[1], ',');
 	std::vector<std::string> channelsKeys;
-	if (command->getValues().size() > 2)
-		channelsKeys = splitCommand(command->getValues()[2], ',');
+	if (command->getParameters().size() > 2)
+		channelsKeys = splitCommand(command->getParameters()[2], ',');
 
 	for (std::vector<std::string>::iterator it = channelsNames.begin(); it != channelsNames.end(); it++)
 	{

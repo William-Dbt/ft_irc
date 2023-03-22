@@ -12,22 +12,22 @@
 #include "Server.hpp"
 
 Server::Server(const int &port, const std::string &password) : _fd(-1),
-																_port(port),
-																_password(password) {}
+															   _port(port),
+															   _password(password),
+															   _nbClients(0) {}
 
 Server::~Server() {
 	std::map<int, Client*>::iterator	it;
 
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
-		(*it).second->sendTo("QUIT :Server disconnected");
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete (*it).second;
-	}
+
 	if (this->_fd != -1)
 		close(this->_fd);
 }
 
 int	Server::initError(const int &exit_code, const std::string &error) {
-	std::cerr << "Error: " << error << std::endl;
+	printServerLog(error);
 	return exit_code;
 }
 
@@ -39,27 +39,27 @@ int	Server::init() {
 
 	socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (socketFd == -1)
-		return initError(1, "can't open new socket.");
+		return initError(1, "Can't open new socket.");
 
 	#ifdef __linux__
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
-			return initError(2, "can't set option(s) to server socket.");
+			return initError(2, "Can't set option(s) to server socket.");
 	#else
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
-			return initError(2, "can't set option(s) to server socket.");
+			return initError(2, "Can't set option(s) to server socket.");
 	#endif
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) == -1)
-		return (initError(3, "can't set the socket to O_NONBLOCK."));
+		return (initError(3, "Can't set the socket to O_NONBLOCK."));
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(this->_port);
 	if (bind(socketFd, (struct sockaddr*)&address, sizeof(address)) == -1)
-		return (initError(4, "can't assign address for the socket (using bind function)."));
+		return (initError(4, "Can't assign address for the socket (using bind function)."));
 
 	if (listen(socketFd, address.sin_port) == -1)
-		return (initError(5, "can't listen to the given port."));
+		return (initError(5, "Can't listen to the given port."));
 
 	this->_fd = socketFd;
 	this->_pfds.push_back(pollfd());
@@ -79,12 +79,19 @@ void	Server::acceptClient() {
 		return ;
 
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
-		initError(1, "can't set a client's fd to O_NONBLOCK.");
+		initError(1, "Can't set a client's fd to O_NONBLOCK.");
 
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
+	printServerLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
+	this->_nbClients++;
+	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str())) {
+		printServerLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
+		this->_clients[fd]->setQuitMessage("Server is full.");
+		this->_clients[fd]->status = DISCONNECTED;
+	}
 }
 
 void	Server::run() {
@@ -92,7 +99,7 @@ void	Server::run() {
 
 	std::vector<pollfd>::iterator	it;
 
-	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("timeout").c_str())) == -1)
+	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("ping").c_str()) * 1000) == -1)
 		return ;
 
 	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
@@ -119,14 +126,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
-
-	if (DEBUG)
-		std::cout << KGRAY << getCurrentDateTime(0,0) << KRESET
-			<< KBOLD << "   <--" << KGRAY << "{"<< (*it).fd << "}" << KRESET
-			<< KBOLD << "[" << KRESET
-			<< KMAG << readBuffer << KRESET
-			<< std::endl;
-
+	printServerLog((*it).fd, readBuffer, true);
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
 		return ;
@@ -139,9 +139,12 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	while (pos != entryBuffer.size()) {
 		lastPos = entryBuffer.find("\r\n", pos) + 2;
+		if (lastPos - 2 == std::string::npos)
+			lastPos = entryBuffer.find("\n", pos) + 1;
+
 		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
 		pos = lastPos;
-		if (commandBuffer.find("CAP LS") != std::string::npos) // Skip the first line (doesn't know what is it for)
+		if (commandBuffer.find("CAP LS") != std::string::npos)
 			continue ;
 
 		Command	command(this->_clients[(*it).fd], commandBuffer);
@@ -152,7 +155,7 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 			user->status = DISCONNECTED;
 			return ;
 		}
-		std::cout << KGRN << BROADCAST << "Client " << KWHT << user->getNickname() << "(" << (*it).fd << ")" << KGRN << " has been connected." << KRESET << std::endl;
+		printServerLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
 		user->status = CONNECTED;
 		user->connectToClient(*this);
 	}
@@ -184,10 +187,13 @@ void	Server::deleteClients() {
 
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
-		std::cout << KRED << BROADCAST << "Client " << KWHT << (*deleteIt)->getNickname() << "(" << (*deleteIt)->getFd() << ")" << KRED << " has been disconnected." << KRESET << std::endl;
+		printServerLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")");
 		deleteClientPollFd(this->_pfds, (*deleteIt)->getFd());
 		this->_clients.erase((*deleteIt)->getFd());
 		delete (*deleteIt);
+		this->_nbClients--;
+		if (this->_nbClients < 0)
+			this->_nbClients = 0; // Just to be sure
 	}
 }
 

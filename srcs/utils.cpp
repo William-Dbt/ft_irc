@@ -2,7 +2,7 @@
 #include <ctime>
 #include "utils.hpp"
 
-const std::string	getCurrentDateTime(bool both, bool onlyDate) {
+std::string	getCurrentDateTime(bool both, bool onlyDate) {
 	time_t		now = time(NULL);
 	struct tm	timeStruct;
 	char		buffer[255];
@@ -15,6 +15,15 @@ const std::string	getCurrentDateTime(bool both, bool onlyDate) {
 	else
 		strftime(buffer, sizeof(buffer), "%T", &timeStruct);
 
+	return buffer;
+}
+
+std::string	intToString(int value) {
+	std::ostringstream	ssbuffer;
+	std::string			buffer;
+
+	ssbuffer << value;
+	buffer = ssbuffer.str();
 	return buffer;
 }
 
@@ -52,4 +61,63 @@ bool	isDigit(char c) {
 		return true;
 
 	return false;
+}
+
+void	printConfigLog(std::string log) {
+	std::string buffer = KBOLD;
+
+	buffer += KGRAY + getCurrentDateTime(false, false);
+	buffer += ":";
+	buffer += KWHT;
+	buffer += "CONFIG";
+	buffer += KGRAY;
+	buffer += "{*}"; 
+	buffer += KWHT;
+	buffer += "[";
+	buffer += KRESET;
+	buffer += KBLU;
+	buffer += log + KRESET;
+	std::cout << buffer << std::endl;
+}
+
+void	printServerLog(std::string log) {
+	std::string buffer = KBOLD;
+
+	buffer += KGRAY + getCurrentDateTime(false, false);
+	buffer += ":";
+	buffer += KWHT;
+	buffer += "SERVER";
+	buffer += KGRAY;
+	buffer += "{*}";
+	buffer += KWHT;
+	buffer += "[";
+	buffer += KRESET;
+	buffer += KYEL;
+	buffer += log + KRESET;
+	std::cout << buffer << std::endl;
+}
+
+void	printServerLog(int fd, std::string log, bool received) {
+	std::string	buffer = KBOLD;
+
+	buffer += KGRAY + getCurrentDateTime(false, false);
+	buffer += ":";
+	buffer += KWHT;
+	if (received)
+		buffer += "   <--";
+	else
+		buffer += "-->   ";
+
+	buffer += KGRAY;
+	buffer += "{" + intToString(fd) + "}";
+	buffer += KWHT;
+	buffer += "[";
+	buffer += KRESET;
+	if (received)
+		buffer += KMAG;
+	else
+		buffer += KCYN;
+
+	buffer += log + KRESET;
+	std::cout << buffer;
 }
