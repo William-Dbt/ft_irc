@@ -21,7 +21,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["QUIT"] = QUIT;
 	this->_commands["JOIN"] = JOIN;
 	// this->_commands["PART"] = PART;
-	// this->_commands["TOPIC"] = TOPIC;
+	this->_commands["TOPIC"] = TOPIC;
 	// this->_commands["INVITE"] = INVITE;
 	// this->_commands["KICK"] = KICK;
 	// this->_commands["PRIVMSG"] = PRIVMSG;
@@ -32,6 +32,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["PONG"] = PONG;
 	this->_commands["rehash"] = REHASH;
 	this->_commands["die"] = DIE;
+	this->_commands["wallops"] = WALLOPS;
 }
 
 Client::~Client() {
@@ -41,6 +42,7 @@ Client::~Client() {
 
 void Client::connectToClient(Server &server)
 {
+	this->setLastPing(time(NULL));
 	this->sendReply(RPL_WELCOME(this->getNickname(), this->getUsername(), this->getHost()));
 	this->sendReply(RPL_YOURHOST(server.getConfig().get("server_name"), server.getConfig().get("version")));
 	this->sendReply(RPL_CREATED(getCurrentDateTime()));
@@ -53,7 +55,7 @@ void Client::connectToClient(Server &server)
 void	Client::send(std::string message) {
 	message.append("\r\n");
 	::send(this->_fd, message.c_str(), message.size(), MSG_NOSIGNAL);
-	printServerLog(this->_fd, message);
+	printLog(message, SENDING, this->_fd);
 }
 
 /*
@@ -89,9 +91,9 @@ std::string	Client::getPrefix() {
 	if (this->status == REGISTER)
 		return "";
 
-	buffer = this->_nickname;
+	buffer = getNickname();
 	buffer.append("!");
-	buffer += this->_username;
+	buffer += getUsername();
 	buffer.append("@");
 	buffer += this->_host;
 	return buffer;
@@ -107,11 +109,6 @@ bool	Client::isModeInUse(char mode) {
 		return false;
 
 	return true;
-}
-
-void	Client::addChannel(Channel* channel)
-{
-	_channels[channel->getName()] = channel;
 }
 
 void	Client::addMode(char mode) {
@@ -166,16 +163,16 @@ std::string	Client::getHost() {
 }
 
 std::string	Client::getNickname() {
-	if (this->status == COMMING)
-		return "*";
-
 	if (this->_nickname.empty())
-		return "Unknown";
+		return "*";
 
 	return this->_nickname;
 }
 
 std::string	Client::getUsername() {
+	if (this->_username.empty())
+		return "#";
+
 	return this->_username;
 }
 

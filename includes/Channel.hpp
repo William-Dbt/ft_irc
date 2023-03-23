@@ -16,21 +16,23 @@ public:
 	Channel(const std::string& name);
 
 	void	setName(std::string name);
-	void	setTopic(std::string topic);
 	void	setKey(std::string key);
+	void	setTopic(std::string topic);
 
+	bool	isClientInChannel(Client* client);
 	void	addClient(Client* client);
-	std::map<int, Client*>&	getClients();
+	bool 	removeClient(Client* client);
 
+	std::map<int, Client*>&	getClients();
+	std::string				getClientsNicknames();
 	std::string&			getName();
 	std::string&			getTopic();
 	std::string&			getKey();
 
-
 private:
-	std::string	_name;
-	std::string	_topic;
-	std::string	_key;
+	std::string				_name;
+	std::string				_topic;
+	std::string				_key;
 	std::map<int, Client*>	_clients;
 };
 

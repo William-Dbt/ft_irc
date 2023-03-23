@@ -19,7 +19,6 @@ enum	e_status {
 	DISCONNECTED
 };
 
-class	Channel;
 
 class	Client {
 	public:
@@ -36,8 +35,6 @@ class	Client {
 		bool		isModeInUse(char mode);
 		void		addMode(char mode);
 		void		removeMode(char mode);
-
-		void	addChannel(Channel* channel);
 
 		void	setLastPing(time_t time);
 		void	setNickname(std::string nickname);
@@ -70,12 +67,9 @@ class	Client {
 		std::string	_quitMessage;
 
 		Server*										_server;
-		std::map<std::string, Channel*>				_channels;
-
 		std::map<std::string, void (*)(Command*)>	_commands;
 };
 
 # include "Server.hpp"
-# include "Channel.hpp"
 
 #endif

@@ -14,8 +14,8 @@ Config::Config() {
 Config::~Config() {}
 
 void	Config::error(std::string error) {
-	printConfigLog(error);
-	printConfigLog("Config set to default config.");
+	printLog(error, CONFIG);
+	printLog("Config set to default config.", CONFIG);
 	setDefaultConfig();
 }
 
@@ -87,7 +87,7 @@ void	Config::setFileConfig() {
 	do {
 		if (atoi(this->_config[name].c_str()) < 0) {
 			this->_config[name] = intToString(abs(atoi(this->_config[name].c_str())));
-			printConfigLog(name + " seems to be negative, absolute value is taken.");
+			printLog(name + " seems to be negative, absolute value is taken.", CONFIG);
 		}
 		if (name == VAR_MAXUSERS)
 			name = VAR_PINGDELAY;

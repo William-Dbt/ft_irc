@@ -16,6 +16,13 @@
 # include <string>
 # include "Client.hpp"
 
+enum	e_prefix {
+	RECEIVED = 0,
+	SENDING,
+	SERVER,
+	CONFIG
+};
+
 std::string	getCurrentDateTime(bool both = true, bool onlyDate = false);
 std::string	intToString(int value);
 
@@ -24,8 +31,6 @@ bool	isSpecial(char c);
 bool	isLetter(char c);
 bool	isDigit(char c);
 
-void	printConfigLog(std::string log);
-void	printServerLog(std::string log);
-void	printServerLog(int fd, std::string log, bool received = false);
+void	printLog(std::string log, int prefix, int fd = -1);
 
 #endif
