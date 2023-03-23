@@ -188,7 +188,7 @@ void Server::run()
  * receiveEntries() function: called with iters on the pollfd vector
  * 1. Receive the client's entries
  * 2. If the client has disconnected, set the client's status to DISCONNECTED
- * 3. If the client has sent an entry, parse it
+ * 3. If the client has sent an entry, parse it and execute the commands
 */
 void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 {
@@ -197,7 +197,7 @@ void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 	// get the client from the clients map using the client's fd
 	Client *user = this->_clients[(*it).fd];
 
-	// receive the client's entries
+	// receive the client's entries and print them in the server log
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
 	printServerLog((*it).fd, readBuffer, true);
@@ -212,8 +212,10 @@ void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 	std::string entryBuffer = readBuffer;
 	std::string commandBuffer;
 
+	// parse the client's entries and execute the commands
 	while (pos != entryBuffer.size())
 	{
+		// "\r\n" is the delimiter between commands in the IRC protocol
 		lastPos = entryBuffer.find("\r\n", pos) + 2;
 		if (lastPos - 2 == std::string::npos)
 			lastPos = entryBuffer.find("\n", pos) + 1;
@@ -223,9 +225,11 @@ void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 		if (commandBuffer.find("CAP LS") != std::string::npos)
 			continue;
 
+		// create a Command object and execute it
 		Command command(this->_clients[(*it).fd], commandBuffer);
 		command.execute();
 	}
+	// test if the client has been registered and if it has a nickname
 	if (user->status == FULLYREGISTER)
 	{
 		if (user->getNickname().empty())
@@ -233,12 +237,18 @@ void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 			user->status = DISCONNECTED;
 			return;
 		}
+
 		printServerLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.");
 		user->status = CONNECTED;
 		user->connectToClient(*this);
 	}
 }
 
+/*
+* deleteClientPollFd() function: called with the pollfd vector and the client's fd
+* called in the deleteClients() function
+* 1. Delete the client's pollfd from the pollfd vector
+*/
 static void deleteClientPollFd(std::vector<pollfd> &pfds, int fd)
 {
 	std::vector<pollfd>::iterator it;
@@ -253,6 +263,14 @@ static void deleteClientPollFd(std::vector<pollfd> &pfds, int fd)
 	}
 }
 
+/*
+ * deleteClients() function: called at the end of the run() function
+ * 1. If a client has been disconnected, add it to the usersToDelete vector
+ * 2. If there is no client to delete, return
+ * 3. Delete the clients in the usersToDelete vector
+ * 4. Delete the client's pollfd from the pollfd vector
+ * 5. Delete the client from the clients map
+*/
 void Server::deleteClients()
 {
 	std::map<int, Client *>::iterator it;
@@ -260,6 +278,7 @@ void Server::deleteClients()
 	std::vector<Client *> usersToDelete;
 	std::vector<Client *>::iterator deleteIt;
 
+	// if a client has been disconnected, add it to the usersToDelete vector
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		if ((*it).second->status == DISCONNECTED)
 			usersToDelete.push_back((*it).second);
@@ -267,6 +286,7 @@ void Server::deleteClients()
 	if (!usersToDelete.size())
 		return;
 
+	// delete the clients in the usersToDelete vector
 	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++)
 	{
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());

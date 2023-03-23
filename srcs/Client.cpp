@@ -56,6 +56,10 @@ void	Client::send(std::string message) {
 	printServerLog(this->_fd, message);
 }
 
+/*
+* This function is used to send a message to a client.
+* called by Server.deleteClient() with "QUIT :Server closed"
+*/
 void	Client::sendTo(std::string message) {
 	std::string	buffer;
 
@@ -194,6 +198,11 @@ Server*	Client::getServer() {
 	return this->_server;
 }
 
+
+/*
+* getCommands
+* called by Command.execute()
+*/
 std::map<std::string, void (*)(Command*)>&	Client::getCommands() {
 	return this->_commands;
 }

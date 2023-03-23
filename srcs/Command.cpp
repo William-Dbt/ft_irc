@@ -1,6 +1,11 @@
 #include <iostream>
 #include "Command.hpp"
 
+/*
+* commmand constructor
+* 1. split the line into parameters
+* 2. store the parameters in a vector
+*/
 Command::Command(Client* client, std::string line) :  _server(client->getServer()), _client(client), _line(line) {
 	size_t	pos = 0;
 	size_t	lastPos;
@@ -28,6 +33,11 @@ Command::Command(Client* client, std::string line) :  _server(client->getServer(
 
 Command::~Command() {}
 
+/*
+* command destructor
+* 1. check if the client is disconnected
+* 2. check if the client is not connected and the command is not PASS or QUIT
+*/
 void	Command::execute() {
 	if (this->_client->status == DISCONNECTED)
 		return ;
