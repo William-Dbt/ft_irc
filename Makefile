@@ -31,7 +31,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									 MODE.cpp \
 									 QUIT.cpp \
 									 JOIN.cpp \
-									  \
+									 KICK.cpp \
 									  \
 									  \
 									  \

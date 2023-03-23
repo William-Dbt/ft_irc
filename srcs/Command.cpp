@@ -37,6 +37,7 @@ Command::~Command() {}
 * command destructor
 * 1. check if the client is disconnected
 * 2. check if the client is not connected and the command is not PASS or QUIT
+* 3. try to execute the command with the client's commands map with function pointers
 */
 void	Command::execute() {
 	if (this->_client->status == DISCONNECTED)
