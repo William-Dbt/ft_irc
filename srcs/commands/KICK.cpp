@@ -21,12 +21,14 @@ void KICK(Command *command)
 
     // if parameter[3] is a reason, we add it to the kick message
     // ? still to know how to write on chanel and how eject client ?
+    // needed : 
+    // -> macro for kick message
+    // -> eject client from channel
+    // client->ejectFromChannel(channel);
     if (command->getParameters().size() > 3)
     {
         std::string reason = command->getParameters()[3];
-        // server->sendToChannel(channel, ":" + client->getPrefix() + " KICK " + channel->getName() + " " + command->getParameters()[2] + " :" + reason);
+        //return client->sendReply(RPL_KICK(channel->getName(), command->getParameters()[2], reason));
     }
-    // else
-    //     server->sendToChannel(channel, ":" + client->getPrefix() + " KICK " + channel->getName() + " " + command->getParameters()[2] + " :Kicked out of channel");
-
+    // return client->sendReply(RPL_KICK(channel->getName(), command->getParameters()[2], "No reason"));
 }

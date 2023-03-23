@@ -1,5 +1,7 @@
 #include "Command.hpp"
 
+
+
 void TOPIC(Command *command)
 {
 	Client *client = command->getClient();
@@ -21,6 +23,7 @@ void TOPIC(Command *command)
 		std::string topic = command->getParameters()[2];
 		topic.erase(topic.begin());
 		channel->setTopic(topic);
+		// send response to all clients in channel use macro for topic message via sendReply() -> send() -> printLog()
 		return client->sendReply(RPL_TOPIC(channel->getName(), channel->getTopic()));
 	}
 }
