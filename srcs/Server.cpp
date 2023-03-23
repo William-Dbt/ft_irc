@@ -27,14 +27,8 @@ Server::~Server()
 		close(this->_fd);
 }
 
-<<<<<<< HEAD
-int Server::initError(const int &exit_code, const std::string &error)
-{
-	printServerLog(error);
-=======
 int	Server::initError(const int &exit_code, const std::string &error) {
 	printLog(error, SERVER);
->>>>>>> main
 	return exit_code;
 }
 
@@ -133,21 +127,10 @@ void Server::acceptClient()
 
 	// add the client to the clients map
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
-<<<<<<< HEAD
-
-	printServerLog(fd, "New connection has been registered (fd: " + intToString(fd) + ").\n");
-	this->_nbClients++;
-
-	// check if the number of clients is greater than the maximum number of clients
-	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str()))
-	{
-		printServerLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)");
-=======
 	printLog("New connection has been registered (fd: " + intToString(fd) + ").", SERVER, fd);
 	this->_nbClients++;
 	if (this->_nbClients > atoi(this->getConfig().get("max_users").c_str())) {
 		printLog("Too many clients has been registered on the server. (maximum of " + this->getConfig().get("max_users") + " users are allowed)", SERVER);
->>>>>>> main
 		this->_clients[fd]->setQuitMessage("Server is full.");
 		this->_clients[fd]->status = DISCONNECTED;
 	}
@@ -212,14 +195,8 @@ void Server::receiveEntries(std::vector<pollfd>::iterator &it)
 	// receive the client's entries and print them in the server log
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
-<<<<<<< HEAD
-	printServerLog((*it).fd, readBuffer, true);
-	if (bytes == 0)
-	{
-=======
 	printLog(readBuffer, RECEIVED, (*it).fd);
 	if (bytes == 0) {
->>>>>>> main
 		user->status = DISCONNECTED;
 		return;
 	}
@@ -337,29 +314,6 @@ void Server::sendPings()
 	}
 
 	// TMP
-<<<<<<< HEAD
-	std::map<std::string, Channel *>::iterator chanIt;
-	std::map<int, Client *>::iterator clientIt;
-	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++)
-	{
-		std::cout << KGRN << "Channel " << KBOLD << (*chanIt).first << KRESET << std::endl;
-		std::cout << KGRN << "key: " << KBOLD << (*chanIt).second->getKey() << KRESET << std::endl;
-
-		std::map<int, Client *> clientInChannel = (*chanIt).second->getClients();
-		std::map<int, Client *>::iterator clientInChannelIt;
-
-		for (clientInChannelIt = clientInChannel.begin(); clientInChannelIt != clientInChannel.end(); clientInChannelIt++)
-		{
-			std::cout << KGRN << "- " << (*clientInChannelIt).second->getNickname() << KRESET << std::endl;
-		}
-		std::cout << std::endl;
-	}
-	for (clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++)
-		std::cout << KYEL << "Client " << (*clientIt).second->getNickname() << KRESET << std::endl;
-}
-
-void Server::addChannel(Channel *channel)
-=======
 	// std::map<std::string, Channel>::iterator	chanIt;
 	// std::map<int, Client*>::iterator		clientIt;
 
@@ -381,21 +335,14 @@ void Server::addChannel(Channel *channel)
 }
 
 void	Server::addChannel(std::string name)
->>>>>>> main
 {
 	Channel &channel = _channels[name];
 	channel.setName(name);
 }
 
-<<<<<<< HEAD
-Channel *Server::getChannel(std::string name)
-{
-	std::map<std::string, Channel *>::iterator it;
-=======
 void	Server::deleteChannel(std::string name)
 {
 	std::map<std::string, Channel>::iterator	it;
->>>>>>> main
 
 	it = this->_channels.find(name);
 	if (it == this->_channels.end())
@@ -403,10 +350,6 @@ void	Server::deleteChannel(std::string name)
 	this->_channels.erase(it);
 }
 
-<<<<<<< HEAD
-int Server::getSocketFd() const
-{
-=======
 void	Server::kickClientFromChannel(Client* client, Channel* channel)
 {
 	channel->removeClient(client);
@@ -430,7 +373,6 @@ void	Server::kickClientFromAllChannels(Client* client)
 }
 
 int	Server::getSocketFd() const {
->>>>>>> main
 	return this->_fd;
 }
 
