@@ -8,7 +8,9 @@ void Channel::setName(std::string name) { this->_name = name; }
 void Channel::setKey(std::string key) { this->_key = key; }
 void Channel::setTopic(std::string topic) { this->_topic = topic; }
 
-bool Channel::isClientInChannel(Client *client) { return this->_clients.find(client->getFd()) != this->_clients.end(); }
+bool Channel::isClientInChannel(Client *client) { 
+std::cout << "isClientInChannel : " << client->getNickname() << std::endl;
+ return this->_clients.find(client->getFd()) != this->_clients.end(); }
 void Channel::addClient(Client *client) { this->_clients[client->getFd()] = client; }
 bool Channel::removeClient(Client *client) { return this->_clients.erase(client->getFd()); }
 

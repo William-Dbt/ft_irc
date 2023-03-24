@@ -1,6 +1,8 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
+
+
 void KICK(Command *command)
 {
 	Client *client = command->getClient();
@@ -14,29 +16,30 @@ void KICK(Command *command)
     {
         std::cout << "KICK params[" << i << "] = " << params[i] << std::endl;
     }
-    // Check if the client has enough parameters
-    // 1 -> channel name
-    // 2 -> target nick
-	if (params.size() < 4 || params.at(4) == ":")
+
+    // check if the command has enough params
+    if (params.size() < 4)
     {
-        std::cout << "KICK not enough params" << std::endl;
-		return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
+        std::cout << "KICK not enough params -> :" << std::endl;
+        return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
     }
-    std::cout << "KICK parsing pass" << std::endl;
-    //
     
     // check if the channel name is valid -> mask = #
     if (params[1][0] != '#')
 			return client->sendReply(ERR_BADCHANMASK(params[1]));
 
-    std::cout << "KICK fin du parsing"<< std::endl;
-    // check if the channel exists and if the client is in it
+    // check if the channel exists
 	Channel *channel = server->getChannel(command->getParameters()[1]);
 	if (channel == NULL)
 		return client->sendReply(ERR_NOSUCHCHANNEL(command->getParameters()[1]));
-	// if (!channel->isClientInChannel(client))
-	// 	return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[1]));
 
+    std::cout << "KICK parsing start" << std::endl;
+	if (!channel->isClientInChannel(client))
+    {
+        std::cout << "KICK client not in channel" << std::endl;
+		return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[1]));
+    }
+    std::cout << "KICK fin du parsing"<< std::endl;
     // if parameter[3] is a reason, we add it to the kick message
     // ? still to know how to write on chanel and how eject client ?
     // needed : 
