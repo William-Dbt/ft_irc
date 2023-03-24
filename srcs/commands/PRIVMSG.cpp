@@ -1,4 +1,5 @@
 #include "Command.hpp"
+#include "Channel.hpp"
 
 void PRIVMSG(Command *command)
 {
@@ -6,11 +7,6 @@ void PRIVMSG(Command *command)
 	Server		*server = senderClient->getServer();
 	std::string	message = command->getEndParam();
 	std::string	target = command->getParameters()[1];
-	std::string	sender = command->getClient()->getNickname();
-
-	std::cout << "PRIVMSG: " << message << std::endl;
-	std::cout << "Target: " << target << std::endl;
-	std::cout << "Sender: " << sender << std::endl;
 
 	if (target[0] == '#')
 	{
@@ -19,7 +15,16 @@ void PRIVMSG(Command *command)
 			return senderClient->sendReply(ERR_NOSUCHCHANNEL(target));
 		if (!channel->isClientInChannel(senderClient))
 			return senderClient->sendReply(ERR_NOTONCHANNEL(target));
-		// channel->sendToAllClients(":" + sender + "!" + client->getUsername() + "@" + client->getHostname() + " PRIVMSG " + target + " :" + message);
+		
+		std::map<int, Client *> clients = channel->getClients();
+		std::map<int, Client *>::iterator it;
+		const std::string &messageToSend = ":" + senderClient->getPrefix() + " PRIVMSG " + target + " :" + message;
+
+		for (it = clients.begin(); it != clients.end(); it++)
+		{
+			if ((*it).second != senderClient)
+				(*it).second->send(messageToSend);
+		}
 	}
 	else
 	{

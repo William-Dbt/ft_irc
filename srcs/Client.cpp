@@ -22,7 +22,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["JOIN"] = JOIN;
 	// this->_commands["PART"] = PART;
 	this->_commands["TOPIC"] = TOPIC;
-	// this->_commands["INVITE"] = INVITE;
+	this->_commands["INVITE"] = INVITE;
 	// this->_commands["KICK"] = KICK;
 	this->_commands["PRIVMSG"] = PRIVMSG;
 	this->_commands["motd"] = MOTD;

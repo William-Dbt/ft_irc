@@ -23,6 +23,8 @@ public:
 	void	addClient(Client* client);
 	bool 	removeClient(Client* client);
 
+	void	sendToAllClients(const std::string& message);
+
 	std::map<int, Client*>&	getClients();
 	std::string				getClientsNicknames();
 	std::string&			getName();
@@ -33,7 +35,7 @@ private:
 	std::string				_name;
 	std::string				_topic;
 	std::string				_key;
-	std::map<int, Client*>	_clients;
+	std::map<int, Client *>	_clients;
 };
 
 # include "Client.hpp"

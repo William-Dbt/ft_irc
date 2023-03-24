@@ -12,6 +12,14 @@ bool Channel::isClientInChannel(Client *client) { return this->_clients.find(cli
 void Channel::addClient(Client *client) { this->_clients[client->getFd()] = client; }
 bool Channel::removeClient(Client *client) { return this->_clients.erase(client->getFd()); }
 
+void Channel::sendToAllClients(const std::string &message)
+{
+	std::map<int, Client *>::iterator it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		(*it).second->send(message);
+}
+
 std::map<int, Client *> &Channel::getClients() { return this->_clients; }
 std::string Channel::getClientsNicknames()
 {

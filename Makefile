@@ -33,7 +33,7 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									 JOIN.cpp \
 									  \
 									 TOPIC.cpp \
-									  \
+									 INVITE.cpp \
 									  \
 									 PRIVMSG.cpp \
 									 MOTD.cpp \
