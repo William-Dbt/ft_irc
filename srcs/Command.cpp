@@ -9,22 +9,15 @@
 Command::Command(Client* client, std::string line) :  _server(client->getServer()), _client(client), _line(line) {
 	size_t	pos = 0;
 	size_t	lastPos;
-	bool	isCarriageReturn = true;
-
-	if (line.find("\r\n") == std::string::npos)
-		isCarriageReturn = false;
 
 	while (pos < this->_line.size()) {
 		lastPos = this->_line.find(' ', pos);
-		if (lastPos == std::string::npos && isCarriageReturn)
-			lastPos = this->_line.size() - 2; // -2 Refers to \r\n
-		else if (lastPos == std::string::npos)
+
+		if (lastPos == std::string::npos)
 			lastPos = this->_line.size() - 1;
 
 		this->_parameters.push_back(this->_line.substr(pos, lastPos - pos));
-		if (isCarriageReturn && lastPos != this->_line.size() - 2)
-			pos = lastPos + 1;
-		else if (!isCarriageReturn && lastPos != this->_line.size() - 1)
+		if (lastPos != this->_line.size() - 1)
 			pos = lastPos + 1;
 		else
 			break ;
@@ -45,6 +38,9 @@ void	Command::execute() {
 
 	if (this->_parameters[0] != "PASS" && this->_parameters[0] != "QUIT" && this->_client->status == BADPASSWORD)
 		return ;
+
+	if (this->_client->commandBuffer.size())
+		this->_client->commandBuffer.clear();
 
 	try {
 		this->_client->getCommands().at(this->_parameters[0])(this);
@@ -67,20 +63,14 @@ std::string	Command::getLine() {
 }
 
 std::string	Command::getEndParam() {
-	int		removedChars;
 	size_t	pos;
-
-	if (this->_line.find("\r\n") != std::string::npos)
-		removedChars = 2;
-	else
-		removedChars = 1;
 
 	if (this->_line.find(':') == std::string::npos)
 		pos = this->_parameters[0].size() + 1;
 	else
 		pos = this->_line.rfind(':') + 1;
 
-	return this->_line.substr(pos, this->_line.size() - pos - removedChars);
+	return this->_line.substr(pos, this->_line.size() - pos - 1);
 }
 
 std::vector<std::string>	Command::getParameters() {

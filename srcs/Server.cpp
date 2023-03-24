@@ -179,48 +179,56 @@ void Server::run()
 	deleteClients();
 }
 
-/*
- * receiveEntries() function: called with iters on the pollfd vector
- * 1. Receive the client's entries
- * 2. If the client has disconnected, set the client's status to DISCONNECTED
- * 3. If the client has sent an entry, parse it and execute the commands
-*/
-void Server::receiveEntries(std::vector<pollfd>::iterator &it)
-{
-	char readBuffer[4096];
-	int bytes;
-	// get the client from the clients map using the client's fd
-	Client *user = this->_clients[(*it).fd];
+static std::string	readEntry(Client* user) {
+	char		readBuffer[4096];
+	int			bytes;
 
-	// receive the client's entries and print them in the server log
-	bytes = recv((*it).fd, readBuffer, 4096, 0);
-	readBuffer[bytes] = '\0';
-	printLog(readBuffer, RECEIVED, (*it).fd);
+	bytes = recv(user->getFd(), readBuffer, 4096, 0);
+	if (bytes == -1)
+		return "";
+
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
-		return;
+		return "";
 	}
+	readBuffer[bytes] = '\0';
+	printLog(readBuffer, RECEIVED, user->getFd());
+	return readBuffer;
+}
 
-	size_t pos = 0;
-	size_t lastPos;
-	std::string entryBuffer = readBuffer;
-	std::string commandBuffer;
+void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
+	size_t		pos = 0;
+	size_t		lastPos;
+	std::string	commandBuffer;
+	std::string	entryBuffer;
+	Client*		user = this->_clients[(*it).fd];
 
-	// parse the client's entries and execute the commands
-	while (pos != entryBuffer.size())
-	{
-		// "\r\n" is the delimiter between commands in the IRC protocol
-		lastPos = entryBuffer.find("\r\n", pos) + 2;
-		if (lastPos - 2 == std::string::npos)
-			lastPos = entryBuffer.find("\n", pos) + 1;
+	entryBuffer = readEntry(user);
+	if (entryBuffer.empty())
+		return ;
+
+	if (entryBuffer.find("\n") == std::string::npos) { // Is a partial command received?
+		user->commandBuffer.append(entryBuffer);
+		return ;
+	}
+	else if (user->commandBuffer.size()) { // If partial command was received, then use this one
+		user->commandBuffer.append(entryBuffer);
+		entryBuffer = user->commandBuffer;
+	}
+	while (pos != entryBuffer.size()) {
+		lastPos = entryBuffer.find("\n", pos) + 1;
+		if (lastPos - 1 == std::string::npos)
+			lastPos = entryBuffer.size();
 
 		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
+		if (commandBuffer.find("\r\n") != std::string::npos)
+			commandBuffer.erase(commandBuffer.size() - 2, 1);
+
 		pos = lastPos;
 		if (commandBuffer.find("CAP LS") != std::string::npos)
 			continue;
 
-		// create a Command object and execute it
-		Command command(this->_clients[(*it).fd], commandBuffer);
+		Command	command(user, commandBuffer);
 		command.execute();
 	}
 	// test if the client has been registered and if it has a nickname
