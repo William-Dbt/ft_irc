@@ -126,18 +126,21 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 	bytes = recv((*it).fd, readBuffer, 4096, 0);
 	readBuffer[bytes] = '\0';
+	std::cout << "DEBUG: After receiving data" << std::endl;
 	printLog(readBuffer, RECEIVED, (*it).fd);
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
 		return ;
 	}
+	std::cout << std::endl << "DEBUG: After printing server log" << std::endl;
 
 	size_t		pos = 0;
 	size_t		lastPos;
 	std::string	entryBuffer = readBuffer;
 	std::string	commandBuffer;
 
-	while (pos != entryBuffer.size()) {
+	// TODO: Segfault
+	while (pos != entryBuffer.size()) { 
 		lastPos = entryBuffer.find("\r\n", pos) + 2;
 		if (lastPos - 2 == std::string::npos)
 			lastPos = entryBuffer.find("\n", pos) + 1;
@@ -150,6 +153,9 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		Command	command(this->_clients[(*it).fd], commandBuffer);
 		command.execute();
 	}
+
+	std::cout << "TOTO: After command parsing" << std::endl;
+
 	if (user->status == FULLYREGISTER) {
 		if (user->getNickname().empty()) {
 			user->status = DISCONNECTED;
