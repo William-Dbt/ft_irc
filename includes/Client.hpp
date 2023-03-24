@@ -19,7 +19,6 @@ enum	e_status {
 	DISCONNECTED
 };
 
-
 class	Client {
 	public:
 		Client(const int& fd, const std::string& host, Server* server);
@@ -54,7 +53,8 @@ class	Client {
 
 		std::map<std::string, void (*)(Command*)>&	getCommands();
 
-		int	status;
+		int			status;
+		std::string	commandBuffer;
 
 	private:
 		time_t		_lastPing;

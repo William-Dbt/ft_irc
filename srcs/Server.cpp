@@ -119,43 +119,58 @@ void	Server::run() {
 	deleteClients();
 }
 
-void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
+static std::string	readEntry(Client* user) {
 	char		readBuffer[4096];
 	int			bytes;
-	Client*		user = this->_clients[(*it).fd];
 
-	bytes = recv((*it).fd, readBuffer, 4096, 0);
-	readBuffer[bytes] = '\0';
-	std::cout << "DEBUG: After receiving data" << std::endl;
-	printLog(readBuffer, RECEIVED, (*it).fd);
+	bytes = recv(user->getFd(), readBuffer, 4096, 0);
+	if (bytes == -1)
+		return "";
+
 	if (bytes == 0) {
 		user->status = DISCONNECTED;
-		return ;
+		return "";
 	}
-	std::cout << std::endl << "DEBUG: After printing server log" << std::endl;
+	readBuffer[bytes] = '\0';
+	printLog(readBuffer, RECEIVED, user->getFd());
+	return readBuffer;
+}
 
+void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	size_t		pos = 0;
 	size_t		lastPos;
-	std::string	entryBuffer = readBuffer;
 	std::string	commandBuffer;
+	std::string	entryBuffer;
+	Client*		user = this->_clients[(*it).fd];
 
-	// TODO: Segfault
-	while (pos != entryBuffer.size()) { 
-		lastPos = entryBuffer.find("\r\n", pos) + 2;
-		if (lastPos - 2 == std::string::npos)
-			lastPos = entryBuffer.find("\n", pos) + 1;
+	entryBuffer = readEntry(user);
+	if (entryBuffer.empty())
+		return ;
+
+	if (entryBuffer.find("\n") == std::string::npos) { // Is a partial command received?
+		user->commandBuffer.append(entryBuffer);
+		return ;
+	}
+	else if (user->commandBuffer.size()) { // If partial command was received, then use this one
+		user->commandBuffer.append(entryBuffer);
+		entryBuffer = user->commandBuffer;
+	}
+	while (pos != entryBuffer.size()) {
+		lastPos = entryBuffer.find("\n", pos) + 1;
+		if (lastPos - 1 == std::string::npos)
+			lastPos = entryBuffer.size();
 
 		commandBuffer = entryBuffer.substr(pos, lastPos - pos);
+		if (commandBuffer.find("\r\n") != std::string::npos)
+			commandBuffer.erase(commandBuffer.size() - 2, 1);
+
 		pos = lastPos;
 		if (commandBuffer.find("CAP LS") != std::string::npos)
 			continue ;
 
-		Command	command(this->_clients[(*it).fd], commandBuffer);
+		Command	command(user, commandBuffer);
 		command.execute();
 	}
-
-	std::cout << "TOTO: After command parsing" << std::endl;
-
 	if (user->status == FULLYREGISTER) {
 		if (user->getNickname().empty()) {
 			user->status = DISCONNECTED;
