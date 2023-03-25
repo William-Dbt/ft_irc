@@ -41,6 +41,7 @@ class	Client {
 		void	setUsername(std::string username);
 		void	setRealname(std::string realname);
 		void	setQuitMessage(std::string quitMessage);
+		void	setAwayMessage(std::string awayMessage);
 
 		time_t		getLastPing();
 		int			getFd();
@@ -50,6 +51,7 @@ class	Client {
 		std::string	getRealname();
 		std::string	getUserModes();
 		std::string	getQuitMessage();
+		std::string	getAwayMessage();
 		Server*		getServer();
 
 		std::map<std::string, void (*)(Command*)>&	getCommands();
@@ -66,6 +68,7 @@ class	Client {
 		std::string	_realname;
 		std::string	_modes;
 		std::string	_quitMessage;
+		std::string	_awayMessage;
 
 		Server*										_server;
 		std::map<std::string, void (*)(Command*)>	_commands;
