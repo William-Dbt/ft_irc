@@ -25,6 +25,8 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["INVITE"] = INVITE;
 	this->_commands["KICK"] = KICK;
 	this->_commands["PRIVMSG"] = PRIVMSG;
+	this->_commands["NOTICE"] = NOTICE;
+	this->_commands["AWAY"] = AWAY;
 	this->_commands["motd"] = MOTD;
 	this->_commands["version"] = VERSION;
 	this->_commands["kill"] = KILL;
@@ -163,6 +165,11 @@ void	Client::setQuitMessage(std::string quitMessage) {
 	this->_quitMessage = quitMessage;
 }
 
+void	Client::setAwayMessage(std::string awayMessage) {
+	this->_awayMessage = awayMessage;
+}
+
+
 time_t	Client::getLastPing() {
 	return this->_lastPing;
 }
@@ -202,6 +209,10 @@ std::string	Client::getQuitMessage() {
 		return this->_quitMessage;
 	
 	return "leaving";
+}
+
+std::string	Client::getAwayMessage() {
+	return this->_awayMessage;
 }
 
 Server*	Client::getServer() {

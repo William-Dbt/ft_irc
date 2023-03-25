@@ -3,17 +3,17 @@
 
 void KICK(Command *command)
 {
-	Client *client = command->getClient();
-	Server *server = client->getServer();
+    Client *client = command->getClient();
+    Server *server = client->getServer();
     std::vector<std::string> params = command->getParameters();
 
     // check if the command has enough params
     if (params.size() < 4)
         return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
-    
+
     // check if the channel name is valid -> mask = #
     if (params[1][0] != '#')
-			return client->sendReply(ERR_BADCHANMASK(params[1]));
+        return client->sendReply(ERR_BADCHANMASK(params[1]));
 
     // check if the channel exists
     // vector of channels

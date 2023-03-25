@@ -13,9 +13,7 @@ std::vector<std::string> splitCommand(std::string str, char c)
 			tmp = "";
 		}
 		else
-		{
 			tmp += *it;
-		}
 	}
 	result.push_back(tmp);
 
@@ -54,6 +52,7 @@ void JOIN(Command *command)
 
 	if (command->getParameters().size() < 2)
 		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
+
 	if (command->getParameters()[1] == "0")
 		return leaveAllChannels(command);
 
@@ -100,3 +99,75 @@ void JOIN(Command *command)
 		client->sendReply(RPL_ENDOFNAMES(*it));
 	}
 }
+
+
+
+/*
+ERR_NEEDMOREPARAMS =	Returned by the server by numerous commands to indicate to
+						the client that it didn't supply enough parameters.
+							"461" + command + " :Not enough parameters"
+
+ERR_NOSUCHCHANNEL		= Used to indicate the given channel name is invalid.
+								"403" + channelname + " :No such channel"
+
+
+						Any command requiring operator privileges to operate
+						MUST return this error to indicate the attempt was
+						unsuccessful
+ERR_CHANNELISFULL			= "471" + channel + " :Cannot join channel (+l)"
+ERR_INVITEONLYCHAN			= "473" + channel + " :Cannot join channel (+i)"
+ERR_BANNEDFROMCHAN			= "474" + channel + " :Cannot join channel (+b)"
+ERR_BADCHANNELKEY			= "475" + channel + " :Cannot join channel (+k)"
+ERR_BADCHANMASK				= "476" + channel + " :Bad Channel Mask"
+
+ERR_TOOMANYCHANNELS =	Sent to a user when they have joined the maximum
+						number of allowed channels and they try to join
+						another channel.
+							"405" + channelname + " :You have joined too many channels"
+
+ERR_TOOMANYTARGETS =	Returned to a client which is attempting to send a
+						PRIVMSG/NOTICE using the user@host destination format
+						and for a user@host which has several occurrences.
+
+						Returned to a client which trying to send a
+						PRIVMSG/NOTICE to too many recipients.
+
+						Returned to a client which is attempting to JOIN a safe
+						channel using the shortname when there are more than one
+						such channel.
+							"407" + target + " :Duplicate recipients. No message delivered"
+
+ERR_UNAVAILRESOURCE =	Returned by a server to a user trying to join a channel
+						currently blocked by the channel delay mechanism.
+
+						Returned by a server to a user trying to change nickname
+						when the desired nickname is blocked by the nick delay
+						mechanism.
+							"437" + nickchannel + " :Nick/channel is temporarily unavailable"
+
+RPL_TOPIC = "332" + channel + " :" + topic
+
+
+
+JOIN #foobar
+; Command to join channel #foobar.
+
+JOIN &foo fubar
+; Command to join channel &foo using key "fubar".
+
+JOIN #foo,&bar fubar
+; Command to join channel #foo using key "fubar" and &bar using no key.
+
+JOIN #foo,#bar fubar,foobar
+; Command to join channel #foo using key "fubar", and channel #bar using key "foobar".
+
+JOIN #foo,#bar
+; Command to join channels #foo and #bar.
+
+JOIN 0
+; Leave all currently joined channels.
+
+:WiZ!jto@tolsun.oulu.fi JOIN #Twilight_zone
+; JOIN message from WiZ on channel #Twilight_zone
+
+*/
