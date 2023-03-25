@@ -25,6 +25,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["INVITE"] = INVITE;
 	this->_commands["KICK"] = KICK;
 	this->_commands["PRIVMSG"] = PRIVMSG;
+	this->_commands["NOTICE"] = NOTICE;
 	this->_commands["AWAY"] = AWAY;
 	this->_commands["motd"] = MOTD;
 	this->_commands["version"] = VERSION;
