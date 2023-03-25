@@ -1,12 +1,18 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
-void KICK(Command *command)
+void execute_kick(std::vector<Channel*> channels, std::vector<Client*> clients)
 {
-	Client *client = command->getClient();
-	Server *server = client->getServer();
-    std::vector<std::string> params = command->getParameters();
+    for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
+    {
+        for (std::vector<Client*>::iterator it2 = clients.begin(); it2 != clients.end(); ++it2)
+                (*it)->removeClient(*it2);
+    }  
+}
 
+
+void parsing_kick(Command *command, Client *client, Server *server, std::vector<std::string> params)
+{
     // check if the command has enough params
     if (params.size() < 4)
         return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
@@ -51,9 +57,15 @@ void KICK(Command *command)
         }
     }
 
-    for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
-    {
-        for (std::vector<Client*>::iterator it2 = clients.begin(); it2 != clients.end(); ++it2)
-                (*it)->removeClient(*it2);
-    }    
+    execute_kick(channels, clients);
 }
+
+void KICK(Command *command)
+{
+	Client *client = command->getClient();
+	Server *server = client->getServer();
+    std::vector<std::string> params = command->getParameters();
+
+    parsing_kick(command, client, server, params);
+}
+
