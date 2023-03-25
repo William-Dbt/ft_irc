@@ -49,6 +49,8 @@
 # define RPL_MOTD(text) "372:- " + text
 # define RPL_ENDOFMOTD() "376:End of MOTD command"
 # define RPL_AWAY(nick, message) "301" + nick + " :" + message
+# define RPL_UNAWAY() "305:You are no longer marked as being away"
+# define RPL_NOWAWAY() "306:You have been marked as being away"
 # define RPL_INVITING(channel, nick) "341" + channel + " " + nick
 # define RPL_NOTOPIC(channel) "331" + channel + " :No topic is set"
 # define RPL_TOPIC(channel, topic) "332" + channel + " :" + topic
