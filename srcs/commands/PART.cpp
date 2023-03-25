@@ -34,11 +34,9 @@ void PART(Command *command)
 
 
     // remove the client from the channel
-    std::cout << "End parsing part" << std::endl;
     for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
     {
         Channel *channel = server->getChannel(*it);
         channel->removeClient(client);
     }
-    std::cout << "Start parsing part" << std::endl;
 }
