@@ -16,10 +16,10 @@ void parsing_kick(Command *command, Client *client, Server *server, std::vector<
     // check if the command has enough params
     if (params.size() < 4)
         return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
-    
+
     // check if the channel name is valid -> mask = #
     if (params[1][0] != '#')
-			return client->sendReply(ERR_BADCHANMASK(params[1]));
+        return client->sendReply(ERR_BADCHANMASK(params[1]));
 
     // check if the channel exists
     // vector of channels

@@ -36,8 +36,10 @@ SRCS		= $(addprefix ${PATHSRCS}, main.cpp Server.cpp Client.cpp \
 									  \
 									 TOPIC.cpp \
 									 INVITE.cpp \
-									  \
+									 KICK.cpp \
 									 PRIVMSG.cpp \
+									 NOTICE.cpp \
+									 AWAY.cpp \
 									 MOTD.cpp \
 									 VERSION.cpp \
 									 KILL.cpp \
