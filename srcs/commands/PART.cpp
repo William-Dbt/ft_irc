@@ -1,18 +1,16 @@
 #include "Command.hpp"
 
-void PART(Command *command)
+void execute_part(std::vector<std::string> channels_name, Client *client)
 {
-    Client *client = command->getClient();
-    Server *server = client->getServer();
-    std::vector<std::string> params = command->getParameters();
-
-    //print params
-    for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
+    for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
     {
-        std::cout << *it << std::endl;
+        Channel *channel = client->getServer()->getChannel(*it);
+        channel->removeClient(client);
     }
-    std::cout << std::endl;
+}
 
+void parsing_part(Command *command, Client *client, Server *server, std::vector<std::string> params)
+{
     // check if the command has enough params
     if (params.size() < 2)
         return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
@@ -31,12 +29,21 @@ void PART(Command *command)
         if (!server->getChannel(*it))
             return client->sendReply(ERR_NOSUCHCHANNEL(*it));
     }
+    execute_part(channels_name, client);
+}
 
+void PART(Command *command)
+{
+    Client *client = command->getClient();
+    Server *server = client->getServer();
+    std::vector<std::string> params = command->getParameters();
 
-    // remove the client from the channel
-    for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
+    //print params
+    for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
     {
-        Channel *channel = server->getChannel(*it);
-        channel->removeClient(client);
+        std::cout << *it << std::endl;
     }
+    std::cout << std::endl;
+
+    parsing_part(command, client, server, params);
 }
