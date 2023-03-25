@@ -76,3 +76,19 @@ std::string	Command::getEndParam() {
 std::vector<std::string>	Command::getParameters() {
 	return this->_parameters;
 }
+
+std::vector<std::string> Command::multipleParams(std::string params)
+{
+    std::vector<std::string> result;
+    size_t limit;
+    size_t it = 0;
+    while(it < params.size())
+    {
+        limit = params.find(',', it);
+        if (limit == params.npos)
+            limit = params.size();
+        result.push_back(params.substr(it, limit - it));
+        it = limit + 1;
+    }
+    return result;
+}

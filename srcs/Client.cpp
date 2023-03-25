@@ -20,7 +20,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	this->_commands["MODE"] = MODE;
 	this->_commands["QUIT"] = QUIT;
 	this->_commands["JOIN"] = JOIN;
-	// this->_commands["PART"] = PART;
+	this->_commands["PART"] = PART;
 	this->_commands["TOPIC"] = TOPIC;
 	this->_commands["INVITE"] = INVITE;
 	this->_commands["KICK"] = KICK;

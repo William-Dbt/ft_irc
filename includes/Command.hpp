@@ -21,6 +21,7 @@ class	Command {
 		std::string					getLine();
 		std::string					getEndParam();
 		std::vector<std::string>	getParameters();
+		std::vector<std::string> 	multipleParams(std::string params);
 
 	private:
 		Server*						_server;
@@ -36,7 +37,7 @@ void	OPER(Command* command);
 void	MODE(Command* command);
 void	QUIT(Command* command);
 void	JOIN(Command* command);
-// void	PART(Command* command);
+void	PART(Command* command);
 void	TOPIC(Command* command);
 void	INVITE(Command* command);
 void	KICK(Command* command);

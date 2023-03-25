@@ -1,20 +1,11 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
-
-
 void KICK(Command *command)
 {
 	Client *client = command->getClient();
 	Server *server = client->getServer();
     std::vector<std::string> params = command->getParameters();
-
-    // std::cout << "KICK command received from " << client->getNickname() << std::endl;
-    // std::cout << "KICK params size = " << params.size() << std::endl;
-    // for (size_t i = 0; i < params.size(); i++)
-    // {
-    //     std::cout << "KICK params[" << i << "] = " << params[i] << std::endl;
-    // }
 
     // check if the command has enough params
     if (params.size() < 4)
@@ -33,7 +24,9 @@ void KICK(Command *command)
     //  1. check if the nickname is in the server
     Client *clientToKick = server->getClient(params[2]);
     if (!clientToKick)
+    {
         return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[2]));
+    }
 
     //  2. check if the nickname is in the channel
 	if (!channel->isClientInChannel(clientToKick))
