@@ -71,6 +71,19 @@ void	Client::sendTo(std::string message) {
 	send(message);
 }
 
+void	Client::sendFrom(Client * senderClient, std::string message) {
+	std::string	buffer;
+
+	if (senderClient->status == REGISTER)
+		message = ": " + message;
+	else {
+		buffer = ':' + senderClient->getPrefix() + ' ';
+		buffer += message;
+		message = buffer;
+	}
+	send(message);
+}
+
 void Client::sendReply(std::string message)
 {
 	std::string code;

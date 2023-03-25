@@ -18,12 +18,12 @@ void PRIVMSG(Command *command)
 		
 		std::map<int, Client *> clients = channel->getClients();
 		std::map<int, Client *>::iterator it;
-		const std::string &messageToSend = ":" + senderClient->getPrefix() + " PRIVMSG " + target + " :" + message;
 
 		for (it = clients.begin(); it != clients.end(); it++)
 		{
 			if ((*it).second != senderClient)
-				(*it).second->send(messageToSend);
+				(*it).second->sendFrom(senderClient, "PRIVMSG " + target + " :" + message);
+
 		}
 	}
 	else
@@ -31,7 +31,7 @@ void PRIVMSG(Command *command)
 		Client *targetClient = server->getClient(target);
 		if (targetClient == NULL)
 			return senderClient->sendReply(ERR_NOSUCHNICK(target));
-		targetClient->send(":" + senderClient->getPrefix() + " PRIVMSG " + target + " :" + message);
+		targetClient->sendFrom(senderClient, "PRIVMSG " + target + " :" + message);
 	}
 
 

@@ -28,6 +28,7 @@ class	Client {
 
 		void	send(std::string message);
 		void	sendTo(std::string message);
+		void	sendFrom(Client * senderClient, std::string message);
 		void	sendReply(std::string message);
 
 		std::string	getPrefix();
