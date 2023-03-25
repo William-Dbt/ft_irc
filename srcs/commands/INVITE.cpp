@@ -2,19 +2,46 @@
 
 void	INVITE(Command *command)
 {
-	Client		*senderClient = command->getClient();
-	Server		*server = senderClient->getServer();
-	std::string	target = command->getParameters()[1];
-	std::string	channel = command->getParameters()[2];
+	Server		*server;
+	Channel		*channel;
+	Client		*senderClient;
+	Client		*targetClient;
+	std::string	nicknameStr;
+	std::string	channelStr;
 
-	if (target[0] == '#')
-		return senderClient->sendReply(ERR_NOSUCHNICK(target));
-	Client *targetClient = server->getClient(target);
-	if (targetClient == NULL)
-		return senderClient->sendReply(ERR_NOSUCHNICK(target));
-	// if (targetClient->getMode('i') && !targetClient->isClientInChannel(server->getChannel(channel)))
-		// return senderClient->sendReply(ERR_USERNOTINCHANNEL(target, channel));
-	targetClient->send(":" + senderClient->getPrefix() + " INVITE " + target + " :" + channel);
+	senderClient = command->getClient();
+	server = senderClient->getServer();
+
+	// ERR_NEEDMOREPARAMS if no parameters are given
+	if (command->getParameters().size() < 3)
+		return senderClient->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
+
+	// ERR_NOSUCHNICK if the sender is not registered
+	nicknameStr = command->getParameters()[1];
+	if (server->getClient(nicknameStr) == NULL)
+		return senderClient->sendReply(ERR_NOSUCHNICK(nicknameStr));
+
+	channelStr = command->getParameters()[2];
+	if (server->getChannel(channelStr))
+	{
+		channel = server->getChannel(channelStr);
+
+		// ERR_NOTONCHANNEL if the sender is not on the channel
+		if (!channel->isClientInChannel(senderClient))
+			return senderClient->sendReply(ERR_NOTONCHANNEL(channelStr));
+		
+		// ERR_USERONCHANNEL if the target is already on the channel
+		if (channel->isClientInChannel(server->getClient(nicknameStr)))
+			return senderClient->sendReply(ERR_USERONCHANNEL(targetClient->getUsername(), channelStr));
+	}
+
+	// ERR_CHANOPRIVSNEEDED if the sender is not a channel operator
+	// if (!channel->isClientOperator(senderClient))
+	// 	return senderClient->sendReply(ERR_CHANOPRIVSNEEDED(channelStr));
+
+	targetClient = server->getClient(nicknameStr);
+	targetClient->sendFrom(senderClient, "INVITE " + nicknameStr + " " + channelStr);
+	senderClient->sendReply(RPL_INVITING(channelStr, nicknameStr));
 }
 
 /*
