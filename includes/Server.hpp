@@ -44,6 +44,8 @@ class	Server {
 		Channel*				getChannel(std::string name);
 		std::vector<Channel >	getChannels();
 
+		bool					isClientInServer(std::string client);
+
 	private:
 		int									_fd;
 		int									_port;

@@ -16,8 +16,9 @@ Server::Server(const int &port, const std::string &password) : _fd(-1),
 															   _password(password),
 															   _nbClients(0) {}
 
-Server::~Server() {
-	std::map<int, Client*>::iterator	it;
+Server::~Server()
+{
+	std::map<int, Client *>::iterator it;
 
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete (*it).second;
@@ -31,59 +32,100 @@ int	Server::initError(const int &exit_code, const std::string &error) {
 	return exit_code;
 }
 
-int	Server::init() {
+/* 
+ * init() function:
+ * 1. Create a new socket
+ * 2. Set socket options
+ * 3. Set the socket to non-blocking mode
+ * 4. Assign address for the socket
+ * 5. Listen to the given port
+*/
+int Server::init()
+{
 	int socketFd = -1;
 	int opt = 1;
 
-	struct sockaddr_in	address;
+	struct sockaddr_in address;
 
+	// init server socket
+	// -> AF_INET: IPv4
+	// -> SOCK_STREAM: TCP
 	socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (socketFd == -1)
 		return initError(1, "Can't open new socket.");
 
-	#ifdef __linux__
-		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
-			return initError(2, "Can't set option(s) to server socket.");
-	#else
-		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
-			return initError(2, "Can't set option(s) to server socket.");
-	#endif
+	// set socket options
+	// -> SOL_SOCKET: socket level
+	// [ allow several clients on the same time ]
+	// -> SO_REUSEADDR: allow reuse of local addresses 
+	// -> SO_REUSEPORT: allow reuse of local ports
+#ifdef __linux__
+	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1)
+		return initError(2, "Can't set option(s) to server socket.");
+#else
+	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+		return initError(2, "Can't set option(s) to server socket.");
+#endif
 
+	// fcntl use to modify the file descriptor properties
+	// -> F_SETFL: set the file descriptor flags
+	// -> O_NONBLOCK: set the file descriptor to non-blocking mode
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) == -1)
 		return (initError(3, "Can't set the socket to O_NONBLOCK."));
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(this->_port);
-	if (bind(socketFd, (struct sockaddr*)&address, sizeof(address)) == -1)
+
+	// bind the socket to the given port and address to listen to it
+	if (bind(socketFd, (struct sockaddr *)&address, sizeof(address)) == -1)
 		return (initError(4, "Can't assign address for the socket (using bind function)."));
 
+	// listen to the given port and address
 	if (listen(socketFd, address.sin_port) == -1)
 		return (initError(5, "Can't listen to the given port."));
 
 	this->_fd = socketFd;
-	this->_pfds.push_back(pollfd());
-	this->_pfds.back().fd = socketFd;
-	this->_pfds.back().events = POLLIN;
+	this->_pfds.push_back(pollfd()); // add the server socket to the pollfd vector
+	this->_pfds.back().fd = socketFd; // set the server socket fd
+	this->_pfds.back().events = POLLIN; // set the server socket to listen to POLLIN events
 	return 0;
 }
 
-void	Server::acceptClient() {
-	int					fd;
-	socklen_t			cliLenght;
-	struct sockaddr_in	address;
+/*
+ * acceptClient() function:
+ * 1. Accept a new client
+ * 2. Set the client's fd to non-blocking mode
+ * 3. Add the client's fd to the pollfd vector
+ * 4. Add the client to the clients map
+ * 5. Print a log message
+ * 6. Increment the number of clients
+ * 7. Check if the number of clients is greater than the maximum number of clients
+ * 8. If so, send a 433 ERR_NICKNAMEINUSE message to the client
+*/
+void Server::acceptClient()
+{
+	int fd;
+	socklen_t cliLenght;
+	struct sockaddr_in address;
 
 	cliLenght = sizeof(address);
-	fd = accept(this->_fd, (struct sockaddr*)&address, &cliLenght);
-	if (fd == -1)
-		return ;
 
+	// accept a new client
+	fd = accept(this->_fd, (struct sockaddr *)&address, &cliLenght);
+	if (fd == -1)
+		return;
+
+	// set the client's fd to non-blocking mode -> to allo the server to listen to other clients
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		initError(1, "Can't set a client's fd to O_NONBLOCK.");
 
+	// same as the server socket -> in server.init()
 	this->_pfds.push_back(pollfd());
 	this->_pfds.back().fd = fd;
 	this->_pfds.back().events = POLLIN;
+
+	// add the client to the clients map
 	this->_clients[fd] = new Client(fd, inet_ntoa(address.sin_addr), this);
 	printLog("New connection has been registered (fd: " + intToString(fd) + ").", SERVER, fd);
 	this->_nbClients++;
@@ -94,23 +136,41 @@ void	Server::acceptClient() {
 	}
 }
 
-void	Server::run() {
-	static int	lastPing = std::time(NULL);
+/* poll() function:
+*  poll prototype: int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+*  	-> fds: an array of pollfd structures
+*  	-> nfds: the number of file descriptors in the array
+*  	-> timeout: the number of milliseconds to wait for an event
+*  1. Wait for an event on a file descriptor
+*  2. If an event occurs, return the number of file descriptors with events
+*  3. If no event occurs, return 0
+*  4. If an error occurs, return -1
+*  5. If timeout is reached, return 0
+*/
+void Server::run()
+{
+	// lastPing is used to send pings to the clients every ping_delay seconds
+	static int lastPing = std::time(NULL);
+	std::vector<pollfd>::iterator it;
 
-	std::vector<pollfd>::iterator	it;
-
+	// the goal of this function is to check if there is an event on the server socket or on the client sockets
 	if (poll(&this->_pfds[0], this->_pfds.size(), atoi(this->_config.get("ping").c_str()) * 1000) == -1)
-		return ;
+		return;
 
-	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str())) {
+	// if the time elapsed since the last ping is greater than the ping_delay, send pings to the clients
+	if (std::time(NULL) - lastPing >= atoi(this->_config.get("ping_delay").c_str()))
+	{
 		sendPings();
 		lastPing = std::time(NULL);
 	}
-	else {
+	else
+	{
 		if (this->_pfds[0].revents == POLLIN)
 			this->acceptClient();
-		else {
-			for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
+		else
+		{
+			for (it = this->_pfds.begin(); it != this->_pfds.end(); it++)
+			{
 				if ((*it).revents == POLLIN)
 					receiveEntries(it);
 			}
@@ -166,15 +226,18 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 
 		pos = lastPos;
 		if (commandBuffer.find("CAP LS") != std::string::npos)
-			continue ;
+			continue;
 
 		Command	command(user, commandBuffer);
 		command.execute();
 	}
-	if (user->status == FULLYREGISTER) {
-		if (user->getNickname().empty()) {
+	// test if the client has been registered and if it has a nickname
+	if (user->status == FULLYREGISTER)
+	{
+		if (user->getNickname().empty())
+		{
 			user->status = DISCONNECTED;
-			return ;
+			return;
 		}
 		printLog(user->getNickname() + "(" + intToString(user->getFd()) + ")" + " has been connected.", SERVER);
 		user->status = CONNECTED;
@@ -182,31 +245,51 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 	}
 }
 
-static void	deleteClientPollFd(std::vector<pollfd>& pfds, int fd) {
-	std::vector<pollfd>::iterator	it;
+/*
+* deleteClientPollFd() function: called with the pollfd vector and the client's fd
+* called in the deleteClients() function
+* 1. Delete the client's pollfd from the pollfd vector
+*/
+static void deleteClientPollFd(std::vector<pollfd> &pfds, int fd)
+{
+	std::vector<pollfd>::iterator it;
 
-	for (it = pfds.begin(); it != pfds.end(); it++) {
-		if ((*it).fd == fd) {
+	for (it = pfds.begin(); it != pfds.end(); it++)
+	{
+		if ((*it).fd == fd)
+		{
 			pfds.erase(it);
-			break ;
+			break;
 		}
 	}
 }
 
-void	Server::deleteClients() {
-	std::map<int, Client*>::iterator	it;
+/*
+ * deleteClients() function: called at the end of the run() function
+ * 1. If a client has been disconnected, add it to the usersToDelete vector
+ * 2. If there is no client to delete, return
+ * 3. Delete the clients in the usersToDelete vector
+ * 4. Delete the client's pollfd from the pollfd vector
+ * 5. Delete the client from the clients map
+*/
+void Server::deleteClients()
+{
+	std::map<int, Client *>::iterator it;
 
-	std::vector<Client*>				usersToDelete;
-	std::vector<Client*>::iterator		deleteIt;
+	std::vector<Client *> usersToDelete;
+	std::vector<Client *>::iterator deleteIt;
 
+	// if a client has been disconnected, add it to the usersToDelete vector
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		if ((*it).second->status == DISCONNECTED)
 			usersToDelete.push_back((*it).second);
 
 	if (!usersToDelete.size())
-		return ;
+		return;
 
-	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++) {
+	// delete the clients in the usersToDelete vector
+	for (deleteIt = usersToDelete.begin(); deleteIt != usersToDelete.end(); deleteIt++)
+	{
 		(*deleteIt)->sendTo("QUIT :" + (*deleteIt)->getQuitMessage());
 		this->kickClientFromAllChannels((*deleteIt));
 		printLog((*deleteIt)->getNickname() + "(" + intToString((*deleteIt)->getFd()) + ")" + " has been disconnected. (" + (*deleteIt)->getQuitMessage() + ")", SERVER);
@@ -219,14 +302,16 @@ void	Server::deleteClients() {
 	}
 }
 
-void	Server::sendPings() {
-	int	timeout = atoi(this->_config.get("timeout").c_str());
+void Server::sendPings()
+{
+	int timeout = atoi(this->_config.get("timeout").c_str());
 
-	std::map<int, Client*>::iterator	it;
+	std::map<int, Client *>::iterator it;
 
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+	{
 		if ((*it).second->status != CONNECTED)
-			continue ;
+			continue;
 
 		if (std::time(NULL) - (*it).second->getLastPing() >= timeout) {
 			(*it).second->status = DISCONNECTED;
@@ -299,20 +384,24 @@ int	Server::getSocketFd() const {
 	return this->_fd;
 }
 
-int	Server::getPort() const {
+int Server::getPort() const
+{
 	return this->_port;
 }
 
-std::string&	Server::getPassword() {
+std::string &Server::getPassword()
+{
 	return this->_password;
 }
 
-Config&	Server::getConfig() {
+Config &Server::getConfig()
+{
 	return this->_config;
 }
 
-Client*	Server::getClient(std::string nickname) {
-	std::map<int, Client*>::iterator	it;
+Client *Server::getClient(std::string nickname)
+{
+	std::map<int, Client *>::iterator it;
 
 	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
 		if ((*it).second->getNickname() == nickname)
@@ -321,7 +410,8 @@ Client*	Server::getClient(std::string nickname) {
 	return NULL;
 }
 
-std::map<int, Client*>&	Server::getClients() {
+std::map<int, Client *> &Server::getClients()
+{
 	return this->_clients;
 }
 
@@ -342,4 +432,15 @@ std::vector<Channel> Server::getChannels()
 		channels.push_back((*chanIt).second);
 	}
 	return channels;
+}
+
+bool Server::isClientInServer(std::string client)
+{
+	std::map<int, Client *>::iterator it;
+
+	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+		if ((*it).second->getNickname() == client)
+			return true;
+
+	return false;
 }

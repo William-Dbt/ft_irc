@@ -23,7 +23,7 @@ Client::Client(const int& fd, const std::string& host, Server* server) : status(
 	// this->_commands["PART"] = PART;
 	this->_commands["TOPIC"] = TOPIC;
 	this->_commands["INVITE"] = INVITE;
-	// this->_commands["KICK"] = KICK;
+	this->_commands["KICK"] = KICK;
 	this->_commands["PRIVMSG"] = PRIVMSG;
 	this->_commands["motd"] = MOTD;
 	this->_commands["version"] = VERSION;
@@ -58,6 +58,10 @@ void	Client::send(std::string message) {
 	printLog(message, SENDING, this->_fd);
 }
 
+/*
+* This function is used to send a message to a client.
+* called by Server.deleteClient() with "QUIT :Server closed"
+*/
 void	Client::sendTo(std::string message) {
 	std::string	buffer;
 
@@ -204,6 +208,11 @@ Server*	Client::getServer() {
 	return this->_server;
 }
 
+
+/*
+* getCommands
+* called by Command.execute()
+*/
 std::map<std::string, void (*)(Command*)>&	Client::getCommands() {
 	return this->_commands;
 }
