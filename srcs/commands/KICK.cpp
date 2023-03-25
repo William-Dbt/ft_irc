@@ -31,11 +31,16 @@ void KICK(Command *command)
 
     // check if params[2] is a valid nickname
     //  1. check if the nickname is in the server
-    if (!server->isClientInServer(params[2]))
+    std::cout << "KICK start"<< std::endl;
+    Client *clientToKick = server->getClient(params[2]);
+    if (!clientToKick)
+    {
+        std::cout << "KICK: clientToKick is NULL" << std::endl;
         return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[2]));
+    }
+    std::cout << "KICK end"<< std::endl;
 
     //  2. check if the nickname is in the channel
-    Client *clientToKick = server->getClient(params[2]);
 	if (!channel->isClientInChannel(clientToKick))
 		return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[2]));
 

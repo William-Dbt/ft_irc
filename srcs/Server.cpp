@@ -433,14 +433,3 @@ std::vector<Channel> Server::getChannels()
 	}
 	return channels;
 }
-
-bool Server::isClientInServer(std::string client)
-{
-	std::map<int, Client *>::iterator it;
-
-	for (it = this->_clients.begin(); it != this->_clients.end(); it++)
-		if ((*it).second->getNickname() == client)
-			return true;
-
-	return false;
-}
