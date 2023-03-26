@@ -1,13 +1,13 @@
 #include "Command.hpp"
 
-static bool	isValidUserModeParam(std::string param) {
+static bool	isValidUserModeParam(std::string param, Config* config) {
 	std::string::iterator	it = param.begin();
 
 	if ((*it) == '+' || (*it) == '-')
 		it++;
 
 	while (it != param.end()) {
-		if (!isValidUserMode((*it)))
+		if (!isValidUserMode((*it), config))
 			return false;
 
 		it++;
@@ -37,7 +37,7 @@ void	MODE(Command* command) {
 		return client->sendReply(RPL_UMODEIS(modes));
 	}
 
-	if (!isValidUserModeParam(command->getParameters()[2]))
+	if (!isValidUserModeParam(command->getParameters()[2], &command->getServer()->getConfig()))
 		return client->sendReply(ERR_UMODEUNKNOWNFLAG());
 
 	modes = command->getParameters()[2];
