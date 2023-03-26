@@ -15,6 +15,7 @@
 
 # include <string>
 # include "Client.hpp"
+# include "Config.hpp"
 
 enum	e_prefix {
 	RECEIVED = 0,
@@ -26,7 +27,7 @@ enum	e_prefix {
 std::string	getCurrentDateTime(bool both = true, bool onlyDate = false);
 std::string	intToString(int value);
 
-bool	isValidUserMode(char c);
+bool	isValidUserMode(char c, Config* config);
 bool	isSpecial(char c);
 bool	isLetter(char c);
 bool	isDigit(char c);
