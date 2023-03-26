@@ -24,6 +24,9 @@ void	MODE(Command* command) {
 	if (command->getParameters().size() == 1)
 		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
+	if (command->getParameters()[1][0] == '#')
+		return client->send("Channel mods aren't supported by this server.");
+
 	if (client->getNickname() != command->getParameters()[1])
 		return client->sendReply(ERR_USERSDONTMATCH());
 
@@ -36,7 +39,6 @@ void	MODE(Command* command) {
 		}
 		return client->sendReply(RPL_UMODEIS(modes));
 	}
-
 	if (!isValidUserModeParam(command->getParameters()[2], &command->getServer()->getConfig()))
 		return client->sendReply(ERR_UMODEUNKNOWNFLAG());
 
