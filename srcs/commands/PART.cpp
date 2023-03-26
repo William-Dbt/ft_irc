@@ -1,18 +1,25 @@
 #include "Command.hpp"
 
-void PART(Command *command)
+void message_part(Channel *channel, Client *clientToKick, std::string message)
 {
-    Client *client = command->getClient();
-    Server *server = client->getServer();
-    std::vector<std::string> params = command->getParameters();
+    std::map<int, Client *> clients = channel->getClients();
+    for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+        (*it).second->sendTo("PART " + channel->getName() + " " + clientToKick->getNickname() + " " + message);
+}
 
-    //print params
-    for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
+void execute_part(std::vector<std::string> channels_name, Client *client, Command *command)
+{
+    std::string message = command->getEndParam();
+    for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
     {
-        std::cout << *it << std::endl;
+        Channel *channel = client->getServer()->getChannel(*it);
+        message_part(channel, client, message);
+        channel->removeClient(client);
     }
-    std::cout << std::endl;
+}
 
+void parsing_part(Command *command, Client *client, Server *server, std::vector<std::string> params)
+{
     // check if the command has enough params
     if (params.size() < 2)
         return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
@@ -31,12 +38,21 @@ void PART(Command *command)
         if (!server->getChannel(*it))
             return client->sendReply(ERR_NOSUCHCHANNEL(*it));
     }
+    execute_part(channels_name, client, command);
+}
 
+void PART(Command *command)
+{
+    Client *client = command->getClient();
+    Server *server = client->getServer();
+    std::vector<std::string> params = command->getParameters();
 
-    // remove the client from the channel
-    for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
+    //print params
+    for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
     {
-        Channel *channel = server->getChannel(*it);
-        channel->removeClient(client);
+        std::cout << *it << std::endl;
     }
+    std::cout << std::endl;
+
+    parsing_part(command, client, server, params);
 }
