@@ -28,8 +28,8 @@ std::string	intToString(int value) {
 }
 
 // user_modes = a i w r o s
-bool	isValidUserMode(char c) {
-	if (c == 'a' || c == 'i' || c == 'w' || c == 'r' || c == 'o' || c == 's')
+bool	isValidUserMode(char c, Config* config) {
+	if (config->get("user_mods").find(c) != std::string::npos)
 		return true;
 
 	return false;
