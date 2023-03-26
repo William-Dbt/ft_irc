@@ -1,10 +1,19 @@
 #include "Command.hpp"
 
-void execute_part(std::vector<std::string> channels_name, Client *client)
+void message_part(Channel *channel, Client *clientToKick, std::string message)
 {
+    std::map<int, Client *> clients = channel->getClients();
+    for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+        (*it).second->sendTo("PART " + channel->getName() + " " + clientToKick->getNickname() + " " + message);
+}
+
+void execute_part(std::vector<std::string> channels_name, Client *client, Command *command)
+{
+    std::string message = command->getEndParam();
     for (std::vector<std::string>::iterator it = channels_name.begin(); it != channels_name.end(); ++it)
     {
         Channel *channel = client->getServer()->getChannel(*it);
+        message_part(channel, client, message);
         channel->removeClient(client);
     }
 }
@@ -29,7 +38,7 @@ void parsing_part(Command *command, Client *client, Server *server, std::vector<
         if (!server->getChannel(*it))
             return client->sendReply(ERR_NOSUCHCHANNEL(*it));
     }
-    execute_part(channels_name, client);
+    execute_part(channels_name, client, command);
 }
 
 void PART(Command *command)
