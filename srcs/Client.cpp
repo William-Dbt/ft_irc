@@ -48,7 +48,7 @@ void Client::connectToClient(Server &server)
 	this->sendReply(RPL_WELCOME(this->getNickname(), this->getUsername(), this->getHost()));
 	this->sendReply(RPL_YOURHOST(server.getConfig().get("server_name"), server.getConfig().get("version")));
 	this->sendReply(RPL_CREATED(getCurrentDateTime()));
-	this->sendReply(RPL_MYINFO(server.getConfig().get("server_name"), server.getConfig().get("version"), server.getConfig().get("user_mods"), server.getConfig().get("channel_mods")));
+	this->sendReply(RPL_MYINFO(server.getConfig().get("server_name"), server.getConfig().get("version"), server.getConfig().get("user_mods"), "channel mods not supported"));
 
 	Command command(this, "motd");
 	MOTD(&command);
