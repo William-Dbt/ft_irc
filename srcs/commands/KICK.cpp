@@ -1,47 +1,37 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
-void message_kick(Channel *channel, Client * clientsToKick, std::string message)
+void message_kick(Channel *channel, Client * clientsToKick, std::string message, Client *sender)
 {
     std::map<int, Client *>clients = channel->getClients();
 
     for (std::map<int, Client *>::iterator it_channel = clients.begin(); it_channel != clients.end(); ++it_channel)
-            (*it_channel).second->sendTo("KICK " + channel->getName() + " " + clientsToKick->getNickname() + " " + message);
+            (*it_channel).second->sendFrom(sender, "KICK " + channel->getName() + " " + clientsToKick->getNickname() + " " + message);
 }
 
-void execute_kick(std::vector<Channel*> channels, std::vector<Client*> clients, Command *command)
+void execute_kick(std::vector<Channel*> channels, std::vector<Client*> clients, Command *command, Client *sender)
 {
 
     std::string message = command->getEndParam();
-    if (channels.size() == 1)
+    for (std::vector<Client*>::iterator client_it = clients.begin(); client_it != clients.end(); ++client_it)
     {
-        for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
-            message_kick(channels[0], *it, message);
-        for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
-        {
-            channels[0]->removeClient(*it);
-        }
-    }
-    else
-    {
-        std::vector<Client*>::iterator client_it = clients.begin();
         for (std::vector<Channel*>::iterator channel_it = channels.begin(); channel_it != channels.end(); ++channel_it)
         {
-                message_kick(*channel_it, *client_it, message);
-                (*channel_it)->removeClient(*client_it);
-                ++client_it;
+            message_kick(*channel_it, *client_it, message, sender);
+            (*channel_it)->removeClient(*client_it);
         }
     }
-
 }
 
 
 void parsing_kick(Command *command, Client *client, Server *server, std::vector<std::string> params)
 {
-    //print parameters 
+    //print parameters
+    int index = 0;
     for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
     {
-        std::cout << *it << std::endl;
+        std::cout << "[" << index << "]" << *it << std::endl;
+        index++;
     }
 
     // check if the command has enough params
@@ -63,7 +53,7 @@ void parsing_kick(Command *command, Client *client, Server *server, std::vector<
             return client->sendReply(ERR_NOSUCHCHANNEL(*it));
     }
 
-    // check if client exist nickname
+    // checking the client
     //  1. check if the nickname is in the server
     std::vector<std::string> clients_name = command->multipleParams(params[2]);
     for (std::vector<std::string>::iterator it = clients_name.begin(); it != clients_name.end(); ++it)
@@ -80,35 +70,16 @@ void parsing_kick(Command *command, Client *client, Server *server, std::vector<
     for (std::vector<std::string>::iterator it = clients_name.begin(); it != clients_name.end(); ++it)
         clients.push_back(server->getClient(*it));
 
-    // check if the client is in the channel
-    // 1. if there is only one channel, check if the clients are in the channel
-    // 2. if there is more than one channel, check if clients are with their channel
-    if (channels.size() == 1)
+    // 2. check if the client is in the channel
+    for (std::vector<Channel*>::iterator it_channel = channels.begin(); it_channel != channels.end(); ++it_channel)
     {
         for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
         {
-            if (!channels[0]->isClientInChannel(*it))
+            if (!(*it_channel)->isClientInChannel(*it))
                 return client->sendReply(ERR_NOTONCHANNEL((*it)->getNickname()));
         }
     }
-    else
-    {
-        if (channels.size() > clients.size())
-            return client->sendReply(ERR_NEEDMOREPARAMS(params[0]));
-        else
-        {
-            // inverse channels and clients
-            std::vector<Client*>:: iterator clients_it = clients.begin();
-            for (std::vector<Channel*>::iterator channels_it = channels.begin(); channels_it != channels.end(); ++channels_it)
-            {
-                if (!(*channels_it)->isClientInChannel(*clients_it))
-                    return client->sendReply(ERR_NOTONCHANNEL((*channels_it)->getName()));
-                ++clients_it;
-            }
-        }
-    }
-    
-    execute_kick(channels, clients, command);
+    execute_kick(channels, clients, command, client);
 }
 
 void KICK(Command *command)
