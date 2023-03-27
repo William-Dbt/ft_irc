@@ -8,6 +8,15 @@ void PRIVMSG(Command *command)
 	std::string	message = command->getEndParam();
 	std::string	target = command->getParameters()[1];
 
+	if (message.empty())
+		return senderClient->sendReply(ERR_NOTEXTTOSEND());
+
+	if (target.empty())
+		return senderClient->sendReply(ERR_NORECIPIENT(command->getParameters()[0]));
+
+	if (server->getClient(target) == NULL && server->getChannel(target) == NULL)
+		return senderClient->sendReply(ERR_NOSUCHNICK(target));
+
 	if (target[0] == '#')
 	{
 		Channel *channel = server->getChannel(target);
@@ -27,6 +36,8 @@ void PRIVMSG(Command *command)
 		Client *targetClient = server->getClient(target);
 		if (targetClient == NULL)
 			return senderClient->sendReply(ERR_NOSUCHNICK(target));
+		if (targetClient->isModeInUse('a'))
+			senderClient->sendReply(RPL_AWAY(targetClient->getNickname(), targetClient->getAwayMessage()));
 		targetClient->sendFrom(senderClient, "PRIVMSG " + target + " :" + message);
 	}
 
