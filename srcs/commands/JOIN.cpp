@@ -69,7 +69,7 @@ void JOIN(Command *command)
 		Channel *channel = server->getChannel(*it);
 		if (channel == NULL)
 		{
-			server->addChannel(*it);
+			server->addChannel(*it, client);
 			channel = server->getChannel(*it);
 			if (channelsKeys.size())
 			{
@@ -89,6 +89,9 @@ void JOIN(Command *command)
 			}
 			else
 				Key = "";
+
+			if (channel->getInviteStatus() && !channel->isClientInvited(client))
+				return client->sendReply(ERR_INVITEONLYCHAN(channel->getName()));
 
 			if (isKeyCorrect(channel, Key))
 				channel->addClient(client);

@@ -27,6 +27,13 @@ std::string	intToString(int value) {
 	return buffer;
 }
 
+std::string	charToString(char c) {
+	std::string	buffer;
+
+	buffer.append(1, c);
+	return buffer;
+}
+
 // user_modes = a i w r o s
 bool	isValidUserMode(char c, Config* config) {
 	if (config->get("user_mods").find(c) != std::string::npos)
