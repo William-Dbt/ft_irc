@@ -24,10 +24,9 @@ void	INVITE(Command *command)
 	targetClient = server->getClient(nicknameStr);
 	channelStr = command->getParameters()[2];
 
-	if (server->getChannel(channelStr))
+	channel = server->getChannel(channelStr);
+	if (channel)
 	{
-		channel = server->getChannel(channelStr);
-
 		// ERR_NOTONCHANNEL if the sender is not on the channel
 		if (!channel->isClientInChannel(senderClient))
 			return senderClient->sendReply(ERR_NOTONCHANNEL(channelStr));
@@ -36,14 +35,14 @@ void	INVITE(Command *command)
 		if (channel->isClientInChannel(server->getClient(nicknameStr)))
 			return senderClient->sendReply(ERR_USERONCHANNEL(targetClient->getUsername(), channelStr));
 	}
-
 	// ERR_CHANOPRIVSNEEDED if the sender is not a channel operator
-	// if (!channel->isClientOperator(senderClient))
-	// 	return senderClient->sendReply(ERR_CHANOPRIVSNEEDED(channelStr));
+	if (channel->getInviteStatus() == true && !channel->isClientOperator(senderClient))
+		return senderClient->sendReply(ERR_CHANOPRIVSNEEDED(channelStr));
 
 	if (targetClient->isModeInUse('a'))
 		senderClient->sendReply(RPL_AWAY(nicknameStr, targetClient->getAwayMessage()));
 
+	channel->addInvitedClient(targetClient);
 	targetClient->sendFrom(senderClient, "INVITE " + nicknameStr + " " + channelStr);
 	senderClient->sendReply(RPL_INVITING(channelStr, nicknameStr));
 }

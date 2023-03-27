@@ -342,10 +342,12 @@ void Server::sendPings()
 	// 	std::cout << KYEL << "Client " << (*clientIt).second->getNickname() << KRESET << std::endl;
 }
 
-void	Server::addChannel(std::string name)
+void	Server::addChannel(std::string name, Client* client)
 {
 	Channel &channel = _channels[name];
 	channel.setName(name);
+	channel.setOperator(client);
+	channel.setInviteStatus(false);
 }
 
 void	Server::deleteChannel(std::string name)
