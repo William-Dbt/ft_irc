@@ -30,7 +30,7 @@ class	Server {
 
 		void	sendPings();
 
-		void	addChannel(std::string name);
+		void	addChannel(std::string name, Client* client);
 		void	deleteChannel(std::string name);
 		void	kickClientFromChannel(Client* client, Channel* channel);
 		void	kickClientFromAllChannels(Client* client);

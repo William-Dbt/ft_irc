@@ -26,6 +26,7 @@ enum	e_prefix {
 
 std::string	getCurrentDateTime(bool both = true, bool onlyDate = false);
 std::string	intToString(int value);
+std::string	charToString(char c);
 
 bool	isValidUserMode(char c, Config* config);
 bool	isSpecial(char c);

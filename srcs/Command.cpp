@@ -46,7 +46,7 @@ void	Command::execute() {
 		this->_client->getCommands().at(this->_parameters[0])(this);
 	}
 	catch (std::exception & e) {
-		this->_client->send("- The command " + this->_parameters[0] + " isn't known by the server " + this->_server->getConfig().get("server_name") + ".");
+		printLog("The command " + this->_parameters[0] + " isn't known by the server " + this->_server->getConfig().get("server_name") + ".", SERVER);
 	}
 }
 

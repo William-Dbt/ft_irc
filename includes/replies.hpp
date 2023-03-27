@@ -30,6 +30,7 @@
 # define ERR_ALREADYREGISTRED() "462:Unauthorized command (already registered)"
 # define ERR_PASSWDMISMATCH() "464:Password incorrect"
 # define ERR_CHANNELISFULL(channel) "471" + channel + " :Cannot join channel (+l)"
+# define ERR_UNKNOWNMODE(mode, channel) "472" + mode + " :is unknown mode char to me for " + channel
 # define ERR_INVITEONLYCHAN(channel) "473" + channel + " :Cannot join channel (+i)"
 # define ERR_BANNEDFROMCHAN(channel) "474" + channel + " :Cannot join channel (+b)"
 # define ERR_BADCHANNELKEY(channel) "475" + channel + " :Cannot join channel (+k)"
@@ -55,12 +56,11 @@
 # define RPL_NOTOPIC(channel) "331" + channel + " :No topic is set"
 # define RPL_TOPIC(channel, topic) "332" + channel + " :" + topic
 # define RPL_UMODEIS(usermode) "221" + usermode
+# define RPL_CHANNELMODEIS(channel, mode, modeParams) "324" + channel + mode + modeParams
 # define RPL_YOUREOPER() "381:You are now an IRC operator"
 # define RPL_NAMREPLY(channel, users) "353= " + channel + " :" + users
 # define RPL_ENDOFNAMES(channel) "366" + channel + " :End of /NAMES list"
 # define RPL_LIST(channel, visible, topic) "322" + channel + " " + visible + " :" + topic
 # define RPL_LISTEND() "323:End of LIST"
 
-
 #endif
-
