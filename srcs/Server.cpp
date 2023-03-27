@@ -433,3 +433,13 @@ std::vector<Channel> Server::getChannels()
 	}
 	return channels;
 }
+
+std::vector<std::string >	Server::getChannelsNames()
+{
+	std::map<std::string, Channel>::iterator	chanIt;
+	std::vector<std::string >					channelsNames;
+	for (chanIt = this->_channels.begin(); chanIt != this->_channels.end(); chanIt++) {
+		channelsNames.push_back((*chanIt).second.getName());
+	}
+	return channelsNames;
+}

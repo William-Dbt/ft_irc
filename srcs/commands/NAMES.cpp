@@ -2,25 +2,25 @@
 
 void NAMES(Command *command)
 {
-	std::vector<std::string>	chanels;
+	std::vector<std::string>	channels;
 	Channel*					channel;
 
 	if (command->getParameters().size() == 3)
 		return command->getClient()->sendReply(ERR_NOSUCHSERVER(command->getParameters()[2]));
 
-	chanels = command->multipleParams(command->getParameters()[1]);
+	channels = command->multipleParams(command->getParameters()[1]);
 
-	while (chanels.size() > 0)
+	while (channels.size() > 0)
 	{
-		if (command->getServer()->getChannel(chanels[0]) == NULL)
-			command->getClient()->sendReply(RPL_ENDOFNAMES(chanels[0]));
+		if (command->getServer()->getChannel(channels[0]) == NULL)
+			command->getClient()->sendReply(RPL_ENDOFNAMES(channels[0]));
 		else
 		{
-			channel = command->getServer()->getChannel(chanels[0]);
-			command->getClient()->sendReply(RPL_NAMREPLY(chanels[0], channel->getClientsNicknames()));
-			command->getClient()->sendReply(RPL_ENDOFNAMES(chanels[0]));
+			channel = command->getServer()->getChannel(channels[0]);
+			command->getClient()->sendReply(RPL_NAMREPLY(channels[0], channel->getClientsNicknames()));
+			command->getClient()->sendReply(RPL_ENDOFNAMES(channels[0]));
 		}
-		chanels.erase(chanels.begin());
+		channels.erase(channels.begin());
 	}
 }
 
