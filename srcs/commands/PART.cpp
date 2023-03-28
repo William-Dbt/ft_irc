@@ -56,3 +56,18 @@ void PART(Command *command)
 
     parsing_part(command, client, server, params);
 }
+
+
+
+/* 
+
+[2023-03-28 18:51:11] 4 > :ema!uxlebaux@localhost PART #42
+[2023-03-28 18:51:11] 5 > :ema!uxlebaux@localhost PART #42
+
+
+18:51:41:-->   {5}[:pepe!uxlebaux@127.0.0.1 PART #42 ema #42
+18:51:41:-->   {6}[:ema!uxlebaux@127.0.0.1 PART #42 ema #42
+
+
+
+ */
