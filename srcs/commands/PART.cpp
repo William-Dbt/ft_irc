@@ -3,8 +3,10 @@
 void message_part(Channel *channel, Client *clientToKick, std::string message)
 {
     std::map<int, Client *> clients = channel->getClients();
-    for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
-        (*it).second->sendTo("PART " + channel->getName() + " " + clientToKick->getNickname() + " " + message);
+
+    for (std::map<int, Client *>::iterator it_channel = clients.begin(); it_channel != clients.end(); ++it_channel)
+        (*it_channel).second->sendFrom(clientToKick, "PART " + channel->getName() + " " + message);
+
 }
 
 void execute_part(std::vector<std::string> channels_name, Client *client, Command *command)
@@ -47,12 +49,20 @@ void PART(Command *command)
     Server *server = client->getServer();
     std::vector<std::string> params = command->getParameters();
 
-    //print params
-    for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it)
-    {
-        std::cout << *it << std::endl;
-    }
-    std::cout << std::endl;
-
     parsing_part(command, client, server, params);
 }
+
+
+
+/* 
+
+[2023-03-28 18:51:11] 4 > :ema!uxlebaux@localhost PART #42
+[2023-03-28 18:51:11] 5 > :ema!uxlebaux@localhost PART #42
+
+
+18:51:41:-->   {5}[:pepe!uxlebaux@127.0.0.1 PART #42 ema #42
+18:51:41:-->   {6}[:ema!uxlebaux@127.0.0.1 PART #42 ema #42
+
+
+
+ */
