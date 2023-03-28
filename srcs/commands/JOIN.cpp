@@ -102,7 +102,7 @@ void JOIN(Command *command)
 		client->sendReply(RPL_ENDOFNAMES(*it));
 		if (!channel->getTopic().empty())
 			client->sendReply(RPL_TOPIC(*it, channel->getTopic()));
-		channel->sendToAllClients(":" + client->getNickname() + " JOIN " + *it);
+		// channel->sendToAllClients(":" + client->getNickname() + " JOIN " + *it);
 	}
 }
 
