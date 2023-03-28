@@ -12,7 +12,7 @@ void	msgForChannels(Server* server, Client* client)
 
 	while (channelsWhereClientIs.size() > 0)
 	{
-		channelsWhereClientIs[0]->sendToAllClients(":" + client->getNickname() + " QUIT :" + client->getQuitMessage());
+		channelsWhereClientIs[0]->sendToAllClients(":" + client->getPrefix() + " QUIT :" + client->getQuitMessage());
 		channelsWhereClientIs.erase(channelsWhereClientIs.begin());
 	}
 }
