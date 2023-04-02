@@ -35,14 +35,15 @@ class	Server {
 		void	kickClientFromChannel(Client* client, Channel* channel);
 		void	kickClientFromAllChannels(Client* client);
 
-		int						getSocketFd() const;
-		int						getPort() const;
-		std::string&			getPassword();
-		Config&					getConfig();
-		Client*					getClient(std::string nickname);
-		std::map<int, Client*>&	getClients();
-		Channel*				getChannel(std::string name);
-		std::vector<Channel >	getChannels();
+		int							getSocketFd() const;
+		int							getPort() const;
+		std::string&				getPassword();
+		Config&						getConfig();
+		Client*						getClient(std::string nickname);
+		std::map<int, Client*>&		getClients();
+		Channel*					getChannel(std::string name);
+		std::vector<Channel >		getChannels();
+		std::vector<std::string>	getChannelsNames();
 
 		bool					isClientInServer(std::string client);
 

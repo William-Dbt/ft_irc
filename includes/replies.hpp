@@ -60,5 +60,7 @@
 # define RPL_YOUREOPER() "381:You are now an IRC operator"
 # define RPL_NAMREPLY(channel, users) "353= " + channel + " :" + users
 # define RPL_ENDOFNAMES(channel) "366" + channel + " :End of /NAMES list"
+# define RPL_LIST(channel, visible, topic) "322" + channel + " " + visible + " :" + topic
+# define RPL_LISTEND() "323:End of LIST"
 
 #endif

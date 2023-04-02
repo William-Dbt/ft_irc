@@ -41,6 +41,8 @@ void	PART(Command* command);
 void	TOPIC(Command* command);
 void	INVITE(Command* command);
 void	KICK(Command* command);
+void	NAMES(Command* command);
+void	LIST(Command* command);
 void	PRIVMSG(Command* command);
 void	NOTICE(Command* command);
 void	AWAY(Command* command);
