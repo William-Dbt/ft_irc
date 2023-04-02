@@ -232,10 +232,8 @@ void	Server::receiveEntries(std::vector<pollfd>::iterator& it) {
 		command.execute();
 	}
 	// test if the client has been registered and if it has a nickname
-	if (user->status == FULLYREGISTER)
-	{
-		if (user->getNickname().empty())
-		{
+	if (user->status == FULLYREGISTER) {
+		if (user->getNickname().empty()) {
 			user->status = DISCONNECTED;
 			return;
 		}

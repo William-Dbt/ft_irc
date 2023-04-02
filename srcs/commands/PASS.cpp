@@ -13,6 +13,5 @@ void	PASS(Command* command) {
 		client->status = BADPASSWORD;
 		return ;
 	}
-
 	client->status = REGISTER;
 }

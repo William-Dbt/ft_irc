@@ -12,6 +12,7 @@ class	Server;
 
 enum	e_status {
 	BADPASSWORD = 0,
+	BADNICKNAME,
 	COMMING,
 	REGISTER,
 	FULLYREGISTER,

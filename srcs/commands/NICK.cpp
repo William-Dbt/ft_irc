@@ -54,10 +54,11 @@ void	NICK(Command* command) {
 		return client->sendReply(ERR_ERRONEUSNICKNAME(nickname));
 
 	if (isNicknameAlreadyInUse(client->getServer(), nickname)) {
-		client->status = DISCONNECTED;
-		client->setQuitMessage("Nickname already used.");
+		client->status = BADNICKNAME;
 		return client->sendReply(ERR_NICKNAMEINUSE(nickname));
 	}
 	client->sendTo("NICK :" + nickname);
 	client->setNickname(nickname);
+	if (client->status == BADNICKNAME)
+		client->status = FULLYREGISTER;
 }

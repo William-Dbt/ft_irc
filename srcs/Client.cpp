@@ -67,7 +67,7 @@ void	Client::send(std::string message) {
 void	Client::sendTo(std::string message) {
 	std::string	buffer;
 
-	if (this->status == REGISTER)
+	if (this->status < FULLYREGISTER)
 		message = ": " + message;
 	else {
 		buffer = ':' + this->getPrefix() + ' ';
@@ -103,7 +103,7 @@ void Client::sendReply(std::string message)
 std::string	Client::getPrefix() {
 	std::string	buffer;
 
-	if (this->status == REGISTER)
+	if (this->status < FULLYREGISTER)
 		return "";
 
 	buffer = getNickname();

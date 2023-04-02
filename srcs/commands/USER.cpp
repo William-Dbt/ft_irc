@@ -6,10 +6,11 @@ void	USER(Command* command) {
 	if (command->getParameters().size() < 5)
 		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
-	if (client->status != REGISTER)
+	if (client->status != REGISTER && client->status != BADNICKNAME)
 		return client->sendReply(ERR_ALREADYREGISTRED());
 
 	client->setUsername(command->getParameters()[1]);
 	client->setRealname(command->getParameters()[4].substr(1, command->getParameters()[4].size()));
-	client->status = FULLYREGISTER;
+	if (client->status != BADNICKNAME)
+		client->status = FULLYREGISTER;
 }
