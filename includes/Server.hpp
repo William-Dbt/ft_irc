@@ -34,6 +34,7 @@ class	Server {
 		void	deleteChannel(std::string name);
 		void	kickClientFromChannel(Client* client, Channel* channel);
 		void	kickClientFromAllChannels(Client* client);
+		void	kickClientFromAllChannelsWithJoin(Client* client);
 
 		int							getSocketFd() const;
 		int							getPort() const;

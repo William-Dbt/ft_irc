@@ -29,22 +29,6 @@ bool isKeyCorrect(Channel *channel, std::string key)
 	return false;
 }
 
-void leaveAllChannels(Command *command)
-{
-	Client *client = command->getClient();
-	Server *server = client->getServer();
-
-	std::vector<Channel > channels = server->getChannels();
-	for (std::vector<Channel >::iterator it = channels.begin(); it != channels.end(); ++it)
-	{
-		(*it).removeClient(client);
-		if ((*it).getClients().size() == 0)
-			server->deleteChannel((*it).getName());
-		std::cout << "Client " << client->getNickname() << " left channel " << (*it).getName() << std::endl;
-	}
-	std::cout << "Client " << client->getNickname() << " left all channels" << std::endl;
-}
-
 void JOIN(Command *command)
 {
 	Client *client = command->getClient();
@@ -54,7 +38,8 @@ void JOIN(Command *command)
 		return client->sendReply(ERR_NEEDMOREPARAMS(command->getParameters()[0]));
 
 	if (command->getParameters()[1] == "0")
-		return leaveAllChannels(command);
+		// return leaveAllChannels(command, server, client);
+		return server->kickClientFromAllChannelsWithJoin(client);
 
 	std::vector<std::string> channelsNames = splitCommand(command->getParameters()[1], ',');
 	std::vector<std::string> channelsKeys;

@@ -380,6 +380,25 @@ void	Server::kickClientFromAllChannels(Client* client)
 	}
 }
 
+void	Server::kickClientFromAllChannelsWithJoin(Client* client)
+{
+	std::vector<Channel *>				channelsWhereClientIs;
+
+	for (std::map<std::string, Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); it++)
+		if ((*it).second.isClientInChannel(client))
+			channelsWhereClientIs.push_back(&(*it).second);
+
+	while (channelsWhereClientIs.size() > 0)
+	{
+		std::map<int, Client *> clients = client->getServer()->getClients();
+
+		for (std::map<int, Client *>::iterator it_channel = clients.begin(); it_channel != clients.end(); ++it_channel)
+			(*it_channel).second->sendFrom(client, "PART " + channelsWhereClientIs[0]->getName());
+		this->kickClientFromChannel(client, channelsWhereClientIs[0]);
+		channelsWhereClientIs.erase(channelsWhereClientIs.begin());
+	}
+}
+
 int	Server::getSocketFd() const {
 	return this->_fd;
 }
