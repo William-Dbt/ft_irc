@@ -11,11 +11,11 @@ void TOPIC(Command *command)
 
 	Channel *channel = server->getChannel(command->getParameters()[1]);
 	if (!channel || !channel->isClientInChannel(client))
-		return client->sendReply(ERR_NOTONCHANNEL(channel->getName()));
+		return client->sendReply(ERR_NOTONCHANNEL(command->getParameters()[1]));
 
 	std::map<int, Client *> clients = channel->getClients();
 	std::map<int, Client *>::iterator it;
-
+	
 	if (newTopic.size() == 0)
 	{
 		channel->setTopic("");
