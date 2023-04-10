@@ -16,8 +16,9 @@ void	KILL(Command* command) {
 
 	size_t	posStartComment = command->getLine().find(':') + 1;
 
-	buffer = command->getLine().substr(posStartComment, command->getLine().size() - posStartComment - 2);
+	buffer = command->getLine().substr(posStartComment, command->getLine().size() - posStartComment - 1);
 	victim->setQuitMessage("<KILLED> " + buffer);
+	client->getServer()->kickClientFromAllChannelsWithJoin(victim);
 	victim->status = DISCONNECTED;
 	victim->sendTo("KILL :" + buffer);
 }

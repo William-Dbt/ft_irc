@@ -393,7 +393,7 @@ void	Server::kickClientFromAllChannelsWithJoin(Client* client)
 		std::map<int, Client *> clients = client->getServer()->getClients();
 
 		for (std::map<int, Client *>::iterator it_channel = clients.begin(); it_channel != clients.end(); ++it_channel)
-			(*it_channel).second->sendFrom(client, "PART " + channelsWhereClientIs[0]->getName());
+			(*it_channel).second->sendFrom(client, "PART " + channelsWhereClientIs[0]->getName() + " " + client->getQuitMessage());
 		this->kickClientFromChannel(client, channelsWhereClientIs[0]);
 		channelsWhereClientIs.erase(channelsWhereClientIs.begin());
 	}
