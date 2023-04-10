@@ -5,13 +5,13 @@ void AWAY(Command* command)
 	Client* client = command->getClient();
 	std::string message = command->getEndParam();
 
-	if (message.empty())
+	if (message.empty() && client->isModeInUse('a'))
 	{
 		client->removeMode('a');
 		client->setAwayMessage("");
 		client->sendReply(RPL_UNAWAY());
 	}
-	else
+	else if (!message.empty())
 	{
 		client->addMode('a');
 		client->setAwayMessage(message);
