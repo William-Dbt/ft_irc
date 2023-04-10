@@ -39,6 +39,10 @@ void	Command::execute() {
 	if (this->_parameters[0] != "PASS" && this->_parameters[0] != "QUIT" && this->_client->status == BADPASSWORD)
 		return ;
 
+	if (this->_parameters[0] != "PASS" && this->_parameters[0] != "NICK"
+		&& this->_parameters[0] != "USER" && this->_parameters[0] != "QUIT" && this->_client->status != CONNECTED)
+		return ;
+
 	if (this->_client->commandBuffer.size())
 		this->_client->commandBuffer.clear();
 
