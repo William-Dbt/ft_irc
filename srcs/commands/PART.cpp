@@ -17,6 +17,8 @@ void execute_part(std::vector<std::string> channels_name, Client *client, Comman
         Channel *channel = client->getServer()->getChannel(*it);
         message_part(channel, client, message);
         channel->removeClient(client);
+        if (channel->getClients().size() == 0)
+		    command->getServer()->deleteChannel(channel->getName());
     }
 }
 
