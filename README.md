@@ -67,8 +67,7 @@ Tips for the bonus (file transfert): [DCC Command](https://irssi.org/documentati
 [RFC2812](https://datatracker.ietf.org/doc/html/rfc2812)  
 [Simple example of a server in C](https://codes-sources.commentcamarche.net/source/36603-server-irc-en-c-protocole-maison)
 
-## Score
+## Colaborators
 
-[![wdebotte's 42 ft_irc Score](https://badge42.vercel.app/api/v2/cl2zu1sil002509mf9zd91hy6/project/2974353)](https://github.com/JaeSeoKim/badge42)
-
-Done with [Xavier Le-baux](https://github.com/Xavier-LB) and [Nicolas Mattera](https://github.com/niko-mttr).
+[Xavier Le-baux](https://github.com/Xavier-LB)  
+[Nicolas Mattera](https://github.com/niko-mttr)
